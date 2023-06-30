@@ -69,6 +69,7 @@ class Processing_EMG:
             ax[cont].legend()
             cont+=1
         
+        ax[0].set_ylim([-500,500])
         ax[0].set_title(self.filename)
         ax[cont-1].set_xlabel(time_label+' [s]')
         
@@ -123,4 +124,7 @@ class Processing_EMG:
             pass
                 
         return 0
+        
+    def getSignal(self, num_muscle):
+        return self.channels[0], self.channels[num_muscle+1], self.channelsNames[num_muscle+1]
 
