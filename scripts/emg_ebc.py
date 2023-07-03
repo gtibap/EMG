@@ -1,3 +1,4 @@
+import pywt
 import sys
 import argparse
 from class_emg_ebc import Processing_EMG
@@ -5,6 +6,17 @@ import numpy as np
 import pandas as pd
 import scipy.io
 import matplotlib.pyplot as plt
+
+def wavelet_ecg(data):
+    # waveletname = 'sym8'
+    waveletname = 'Haar'
+    nlevel=10
+    fig, axarr = plt.subplots(nrows=nlevel, ncols=1)
+    for ii in np.arange(nlevel):
+        (data, coeff_d) = pywt.dwt(data, waveletname)
+        axarr[ii].plot(data, 'r')
+    
+    return 0
 
 def on_press(event):
     # print('press', event.key)
@@ -17,7 +29,7 @@ def on_press(event):
             
     return 0
 
-def plotEMG(emg_times, emg_signals, emg_names, num_session):
+def plotEMG(emg_times, emg_signals, emg_names, num_session, file_number):
     num_signals = len(emg_signals)
     ## we exclude Time channel and Swich channel (first and last channels)
     fig, ax = plt.subplots(nrows=num_signals, ncols=1, sharex=True, sharey=True)
@@ -29,8 +41,13 @@ def plotEMG(emg_times, emg_signals, emg_names, num_session):
         cont+=1
     
     ax[0].set_ylim([-500,500])
-    ax[0].set_title('session '+str(num_session))
+    ax[0].set_title('EBC '+ file_number+' session '+str(num_session))
     ax[cont-1].set_xlabel('Time [s]')
+    ax[0].set_ylabel('b1')
+    ax[1].set_ylabel('e1')
+    ax[2].set_ylabel('e2')
+    ax[3].set_ylabel('e3')
+    ax[4].set_ylabel('b2')
     
     return 0
 
@@ -40,6 +57,7 @@ def main():
     parser = argparse.ArgumentParser(description = 'EMG visualization')
 
     # Adding optional argument
+    parser.add_argument('-f', '--file_number', type = str, help = "Select file number, for example: 040")
     parser.add_argument('-s', '--session', type = int, help = "Select one SESSION among: 1, 7, and 14")
     parser.add_argument('-r','--recording', type = str, help='Select one RECORDING among: b1, e1, e2, e3, b2 (baseline1, 2min-, 15min-, and 30min-pedaling, baseline2)')
     parser.add_argument('-m','--muscle', type = str, help='Select one MUSCLE among: grt, glt, tbart, tbalt, vlrt, vllt, vmrt, vmlt')
@@ -50,13 +68,32 @@ def main():
     # session = int(args[1]) ## [1,7,14]
     # num_file = int(args[2]) ## [0,1,2,3,4]-> (baseline_start, e1,e2,e2, baseline_end)
     
+    # file_number=['040']
+    file_number=args.file_number
+    
     session = args.session
     if  session == 1:
         path='../data/emg_noraxon/matlab/s01/'
-        files=['EBC040S1-Baseline1.mat','EBC040S1e1.mat','EBC040S1e2.mat','EBC040S1e3.mat', 'EBC040S1-Baseline2.mat']
+        # files=['EBC040S1-Baseline1.mat','EBC040S1e1.mat','EBC040S1e2.mat','EBC040S1e3.mat', 'EBC040S1-Baseline2.mat']
+        f_b1 = 'ebc_'+file_number+'_s01_'+'b1.mat'
+        f_e1 = 'ebc_'+file_number+'_s01_'+'e1.mat'
+        f_e2 = 'ebc_'+file_number+'_s01_'+'e2.mat'
+        f_e3 = 'ebc_'+file_number+'_s01_'+'e3.mat'
+        f_b2 = 'ebc_'+file_number+'_s01_'+'b2.mat'
+        
+        files=[f_b1, f_e1, f_e2, f_e3, f_b2] 
+        
     elif session == 7:
         path='../data/emg_noraxon/matlab/s07/'
-        files=['EBC040_S7_BASELINE1.mat','EBC040_S7_E1.mat','EBC040_S7_E2.mat','EBC040_S7_E3.mat','EBC040_S7_BASELINE.mat']
+        # files=['EBC040_S7_BASELINE1.mat','EBC040_S7_E1.mat','EBC040_S7_E2.mat','EBC040_S7_E3.mat','EBC040_S7_BASELINE.mat']
+        f_b1 = 'ebc_'+file_number+'_s07_'+'b1.mat'
+        f_e1 = 'ebc_'+file_number+'_s07_'+'e1.mat'
+        f_e2 = 'ebc_'+file_number+'_s07_'+'e2.mat'
+        f_e3 = 'ebc_'+file_number+'_s07_'+'e3.mat'
+        f_b2 = 'ebc_'+file_number+'_s07_'+'b2.mat'
+        
+        files=[f_b1, f_e1, f_e2, f_e3, f_b2] 
+        
     elif session == 14:
         path='../data/emg_noraxon/matlab/s14/'
         files=['EBC_Bed_cycling_Baseline.mat','EBC_Bed_cycling-s14-Baseline.mat','EBC040_Bed_cycling-S14.mat','EBC040_Bed_cycling-s14-5min.mat','EBC040-_Bed_cycling_-s14-15m.mat','EBC040_Bed_cycling-s14-30min.mat']
@@ -127,7 +164,9 @@ def main():
             list_emg_signals.append(emg_signal)
             list_emg_names.append(emg_name)
         # print(list_emg_names)
-        plotEMG(list_emg_times, list_emg_signals, list_emg_names, session)
+        plotEMG(list_emg_times, list_emg_signals, list_emg_names, session, file_number)
+        
+    # wavelet_ecg(list_emg_signals[2])
 
     plt.ion()
     plt.show(block=True)
