@@ -21,6 +21,17 @@ class Processing_EMG:
         self.n_channels=1
         self.channels=[]
         self.channelsNames=[]
+        
+        # self.channelsRef = {0:'Tb Ant RT, uV', 1:'VL LT, uV', 2:'Gastroc LT, uV', 3:'VM RT, uV', 4:'Tb Ant LT, uV', 5:'Gastroc RT, uV', 6:'VM LT, uV', 7:'VL RT, uV'}
+        self.dict_namesChannels ={'time':'Time',
+                                'tbart':'Tb Ant RT, uV', 
+                                 'vllt':'VL LT, uV', 
+                                  'glt':'Gastroc LT, uV', 
+                                 'vmrt':'VM RT, uV', 
+                                'tbalt':'Tb Ant LT, uV',
+                                  'grt':'Gastroc RT, uV', 
+                                 'vmlt':'VM LT, uV', 
+                                 'vlrt':'VL RT, uV'}
     
         self.path = path
         self.filename = filename
@@ -30,13 +41,19 @@ class Processing_EMG:
         self.sampling_rate = mat['samplingRate'][0,0]
         ## plus one to include the Time channel (channel 0)
         self.n_channels = mat['noChans'][0,0]+1
+        # self.n_channels = 9
+        
+        print(f'self.n_channels {self.n_channels}')
         
         self.channels = np.empty((self.n_channels, 0)).tolist()
         self.channelsNames = np.empty((self.n_channels, 0)).tolist()
 
         for i in np.arange(self.n_channels):
+        # for name_ch in self.dict_namesChannels:
             self.channels[i] = mat['Data'][0,i].flatten()
             self.channelsNames[i] = mat['channelNames'][0][i][0]
+        
+        # print(f'self.channelsNames {self.channelsNames}')
                 
     
     def smoothingRMS(self, window_size):
@@ -54,6 +71,29 @@ class Processing_EMG:
             i+=1
         
         return 0
+
+
+    def plotSignals(self):
+        
+        time = self.channels[0]
+        time_label = self.channelsNames[0]
+        ## we exclude Time channel and Swich channel (first and last channels)
+        fig, ax = plt.subplots(nrows=4, ncols=1, sharex=True, sharey=True)
+        fig.canvas.mpl_connect('key_press_event', self.on_press)
+        
+        
+        
+        cont=0
+        for ch, ch_n in zip(self.channels[1:-1], self.channelsNames[1:-1]):
+            ax[cont].plot(time, ch, label=ch_n)
+            ax[cont].legend()
+            cont+=1
+        
+        ax[0].set_ylim([-500,500])
+        ax[0].set_title(self.filename)
+        ax[cont-1].set_xlabel(time_label+' [s]')
+        
+        return 0
         
     
     def plotEMG(self):
@@ -61,7 +101,7 @@ class Processing_EMG:
         time = self.channels[0]
         time_label = self.channelsNames[0]
         ## we exclude Time channel and Swich channel (first and last channels)
-        fig, ax = plt.subplots(nrows=(self.n_channels-2), ncols=1, sharex=True, sharey=True)
+        fig, ax = plt.subplots(nrows=(len(self.channels)-2), ncols=1, sharex=True, sharey=True)
         fig.canvas.mpl_connect('key_press_event', self.on_press)
         cont=0
         for ch, ch_n in zip(self.channels[1:-1], self.channelsNames[1:-1]):
@@ -125,6 +165,15 @@ class Processing_EMG:
                 
         return 0
         
-    def getSignal(self, num_muscle):
-        return self.channels[0], self.channels[num_muscle+1], self.channelsNames[num_muscle+1]
+    def getSignal(self, muscle):
+        ## channels[0] is the time
+        if muscle in self.dict_namesChannels:
+            channel_name = self.dict_namesChannels[muscle]
+            id_signal = self.channelsNames.index(channel_name)
+            
+            # return self.channels[0], self.channels[num_muscle+1], self.channelsNames[num_muscle+1]
+            return self.channels[0], self.channels[id_signal], self.channelsNames[id_signal]
+        else:
+            print(f'\n{muscle} muscle was not found.\n')
+            return 0,0, muscle+' was not found'
 
