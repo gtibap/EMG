@@ -37,7 +37,8 @@ class Processing_EMG:
         self.filename = filename
     
         mat = scipy.io.loadmat(self.path+self.filename)
-        print('File content:', mat['__header__'])
+        print(self.filename)
+        print('File content:',  mat['__header__'])
         self.sampling_rate = mat['samplingRate'][0,0]
         # print(f'sample rate: {self.sampling_rate}')
         ## plus one to include the Time channel (channel 0)
@@ -54,7 +55,7 @@ class Processing_EMG:
             self.channels[i] = mat['Data'][0,i].flatten()
             self.channelsNames[i] = mat['channelNames'][0][i][0]
         
-        # print(f'self.channelsNames {self.channelsNames}')
+        print(f'self.channelsNames {self.channelsNames}')
                 
     
     def smoothingRMS(self, window_size):
