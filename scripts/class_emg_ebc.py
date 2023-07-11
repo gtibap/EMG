@@ -39,6 +39,7 @@ class Processing_EMG:
         mat = scipy.io.loadmat(self.path+self.filename)
         print('File content:', mat['__header__'])
         self.sampling_rate = mat['samplingRate'][0,0]
+        # print(f'sample rate: {self.sampling_rate}')
         ## plus one to include the Time channel (channel 0)
         self.n_channels = mat['noChans'][0,0]+1
         # self.n_channels = 9
@@ -75,21 +76,36 @@ class Processing_EMG:
 
     def plotSignals(self):
         
+        selected_names=['vmrt','vlrt','vmlt','vllt']
+        
         time = self.channels[0]
         time_label = self.channelsNames[0]
-        ## we exclude Time channel and Swich channel (first and last channels)
+        
+        print(f'filename: {self.filename}')
+        
+        # ## we exclude Time channel and Swich channel (first and last channels)
         fig, ax = plt.subplots(nrows=4, ncols=1, sharex=True, sharey=True)
         fig.canvas.mpl_connect('key_press_event', self.on_press)
         
-        
-        
         cont=0
-        for ch, ch_n in zip(self.channels[1:-1], self.channelsNames[1:-1]):
-            ax[cont].plot(time, ch, label=ch_n)
-            ax[cont].legend()
-            cont+=1
+        for name in selected_names:
+            if name in self.dict_namesChannels:
+                channel_name = self.dict_namesChannels[name]
+                id_signal = self.channelsNames.index(channel_name)
+                # print(f'channel_name and id_signal: {channel_name}, {id_signal}')
+                ax[cont].plot(time, self.channels[id_signal], label=channel_name)
+                ax[cont].legend()
+                cont+=1
         
-        ax[0].set_ylim([-500,500])
+        ## 5 seconds x axis
+        print('time:', self.sampling_rate, len(time), np.min(time), np.max(time))
+
+        ## we select 5 seconds in the middle of the recordings for visualization
+        id01 = (len(time)/2 - (self.sampling_rate*2.5)).astype(int)
+        id02 = (id01 + (self.sampling_rate*5)).astype(int)        
+        
+        ax[0].set_xlim([time[id01],time[id02]])
+        ax[0].set_ylim([-300,300])
         ax[0].set_title(self.filename)
         ax[cont-1].set_xlabel(time_label+' [s]')
         
