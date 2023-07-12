@@ -1,7 +1,7 @@
 import pywt
 import sys
 import argparse
-from class_emg_ebc import Processing_EMG
+from class_emg_ebc_plots import Processing_EMG
 import numpy as np
 import pandas as pd
 import scipy.io
@@ -27,6 +27,74 @@ def on_press(event):
     else:
         pass
             
+    return 0
+
+def plot_together(list_data, list_labels, list_sr, file_number, asia_nl):
+    
+    fig, ax = plt.subplots(nrows=4, ncols=2, sharey=True)
+    fig.canvas.mpl_connect('key_press_event', on_press)
+    
+    dt = list_data[0]
+    la = list_labels[0]
+    
+    time = dt[0]
+    time_label = la[0]
+    
+    id01 = (len(time)/2 - (list_sr[0]*2.5)).astype(int)
+    id02 = (id01 + (list_sr[0]*5)).astype(int)        
+    
+    cont=0
+    for signal, label  in zip(dt[1:], la[1:]):
+        if label == 'Noraxon Ultium.EMG 8, uV':
+            label = 'VLO RT, uV'
+        elif label == 'RECTUS FEM. RT, uV':
+            label = 'VMO RT, uV'
+        elif label == 'RECTUS FEM. LT, uV':
+            label = 'VMO LT, uV'
+        else:
+            pass
+        ax[cont][0].plot(time, signal, label=label)
+        ax[cont][0].set_xlim([time[id01],time[id02]])
+        ax[cont][0].legend(loc='lower right')
+        cont+=1
+    
+    ##############################    
+    dt = list_data[1]
+    la = list_labels[1]
+    
+    time = dt[0]
+    label_time = la[0]
+    
+    id01 = (len(time)/2 - (list_sr[0]*2.5)).astype(int)
+    id02 = (id01 + (list_sr[0]*5)).astype(int)        
+    
+    cont=0
+    for signal, label  in zip(dt[1:], la[1:]):
+        if label == 'Noraxon Ultium.EMG 8, uV':
+            label = 'VLO RT, uV'
+        elif label == 'RECTUS FEM. RT, uV':
+            label = 'VMO RT, uV'
+        elif label == 'RECTUS FEM. LT, uV':
+            label = 'VMO LT, uV'
+        else:
+            pass
+        ax[cont][1].plot(time, signal, label=label)
+        ax[cont][1].set_xlim([time[id01],time[id02]])
+        ax[cont][1].legend(loc='lower right')
+        cont+=1
+
+    #######
+    
+    ax[0][0].set_ylim([-300,300])
+    
+    ax[0][0].set_title('day 01')
+    ax[0][1].set_title('day 07')
+    ax[cont-1][0].set_xlabel(time_label+' [s]')
+    ax[cont-1][1].set_xlabel(time_label+' [s]') 
+    
+    fig.suptitle('P:'+file_number+' ASIA:'+asia_nl[0]+' NL:'+asia_nl[1], fontsize=16)  
+    
+    
     return 0
 
 def plotEMG(emg_times, emg_signals, emg_names, num_session, file_number):
@@ -68,45 +136,67 @@ def main():
     file_number=args.file_number
     
                         
-    list_files_names = {'001':['EBC-PATIENT 1 S7.mat'],
-                        '002':['EBC-PATIENT 2.mat','EBC-PATIENT 2-1.mat'],
-                        '003':['EBC003-J1.mat','EBC003-S7.1.mat','EBC003-S7.2.mat','EBC003-J14.mat'],
-                        '004':['EBC004-S1.mat','EBC004 S6.mat','EBC004  J13.mat'],
-                        '006':['EBC006 S1 E1.mat','EBC006 S1 E2.mat','EBC 006 S1 E3.mat','EBC 006 S8 E1.mat','EBC 006 S8 E2.mat','EBC 006 S8 E3.mat','EBC006 s15 E1.mat','EBC006 s15 E2.mat','EBC006 s15 e3.mat'],
-                        '018':['EBC018_S2_E2.mat','EBC018-s3-e1.mat','EBC018_S3_E3.mat','ebc018_S8_e1.mat','EBC018_s8_e1-2.mat','EBC 018_s8_e2.mat','EBC018_S8_E3.mat','EBC018_S12_e1.mat','EBC018_S12_E2.mat','EBC018_s12_e2_.mat','EBC018_s12_E2-3.mat','EBC018_S12_e3.mat'],
-                        '024':['EBC24-S4_BASELINE.mat','EBC024-S4-E1.mat','EBC024-S4-E2.mat','EBC24-S4-E3.mat','EBC24_S9_baseline1.mat','EBC24-S9-e2.mat','EBC24_s9_E3.mat','EBC24-S4-BASELINE2.mat','EBC24_S9_baseline 2.mat','EBC24-s9_e1.mat','EBC024S13e1.mat','EBC024S13e2.mat','EBC024S13e3.mat'],
-                        '030':['EBC030_S1_BASELINE1.mat','EBC030_S1_E1.mat','EBC030_S1_E2.mat','EBC030_S1_E3.mat','EBC030_S1_BASELINE2.mat','EBC030_S7_BASELINE1.mat','EBC030_S7_E1.mat','EBC030_S7_E2.mat','EBC030_S7_E3.mat','EBC030_S7_BASELINE2.mat','EBC030_S14_BASELINE.mat','EBC030_S14_E1.mat','EBC030_s14_e2.mat','EBC30_S14_E3.mat','EBC030_S14_BASELINE2.mat'],
-                        '031':['EBC031_s2_baseline2.mat','EBC031_s2_e1.mat','EBC031_s2_e2.mat','EBC031_s2_e3.mat','EBC031S7e1.mat','EBC031_s7e2.mat','EBC031S7e3.mat','EBC031_S14_BASELINE1.mat','EBC031_S14_E1.mat','EBC031S14e2.mat','EBC031_s14_e3.mat','EBC031_s14_baseline2.mat'],
-                        '032':['EBC032_s1_baseline1.mat','EBC032_S1_e1.mat','EBC032_S1_E2.mat','EBC032_s1_e3.mat','EBC032_s1_baseline2.mat','EBC032S7-Baseline1.mat','EBC032S7e1.mat','EBC032S7e2.mat','EBC032S7e3.mat','EBC032S7-Baseline2.mat','EBC032S14e1.mat','EBC032S14e2.mat','EBC032S14e3.mat','EBC032S14-baseline2.mat'],
-                        '033':['EBC033S3-Baseline.mat','EBC033S3e1.mat','EBC033S3e2.mat','EBC033S3e3.mat','EBC033_S7_BASELINE1.mat','EBC033_S7_e1.mat','EBC033_S7_E2.mat','EBC033_S7_E3.mat','ebc033_s7_baseline2.mat','EBC033S14-Baseline1.mat','EBC033S14e1.mat','EBC033S14e2.mat','EBC033S14e3.mat'],
-                        '037':['EBC037_S2_BASELINE2.mat','EBC037_S2_E1.mat','EBC037_S2_E2.mat','EBC037_S2_E3.mat','EBC037S7-Baseline1.mat','EBC037S7e1.mat','EBC037S7e2.mat','EBC037S7e3.mat','EBC037_S14_BASELINE1.mat','EBC037_S14_E1.mat','EBC037_S14_E2.mat','EBC037S14E3.mat','EBC037_S14_BASELINE2.mat'],
-                        '042':['EBC042_S7_BASELINE.mat','EBC042S75MIN.mat','EBC042S715MIN.mat','EB042S730MIN.mat','EBC042S7BASELINE2.mat'],
-                        '045':['EBC45-S2-Baseline.mat','EBC45-S2-1min.mat','EBC45-S2-5min.mat','EBC45-S2-15min.mat','EBC45-S2-25min.mat','EBC45-S2-30min.mat']}
+    list_files_names = {'003':['EBC003-J1.mat','EBC003-J14.mat'],
+                        '004':['EBC004-S1.mat','EBC004  J13.mat'],
+                        '006':['EBC 006 S1 E3.mat','EBC006 s15 e3.mat'],
+                        '018':['EBC018_S3_E3.mat','EBC018_S12_e3.mat'],
+                        '024':['EBC24-S4-E3.mat','EBC024S13e3.mat'],
+                        '030':['EBC030_S1_E3.mat','EBC30_S14_E3.mat'],
+                        '031':['EBC031_s2_e3.mat','EBC031_s14_e3.mat'],
+                        '032':['EBC032_s1_e3.mat','EBC032S14e3.mat'],
+                        '033':['EBC033S3e3.mat','EBC033S14e3.mat'],
+                        '037':['EBC037_S2_E3.mat','EBC037S14E3.mat'],
+                        '042':['EB042S730MIN.mat'],
+                        '045':['EBC45-S2-25min.mat','EBC045S14e3.mat']}
+    
+    
+    list_asia_nl = {'003':['C','C5'],
+                    '004':['B','C4'],
+                    '006':['A','L2'],
+                    '018':['A','C2'],
+                    '024':['A','T4'],
+                    '030':['A','T10'],
+                    '031':['B','C4'],
+                    '032':['A','C3'],
+                    '033':['B','T12'],
+                    '037':['A','C3'],
+                    '042':['A','T10'],
+                    '045':['A','C6'],
+                    }
     
     print(f'Dir name: {path}')
     # print(f'Selected files: {list_files_names[file_number]}')
     
     files = list_files_names[file_number]
+    asia_nl = list_asia_nl[file_number]
    
         
     ## EMG early bed cycling (EBC) from .mat file (matlab file) generated by Noraxon software.
     ## Each file has several channels.
     ## We read the data in the class 'Processing_EMG'.
     ## We create an object (obj_emg) for a selected file.
+    list_days=['1','14']
     
     list_objs = []
     ## read emg-signals from all recordings of a selected session
-    for filename in files:
+    for filename, day_number in zip(files, list_days):
         print(f'filename {filename}')
-        list_objs.append(Processing_EMG(path,filename))
+        list_objs.append(Processing_EMG(path,filename,day_number))
     ## plot emg-signals selected muscle
     list_emg_times=[]
     list_emg_signals=[]
     list_emg_names=[]
     
+    list_data=[[],[]]
+    list_labels=[[],[]]
+    list_sr=[]
+    
+    i=0
     for obj_emg in list_objs:
         # print(f'obj emg: {obj_emg}')
-        obj_emg.plotSignals()
+        list_data[i], list_labels[i] = obj_emg.plotSignals(file_number)
+        list_sr.append(obj_emg.getSamplingRate())
+        i=+1
         # emg_time, emg_signal, emg_name = obj_emg.getSignal(num_muscle)
         # emg_time, emg_signal, emg_name = obj_emg.getSignal(muscle)
         
@@ -117,6 +207,10 @@ def main():
     # plotEMG(list_emg_times, list_emg_signals, list_emg_names, session, file_number)
         
     # wavelet_ecg(list_emg_signals[2])
+
+    print('sampling: ', list_sr)
+    
+    plot_together(list_data, list_labels, list_sr, file_number, asia_nl)
 
     plt.ion()
     plt.show(block=True)

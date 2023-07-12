@@ -13,7 +13,7 @@ import sys
 
 class Processing_EMG:
 
-    def __init__(self, path, filename):
+    def __init__(self, path, filename, day_number):
 
         self.path=''
         self.filename=[]
@@ -77,6 +77,7 @@ class Processing_EMG:
     
         self.path = path
         self.filename = filename
+        self.day_number = day_number
     
         mat = scipy.io.loadmat(self.path+self.filename)
         print(self.filename)
@@ -198,7 +199,12 @@ class Processing_EMG:
         # else:
             # print('Channels not found.')
             # return 0
-            
+           
+        list_data = []
+        list_labels=[]
+        list_data.append(time)
+        list_labels.append(time_label)
+        
         
         cont=0
         for name in selected_names:
@@ -206,9 +212,14 @@ class Processing_EMG:
                 channel_name = selected_dict[name]
                 id_signal = self.channelsNames.index(channel_name)
                 # print(f'channel_name and id_signal: {channel_name}, {id_signal}')
+                
                 ax[cont].plot(time, self.channels[id_signal], label=channel_name)
-                ax[cont].legend()
+                ax[cont].legend(loc='lower right')
                 cont+=1
+                
+                list_data.append(self.channels[id_signal])
+                list_labels.append(channel_name)
+                
         
         ## 5 seconds x axis
         # print('time:', self.sampling_rate, len(time), np.min(time), np.max(time))
@@ -219,10 +230,10 @@ class Processing_EMG:
         
         ax[0].set_xlim([time[id01],time[id02]])
         ax[0].set_ylim([-300,300])
-        ax[0].set_title('P'+file_number+' - '+self.date)
+        ax[0].set_title('P'+file_number+' - day '+self.day_number)
         ax[cont-1].set_xlabel(time_label+' [s]')
         
-        return 0
+        return list_data, list_labels
         
     
     def plotEMG(self):
@@ -306,3 +317,6 @@ class Processing_EMG:
             print(f'\n{muscle} muscle was not found.\n')
             return 0,0, muscle+' was not found'
 
+
+    def getSamplingRate(self):
+        return self.sampling_rate
