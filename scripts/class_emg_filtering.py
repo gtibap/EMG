@@ -121,7 +121,7 @@ class Reading_EMG:
             ax[cont].legend()
             cont+=1
         
-        ax[0].set_ylim([-500,500])
+        ax[0].set_ylim([-100,100])
         ax[0].set_title(self.filename)
         ax[cont-1].set_xlabel(self.ch_time_name+' [s]')
 
@@ -140,12 +140,22 @@ class Reading_EMG:
         # window_size=20 ## miliseconds
         # ch_s = self.smoothingRMS(ch, window_size)
         # filtered_ch = ktk.filters.butter(ch, btype="bandpass", fc=[20, 500])
-        fc1 = 50 ## 20 Hz high pass filter
+        fc1 = 60 ## 20 Hz high pass filter
         fc2 = 500 ## Hz
         ch_s = self.filterBandPass(ch, fc1, fc2)
+        
+        id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
+        id02 = (id01 + (self.sampling_rate*5)).astype(int)  
 
-        f1, Pxx_spec1 = signal.periodogram(ch, self.sampling_rate, 'flattop', scaling='spectrum')
-        f2, Pxx_spec2 = signal.periodogram(ch_s, self.sampling_rate, 'flattop', scaling='spectrum')
+        # f1, Pxx_spec1 = signal.periodogram(ch, self.sampling_rate, 'flattop', scaling='spectrum')
+        # f2, Pxx_spec2 = signal.periodogram(ch_s, self.sampling_rate, 'flattop', scaling='spectrum')
+        # f1, S1 = signal.periodogram(ch[id01:id02], self.sampling_rate, scaling='density')
+        # f2, S2 = signal.periodogram(ch_s[id01:id02], self.sampling_rate, scaling='density')
+        
+        
+        (f1, S1)= scipy.signal.welch(ch[id01:id02], self.sampling_rate, nperseg=2*1024, scaling='density')
+        (f2, S2)= scipy.signal.welch(ch_s[id01:id02], self.sampling_rate, nperseg=2*1024, scaling='density')
+
         
         ax[0][0].plot(self.ch_time, ch, label=ch_n)
         ax[0][0].legend()
@@ -153,37 +163,45 @@ class Reading_EMG:
         ax[0][1].plot(self.ch_time, ch_s, label=ch_n)
         ax[0][1].legend()
         
-        ax[1][0].axes.semilogy(f1, np.sqrt(Pxx_spec1),label=ch_n)
+        # ax[1][0].axes.semilogy(f1, np.sqrt(Pxx_spec1),label=ch_n)
+        # ax[1][1].axes.semilogy(f2, np.sqrt(Pxx_spec2),label=ch_n)
+        # ax[1][0].axes.semilogy(f1, S1,label=ch_n)
+        # ax[1][1].axes.semilogy(f2, S2,label=ch_n)
+        # ax[1][0].axes.semilogy(f1, np.sqrt(S1),label=ch_n)
+        # ax[1][1].axes.semilogy(f2, np.sqrt(S2),label=ch_n)
+        ax[1][0].axes.plot(f1, np.sqrt(S1),label=ch_n)
+        ax[1][1].axes.plot(f2, np.sqrt(S2),label=ch_n)
         ax[1][0].legend()
-        
-        ax[1][1].axes.semilogy(f2, np.sqrt(Pxx_spec2),label=ch_n)
         ax[1][1].legend()
 
-        id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
-        id02 = (id01 + (self.sampling_rate*5)).astype(int)        
+              
         
         ax[0][0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
         ax[0][1].set_xlim([self.ch_time[id01],self.ch_time[id02]])
+
+        ax[1][0].set_xlim([0,fc2])
+        ax[1][1].set_xlim([0,fc2])
         
-        amp_y = 100
+        amp_y = 250
         
         ax[0][0].set_ylim([-amp_y,amp_y])
         ax[0][1].set_ylim([-amp_y,amp_y])
-        ax[1][0].set_ylim([10e-8, 10e0])
-        ax[1][1].set_ylim([10e-8, 10e0])
+        ax[1][0].set_ylim([10e-8, amp_y/32])
+        ax[1][1].set_ylim([10e-8, amp_y/32])
         
         ax[0][0].set_title(self.filename+' (original)')
         ax[0][1].set_title(f'{self.filename} passband {fc1} Hz - {fc2} Hz')
         
         ax[0][0].set_xlabel(self.ch_time_name+' [s]')
         ax[0][1].set_xlabel(self.ch_time_name+' [s]')
+        
         ax[1][0].set_xlabel('frequency [Hz]')
         ax[1][1].set_xlabel('frequency [Hz]')
         
         ax[0][0].set_ylabel('magnitude')
         ax[0][1].set_ylabel('magnitude')
-        ax[1][0].set_ylabel('magnitude')
-        ax[1][1].set_ylabel('magnitude')
+        ax[1][0].set_ylabel('power spectral density')
+        ax[1][1].set_ylabel('power spectral density')
 
         return 0
         
