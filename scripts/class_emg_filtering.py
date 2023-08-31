@@ -140,7 +140,7 @@ class Reading_EMG:
         # window_size=20 ## miliseconds
         # ch_s = self.smoothingRMS(ch, window_size)
         # filtered_ch = ktk.filters.butter(ch, btype="bandpass", fc=[20, 500])
-        fc1 = 60 ## 20 Hz high pass filter
+        fc1 = 50 ## 20 Hz high pass filter
         fc2 = 500 ## Hz
         ch_s = self.filterBandPass(ch, fc1, fc2)
         
@@ -182,12 +182,12 @@ class Reading_EMG:
         ax[1][0].set_xlim([0,fc2])
         ax[1][1].set_xlim([0,fc2])
         
-        amp_y = 250
+        amp_y = 150
         
         ax[0][0].set_ylim([-amp_y,amp_y])
         ax[0][1].set_ylim([-amp_y,amp_y])
-        ax[1][0].set_ylim([10e-8, amp_y/32])
-        ax[1][1].set_ylim([10e-8, amp_y/32])
+        ax[1][0].set_ylim([10e-8, amp_y/64])
+        ax[1][1].set_ylim([10e-8, amp_y/64])
         
         ax[0][0].set_title(self.filename+' (original)')
         ax[0][1].set_title(f'{self.filename} passband {fc1} Hz - {fc2} Hz')
