@@ -33,11 +33,12 @@ def main(args):
     
     list_files_names = { # '003':['EBC003-J1.mat','EBC003-S7.1.mat','EBC003-S7.2.mat','EBC003-J14.mat'],
                         # '037':['EBC37_S1_BASELINE1.mat','EBC037_S2_BASELINE2.mat', 'EBC037_S2_E1.mat','EBC037_S2_E2.mat','EBC037_S2_E3.mat', 'EBC037S7-Baseline1.mat','EBC037S7e1.mat','EBC037S7e2.mat','EBC037S7e3.mat','EBC037_S14_BASELINE1.mat','EBC037_S14_BASELINE2.mat','EBC037_S14_E1.mat','EBC037_S14_E2.mat','EBC039S14E2.mat','EBC037S14E3.mat'],
-                        '':[],
-                        '001':['EBC-PATIENT 2-1.mat','EBC-PATIENT 1 S7.mat'],
+                        # '':[],
+                        '001':['EBC-PATIENT 1 S7.mat'],
+                        '002':['EBC-PATIENT 2-1.mat','EBC002-S1.mat'],
                         '003':['EBC003-J1.mat','EBC003-J14.mat'],
                         '004':['EBC004-S1.mat','EBC004 S6.mat','EBC004  J13.mat'],
-                        '006':['EBC 006 S1 E3.mat','EBC006 s15 e3.mat'],
+                        '006':['EBC 006 S1 E3.mat','EBC 006 S8 E3.mat','EBC006 s15 e3.mat'],
                         '009':['ebc_009 _s01_e3.mat','ebc_009 _s08_e3.mat','ebc_009 _s14_e3.mat'],
                         '012':['ebc_012 _s02_e3.mat','ebc_012 _s07_e3.mat'],
                         '018':['EBC018_S3_E3.mat','EBC018_S8_E3.mat','EBC018_S12_e3.mat'],
@@ -51,38 +52,89 @@ def main(args):
                         '031':['EBC031_s2_e3.mat','EBC031S7e3.mat','EBC031_s14_e3.mat'],
                         '032':['EBC032_s1_e3.mat','EBC032S7e3.mat','EBC032S14e3.mat'],
                         '033':['EBC033S3e3.mat','EBC033_S7_E3.mat','EBC033S14e3.mat'],
-                        '037':['EBC037_S2_E3.mat','EBC037S14E3.mat'],
-                        # '042':['EB042S730MIN.mat'],
+                        '037':['EBC037_S2_E3.mat','EBC037S7e3.mat','EBC037S14E3.mat'],
+                        '039':['EBC039S1E3.mat','EBC039s7e3.mat','EBC039S14e3.mat'],
+                        '040':['ebc_040_s01_e3.mat','ebc_040_s07_e3.mat','ebc_040_s14_e3.mat'],
+                        '042':['EB042S730MIN.mat'],
                         '045':['EBC45-S2-25min.mat','EBC045S14e3.mat'],
+                        '046':['ebc_046_s01_e3.mat','ebc_046_s06_e2_20min.mat','ebc_046_s13_e3.mat'],
+                        '048':['ebc_048_s01_e3.mat','ebc_048_s07_e3.mat','ebc_048_s14_e3.mat'],
+                        '052':['ebc_052_s01_e3.mat','ebc_052_s07_e3.mat','ebc_052_s14_e3.mat'],
+                        '054':['ebc_054_s01_e3.mat','ebc_054_s14_e3.mat'],
+                        '056':['ebc_056_s01_e3.mat'],
+                        '057':['ebc_057_s01_e3.mat','ebc_057_s07_e4.mat','ebc_057_s14_e4.mat'],
+                        '058':['ebc_058_s01_e3.mat','ebc_058_s07_e2_25min.mat','ebc_058_s14_e2_25min.mat'],
+                        '059':['ebc_059_s07_e2.mat'],
+                        '060':['EBC060-25MIN.mat','EBC060-S14-15MIN.mat'],
                         # 'test':['test2-config1.mat','test3-config2.mat'],
                         }
     
-      
+    ## Documents/EMG/docs/figures/sep06_2023/  
                         
     ## ids of the eight required channels: muscular signals EMG without the insole signals
     list_ids_channels = {'001':[[9,16]]*2,
-                         '003':[[9,16]]*4,
-                         '006':[[9,16]]*2,
+                         '002':[[9,16]]*2,
+                         '003':[[9,16]]*2,
                          '004':[[9,16]]*3,
-                         '006':[[9,16]]*2,
+                         '006':[[9,16]]*3,
+                         '009':[[9,16]]*3,
+                         '012':[[9,16]]*2,
                          '018':[[9,16],[9,16],[1,8]],
+                         '019':[[9,16]]*3,
+                         '022':[[9,16]],
                          '024':[[9,16]]*3,
+                         '027':[[9,16]]*3,
+                         '028':[[9,16]]*3,
+                         '029':[[9,16]]*3,
                          '030':[[9,16],[1,8],[1,8]],
                          '031':[[1,8],[9,16],[1,8]],
                          '032':[[9,16],[1,8],[1,8]],
-                         '033':[[1,8]]*2,
-                         '037':[[1,8]]*2,
-                         '042':[[1,8]]*2,
+                         '033':[[1,8]]*3,
+                         '037':[[1,8]]*3,
+                         '039':[[1,8]]*3,
+                         '040':[[1,8]]*3,
+                         '042':[[1,8]],
                          '045':[[9,16]]*2,
+                         '046':[[9,16]]*3,
+                         '048':[[9,16]]*3,
+                         '052':[[9,16]]*3,
+                         '054':[[9,16]]*2,
+                         '056':[[9,16]],
+                         '057':[[9,16]]*3,
+                         '058':[[9,16]]*3,
+                         '059':[[9,16]],
+                         '060':[[9,16]]*2,
                         }
                         
+    list_emg_sorted = {'001':[[7,0,6,4,2,5,3]]*2,
+                       '002':[[7,0,6,4,2,5,3]]*2,
+                       '004':[[5,7,3,0,6,4,2,1]]*3,
+                       '006':[[5,7,3,0,6,4,2,1]]*3,
+                       '018':[[7,2,4,1,6,5,0,3]]*3,
+                       '024':[[7,2,4,1,6,5,0,3]]*3,
+                       '030':[[7,2,4,1,6,5,0,3]]*3,
+                       '031':[[7,2,4,1,6,5,0,3]]*3,
+                       '032':[[7,2,4,1,6,5,0,3]]*3,
+                       '033':[[7,2,4,1,6,5,0,3]]*3,
+                       '037':[[7,2,4,1,6,5,0,3],[7,2,4,1,6,5,0,3],[2,4,1,6,5,0,3]],
+                       '039':[[7,2,4,1,6,5,0,3]]*3,
+                       '042':[[0,6,5,7,2,4,3,1]],
+                       '045':[[4,6,7,1,0,5,3,2],[5,3,7,1,4,0,6,2]],
+                       # '059':[[1,2,0,6,3,4,5,7]],
+                       '059':[[7,5,1,3,6,4,0,2]],
+                       
+                       
+                       '':[],
+                        }
     
                         
     files = list_files_names[patient_number]
     ids_channels = list_ids_channels[patient_number]
+    ids_emg_sorted = list_emg_sorted[patient_number]
     
     filename = files[file_number]
     file_channels = ids_channels[file_number]
+    ids_emg_plot = ids_emg_sorted[file_number]
     
     print(f'files: {files}')
     print(f'channels: {ids_channels}')
@@ -94,7 +146,10 @@ def main(args):
     print(f'names: {ch_names}')
     
     obj_emg.plotSignals()
-    obj_emg.plotSelectedSignal(signal_number)
+    # obj_emg.plotSelectedSignal(signal_number)
+    
+    obj_emg.filteringSignals()
+    obj_emg.plotFilteredSignals(ids_emg_plot)
     
     # ## open files
     # list_objs = []

@@ -15,6 +15,7 @@ class Reading_EMG:
         self.sampling_rate=1.0
         self.n_channels=1
         self.channels=[]
+        self.channelsFiltered=[]
         self.channelsNames=[]
         
         self.path = path
@@ -39,6 +40,7 @@ class Reading_EMG:
         self.n_channels = ids_channels[1]-ids_channels[0] + 1
         
         self.channels = np.empty((self.n_channels, 0)).tolist()
+        self.channelsFiltered = np.empty((self.n_channels, 0)).tolist()
         self.channelsNames = np.empty((self.n_channels, 0)).tolist()
 
         ## channel 0 is the time array
@@ -80,6 +82,7 @@ class Reading_EMG:
     def filterHighPass(self, emg, fc):
         sos = signal.butter(10, fc, btype='highpass', fs=self.sampling_rate, output='sos')
         filtered = signal.sosfilt(sos, emg)
+        # scipy.signal.sosfiltfilt
         return filtered
 
     def filterLowPass(self, emg, fc):
@@ -88,8 +91,9 @@ class Reading_EMG:
         return filtered
 
     def filterBandPass(self, emg, fc1, fc2):
-        sos = signal.butter(10, [fc1,fc2], btype='bandpass', fs=self.sampling_rate, output='sos')
-        filtered = signal.sosfilt(sos, emg)
+        sos = signal.butter(5, [fc1,fc2], btype='bandpass', fs=self.sampling_rate, output='sos')
+        # filtered = signal.sosfilt(sos, emg)
+        filtered = signal.sosfiltfilt(sos, emg)
         return filtered
         
         
@@ -108,6 +112,19 @@ class Reading_EMG:
             # i+=1
         
         # return 0
+        
+    def filteringSignals(self):
+        
+        fc1 = 50 ## 20 Hz high pass filter
+        fc2 = 500 ## Hz
+
+        i=0
+        for ch, ch_n in zip(self.channels, self.channelsNames):
+            print(f'filtering {ch_n}')
+            self.channelsFiltered[i] = self.filterBandPass(ch, fc1, fc2)
+            i+=1
+        
+        return 0
         
 
     def plotSignals(self):
@@ -129,7 +146,7 @@ class Reading_EMG:
         
     def plotSelectedSignal(self, signal_number):
         # print(f'\nids channels: {ids_channels}')
-        fig, ax = plt.subplots(nrows=2, ncols=2)
+        fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(10, 7))
         fig.canvas.mpl_connect('key_press_event', self.on_press)
         
         # cont=0
@@ -179,18 +196,19 @@ class Reading_EMG:
         ax[0][0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
         ax[0][1].set_xlim([self.ch_time[id01],self.ch_time[id02]])
 
-        ax[1][0].set_xlim([0,fc2])
-        ax[1][1].set_xlim([0,fc2])
+        ax[1][0].set_xlim([0,fc2*1.5])
+        ax[1][1].set_xlim([0,fc2*1.5])
         
-        amp_y = 150
+        amp_y = 40
         
         ax[0][0].set_ylim([-amp_y,amp_y])
         ax[0][1].set_ylim([-amp_y,amp_y])
         ax[1][0].set_ylim([10e-8, amp_y/64])
         ax[1][1].set_ylim([10e-8, amp_y/64])
         
-        ax[0][0].set_title(self.filename+' (original)')
-        ax[0][1].set_title(f'{self.filename} passband {fc1} Hz - {fc2} Hz')
+        fig.suptitle(f'{self.filename}, bandpass filter {fc1} Hz - {fc2} Hz')
+        ax[0][0].set_title(f'original')
+        ax[0][1].set_title(f'filtered')
         
         ax[0][0].set_xlabel(self.ch_time_name+' [s]')
         ax[0][1].set_xlabel(self.ch_time_name+' [s]')
@@ -204,6 +222,34 @@ class Reading_EMG:
         ax[1][1].set_ylabel('power spectral density')
 
         return 0
+        
+        
+    def plotFilteredSignals(self,ids_emg):
+        
+        fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(10, 7), sharex=True, sharey=True, squeeze=False)
+        fig.canvas.mpl_connect('key_press_event', self.on_press)
+        
+        ax = ax.reshape(-1)
+        
+        # cont=0
+        for ch, ch_n, id_emg in zip(self.channelsFiltered, self.channelsNames, ids_emg):
+            ax[id_emg].plot(self.ch_time, ch, label=ch_n)
+            ax[id_emg].legend()
+            # cont+=1
+        
+        id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
+        id02 = (id01 + (self.sampling_rate*5)).astype(int)  
+        
+        ax[0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
+        ax[0].set_ylim([-100,100])
+        # ax[0].set_title(self.filename)
+        ax[6].set_xlabel(self.ch_time_name+' [s]')
+        ax[7].set_xlabel(self.ch_time_name+' [s]')
+        
+        fig.suptitle(f'{self.filename}')
+        
+        return 0
+    
         
     # def plotPowerSpectrum(self):
         
