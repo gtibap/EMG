@@ -224,7 +224,7 @@ class Reading_EMG:
         return 0
         
         
-    def plotFilteredSignals(self,ids_emg):
+    def plotFilteredSignals(self, ids_emg, title_emg, patient_number, session_name):
         
         fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(10, 7), sharex=True, sharey=True, squeeze=False)
         fig.canvas.mpl_connect('key_press_event', self.on_press)
@@ -246,7 +246,8 @@ class Reading_EMG:
         ax[6].set_xlabel(self.ch_time_name+' [s]')
         ax[7].set_xlabel(self.ch_time_name+' [s]')
         
-        fig.suptitle(f'{self.filename}')
+        fig.suptitle(f'{self.filename}\n{title_emg}')
+        plt.savefig(f'../docs/figures/sep12_2023/ebc{patient_number}{session_name}.png', bbox_inches='tight')
         
         return 0
     

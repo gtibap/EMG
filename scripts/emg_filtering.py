@@ -60,11 +60,13 @@ def main(args):
                         '046':['ebc_046_s01_e3.mat','ebc_046_s06_e2_20min.mat','ebc_046_s13_e3.mat'],
                         '048':['ebc_048_s01_e3.mat','ebc_048_s07_e3.mat','ebc_048_s14_e3.mat'],
                         '052':['ebc_052_s01_e3.mat','ebc_052_s07_e3.mat','ebc_052_s14_e3.mat'],
+                        '053':['ebc_053_s01_e3.mat','ebc_053_s07_e3.mat','ebc_053_s14_e3.mat'],
                         '054':['ebc_054_s01_e3.mat','ebc_054_s14_e3.mat'],
                         '056':['ebc_056_s01_e3.mat'],
                         '057':['ebc_057_s01_e3.mat','ebc_057_s07_e4.mat','ebc_057_s14_e4.mat'],
                         '058':['ebc_058_s01_e3.mat','ebc_058_s07_e2_25min.mat','ebc_058_s14_e2_25min.mat'],
-                        '059':['ebc_059_s07_e2.mat'],
+                        '056':['ebc_056_s01_e3.mat'],
+                        '059':['ebc_059_s07_e3.mat','ebc_059_s14_e3.mat'],
                         '060':['EBC060-25MIN.mat','EBC060-S14-15MIN.mat'],
                         # 'test':['test2-config1.mat','test3-config2.mat'],
                         }
@@ -96,18 +98,20 @@ def main(args):
                          '042':[[1,8]],
                          '045':[[9,16]]*2,
                          '046':[[9,16]]*3,
-                         '048':[[9,16]]*3,
-                         '052':[[9,16]]*3,
-                         '054':[[9,16]]*2,
+                         '048':[[1,8]]*3,
+                         '052':[[1,8]]*3,
+                         '053':[[1,8]]*3,
+                         '054':[[1,8]]*2,
                          '056':[[9,16]],
                          '057':[[9,16]]*3,
                          '058':[[9,16]]*3,
-                         '059':[[9,16]],
+                         '059':[[9,16]]*2,
                          '060':[[9,16]]*2,
                         }
                         
     list_emg_sorted = {'001':[[7,0,6,4,2,5,3]]*2,
                        '002':[[7,0,6,4,2,5,3]]*2,
+                       '003':[[5,7,3,0,6,4,2,1]]*2,
                        '004':[[5,7,3,0,6,4,2,1]]*3,
                        '006':[[5,7,3,0,6,4,2,1]]*3,
                        '018':[[7,2,4,1,6,5,0,3]]*3,
@@ -120,21 +124,48 @@ def main(args):
                        '039':[[7,2,4,1,6,5,0,3]]*3,
                        '042':[[0,6,5,7,2,4,3,1]],
                        '045':[[4,6,7,1,0,5,3,2],[5,3,7,1,4,0,6,2]],
-                       # '059':[[1,2,0,6,3,4,5,7]],
-                       '059':[[7,5,1,3,6,4,0,2]],
-                       
+                       '048':[[5,3,7,1,4,0,6,2],[6,2,0,4,7,3,1,5],[7,5,3,1,2,0,6,4]],
+                       '052':[[2,4,0,6,3,1,5,7]]*3,
+                       '053':[[2,4,0,6,3,1,5,7]]*3,
+                       '054':[[2,4,0,6,3,1,5,7]]*2,
+                       '058':[[2,4,0,6,3,1,5,7]]*3,
+                       '056':[[7,5,1,3,6,4,0,2]],
+                       '059':[[7,5,1,3,6,4,0,2]]*2,
                        
                        '':[],
                         }
+                        
+    list_emg_titles = {'001':'A - T10 (discharge) -> B - T11 (12 months)',
+                       '004':'B - C4 (discharge)  -> B - C4 (6 months)',
+                       '006':'A - L2 (6 weeks)    -> B - L2 (12 months)',
+                       '018':'B - C4 (3 months)   -> A - C4 (6 months)',
+                       '024':'B - T5 (discharge)  -> C - L1 (12 months)',
+                       '030':'A - T10 (discharge) -> A - T11 (6 months)',
+                       '031':'B - C4 (discharge)  -> D - C6 (12 months)',
+                       '032':'C - C4 (discharge)  -> D - C7 (12 months)',
+                       '033':'B - T12 (post-op.)  -> C - L1 (12 months)',
+                       '037':'A - C4 (discharge)  -> B - C6 (12 months)',
+                       '039':'A - C4 (discharge)  -> A - C2 (9 months)',
+                       '042':'A - T10 (discharge) -> A - T10 (6 months)',
+                       '045':'A - C6 (discharge)  -> A - C7 (6 months)',
+                       }
     
+    list_session_names={0:'a',
+                        1:'b',
+                        2:'c'
+                        }
                         
     files = list_files_names[patient_number]
     ids_channels = list_ids_channels[patient_number]
     ids_emg_sorted = list_emg_sorted[patient_number]
+    title_emg = list_emg_titles[patient_number]
     
     filename = files[file_number]
     file_channels = ids_channels[file_number]
     ids_emg_plot = ids_emg_sorted[file_number]
+    session_name = list_session_names[file_number]
+    
+    
     
     print(f'files: {files}')
     print(f'channels: {ids_channels}')
@@ -149,7 +180,7 @@ def main(args):
     # obj_emg.plotSelectedSignal(signal_number)
     
     obj_emg.filteringSignals()
-    obj_emg.plotFilteredSignals(ids_emg_plot)
+    obj_emg.plotFilteredSignals(ids_emg_plot, title_emg, patient_number, session_name)
     
     # ## open files
     # list_objs = []
@@ -160,8 +191,8 @@ def main(args):
     
     # list_objs[0].plotSignals()
     
-    plt.ion()
-    plt.show(block=True)
+    # plt.ion()
+    # plt.show(block=True)
     
     return 0
 
