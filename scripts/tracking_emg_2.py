@@ -46,16 +46,55 @@ def delta_mov(df, cg_rb_position, jg_rb_position):
 
 def main(args):
     
-    filename = '../data/motive_tracking/tracking_006_s1/e1.csv'
+    filename = '../data/motive_tracking/tracking_061_s9/EBC061-S9_5MIN_tracking.csv'
     
     ## reading csv file. Header includes: Frame, Time, ... 
     df = pd.read_csv(filename, header=5)
     # print(f'{df.columns}')
+    # print(f'{df}')
     # print(f'{df.iloc[:,6].tolist()}')
     
     ## column 0 frames, column 1 time (seconds)
     frames = df.iloc[:,0].tolist()
     time = df.iloc[:,1].to_numpy()
+
+    ## coordinates marker 1 left knee
+    lmfc_x = df.iloc[:,26].to_numpy()
+    lmfc_y = df.iloc[:,27].to_numpy()
+    lmfc_z = df.iloc[:,28].to_numpy()
+    
+    ## ## coordinates marker lower left leg
+    ltb2_x = df.iloc[:,41].to_numpy()
+    ltb2_y = df.iloc[:,42].to_numpy()
+    ltb2_z = df.iloc[:,43].to_numpy()
+    
+    ## coordinates marker 2 left knee
+    llfc_x = df.iloc[:,44].to_numpy()
+    llfc_y = df.iloc[:,45].to_numpy()
+    llfc_z = df.iloc[:,46].to_numpy()
+    
+    ## ## coordinates marker higher left leg
+    lth2_x = df.iloc[:,50].to_numpy()
+    lth2_y = df.iloc[:,51].to_numpy()
+    lth2_z = df.iloc[:,52].to_numpy()
+    
+    print(f'lmfc_x:{lmfc_x}\nlmfc_y:{lmfc_y}\nlmfc_z:{lmfc_z}\n')
+    print(f'ltb2_x:{ltb2_x}\nltb2_y:{ltb2_y}\nltb2_z:{ltb2_z}\n')
+    print(f'llfc_x:{llfc_x}\nllfc_y:{llfc_y}\nllfc_z:{llfc_z}\n')
+    print(f'lth2_x:{lth2_x}\nlth2_y:{lth2_y}\nlth2_z:{lth2_z}\n')
+    
+    ## middle point between the two markers left knee
+    lfc_x = (llfc_x + lmfc_x)/2
+    lfc_y = (llfc_y + lmfc_y)/2
+    lfc_z = (llfc_z + lmfc_z)/2
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     ids=list(range(2,(23+1)*4,4))
