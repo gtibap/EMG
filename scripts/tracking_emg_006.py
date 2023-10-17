@@ -12,14 +12,39 @@ from scipy.signal import savgol_filter
 
 def main(args):
     
-    filename = '../data/motive_tracking/tracking_061_s9/EBC061-S9_5MIN_tracking.csv'
-    
+    filename = '../data/motive_tracking/tracking_006_s1/e1.csv'
     ## reading csv file. Header includes: Frame, Time, ... 
     df = pd.read_csv(filename, header=5)
-    # print(f'{df.columns}')
-    # print(f'{df}')
+    print(f'{df.columns}')
+    print(f'{df}')
     # print(f'{df.iloc[:,6].tolist()}')
     
+    ## for EBC006_s1 we selected markers on the right (droite) leg: four at the cuisse and four at the jambe
+    
+    ## filling missing data
+    df.iloc[:,110:113].interpolate(method="cubicspline", inplace=True, limit_direction='both')
+    df.iloc[:,113:116].interpolate(method="cubicspline", inplace=True, limit_direction='both')
+    df.iloc[:,116:119].interpolate(method="cubicspline", inplace=True, limit_direction='both')
+    df.iloc[:,119:122].interpolate(method="cubicspline", inplace=True, limit_direction='both')
+    df.iloc[:,122:125].interpolate(method="cubicspline", inplace=True, limit_direction='both')
+    df.iloc[:,125:128].interpolate(method="cubicspline", inplace=True, limit_direction='both')
+    df.iloc[:,128:131].interpolate(method="cubicspline", inplace=True, limit_direction='both')
+    df.iloc[:,131:134].interpolate(method="cubicspline", inplace=True, limit_direction='both')
+    
+    CD_Marker1 = df.iloc[:,110:113].to_numpy()
+    CD_Marker2 = df.iloc[:,113:116].to_numpy()
+    CD_Marker3 = df.iloc[:,116:119].to_numpy()
+    CD_Marker4 = df.iloc[:,119:122].to_numpy()
+    JD_Marker1 = df.iloc[:,122:125].to_numpy()
+    JD_Marker2 = df.iloc[:,125:128].to_numpy()
+    JD_Marker3 = df.iloc[:,128:131].to_numpy()
+    JD_Marker4 = df.iloc[:,131:134].to_numpy()
+    
+    
+    print(f'CD_Marker1:\n{CD_Marker1}\n shape: {CD_Marker1.shape}')
+    
+    
+    '''    
     ## column 0 frames, column 1 time (seconds)
     frames = df.iloc[:,0].tolist()
     time = df.iloc[:,1].to_numpy()
@@ -95,11 +120,10 @@ def main(args):
 
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
     plt.show()
-    
+    '''    
     # plt.plot(angle, label='angle [deg]')
     # plt.plot((1000*norm_vjc)-100.35, label='dist [mm]')
     # plt.show()
-    
     
     return 0
 
