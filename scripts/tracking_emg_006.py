@@ -9,6 +9,29 @@ import numpy as np
 from scipy import optimize
 from scipy.signal import savgol_filter
 
+def smooth_filter(arr):
+    arr[:,0]=savgol_filter(arr[:,0], window_length=60, polyorder=1, mode='mirror')
+    arr[:,1]=savgol_filter(arr[:,1], window_length=60, polyorder=1, mode='mirror')
+    arr[:,2]=savgol_filter(arr[:,2], window_length=60, polyorder=1, mode='mirror')
+    return arr
+
+def max_and_min(arr):
+        win_size = 60
+        id0=0
+        delta=10
+        max_list=[]
+        min_list=[]
+        while id0 < len(arr):
+            window = arr[id0:id0+win_size]
+            ids_max = np.argmax(window)
+            ids_min = np.argmin(window)
+            print(f'max:{ids_max}')
+            print(f'min:{ids_min}')
+            max_list.append(ids_max+id0) 
+            min_list.append(ids_min+id0) 
+            id0 = id0 + delta
+        
+        return max_list, min_list
 
 def main(args):
     
@@ -21,6 +44,18 @@ def main(args):
     
     ## for EBC006_s1 we selected markers on the right (droite) leg: four at the cuisse and four at the jambe
     
+    ## how many missing values in the selected columns?
+    print('\nMissing values:')
+    print(f'CD_Marker1: {df.iloc[:,110].isnull().sum()}')
+    print(f'CD_Marker2: {df.iloc[:,113].isnull().sum()}')
+    print(f'CD_Marker3: {df.iloc[:,116].isnull().sum()}')
+    print(f'CD_Marker4: {df.iloc[:,119].isnull().sum()}')
+    print(f'JD_Marker1: {df.iloc[:,122].isnull().sum()}')
+    print(f'JD_Marker2: {df.iloc[:,125].isnull().sum()}')
+    print(f'JD_Marker3: {df.iloc[:,128].isnull().sum()}')
+    print(f'JD_Marker4: {df.iloc[:,131].isnull().sum()}')
+    print('\n')
+        
     ## filling missing data
     df.iloc[:,110:113].interpolate(method="cubicspline", inplace=True, limit_direction='both')
     df.iloc[:,113:116].interpolate(method="cubicspline", inplace=True, limit_direction='both')
@@ -40,8 +75,73 @@ def main(args):
     JD_Marker3 = df.iloc[:,128:131].to_numpy()
     JD_Marker4 = df.iloc[:,131:134].to_numpy()
     
+    # fig, ax = plt.subplots()
+    # ax.plot(CD_Marker1[:,1], label='original')
+    
+    CD_Marker1 = smooth_filter(CD_Marker1)
+    CD_Marker2 = smooth_filter(CD_Marker2)
+    CD_Marker3 = smooth_filter(CD_Marker3)
+    CD_Marker4 = smooth_filter(CD_Marker4)
+    JD_Marker1 = smooth_filter(JD_Marker1)
+    JD_Marker2 = smooth_filter(JD_Marker2)
+    JD_Marker3 = smooth_filter(JD_Marker3)
+    JD_Marker4 = smooth_filter(JD_Marker4)
+    
+    # ax.plot(CD_Marker1[:,1], label='smooth')
+    
     
     print(f'CD_Marker1:\n{CD_Marker1}\n shape: {CD_Marker1.shape}')
+    
+    ## calculation mean points for both CD markers and JD markers
+    CD_center = (CD_Marker1 + CD_Marker2 + CD_Marker3 + CD_Marker4)/4
+    JD_center = (JD_Marker1 + JD_Marker2 + JD_Marker3 + JD_Marker4)/4
+    
+    
+    JCD_norm = np.linalg.norm(JD_center - CD_center, axis=1)
+    
+    
+    ## finding maximum and minimum at each window
+    max_list, min_list = max_and_min(JCD_norm)
+    print(f'max and min:\n{max_list},\n{min_list}')
+    
+    
+    
+    
+    # JCD_grad = np.gradient(JCD_norm)
+    
+    fig, ax = plt.subplots()
+    ax.plot(JCD_norm, label='original')
+    # ax.plot(JCD_grad, label='gradient')
+    ax.legend()
+    ax.set_xlim([500,1000])
+    plt.show()
+    
+    # norm_CD_center = np.linalg.norm(CD_center,axis=1)
+    # norm_JD_center = np.linalg.norm(JD_center,axis=1)
+    
+    
+    # fig1, ax1 = plt.subplots()
+    # ax1.plot(norm_JD_center, label='JD_norm')
+    # ax1.plot(norm_CD_center, label='CD_norm')
+    # ax1.set_xlim([500,1000])
+    # ax1.legend()
+    
+    # color = 'tab:red'
+    # ax1.set_xlabel('samples')
+    # ax1.set_ylabel('JCD_norm [m]', color=color)
+    # ax1.plot(JCD_norm, color=color)
+    # ax1.tick_params(axis='y', labelcolor=color)
+
+    # ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+
+    # color = 'tab:blue'
+    # ax2.set_ylabel('JCD_gradient [m/sample]', color=color)  # we already handled the x-label with ax1
+    # ax2.plot(JCD_grad, color=color)
+    # ax2.tick_params(axis='y', labelcolor=color)
+
+    # ax2.set_xlim([500,100])
+    # fig.tight_layout()  # otherwise the right y-label is slightly clipped
+    # plt.show()
     
     
     '''    
