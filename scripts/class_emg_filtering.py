@@ -16,10 +16,13 @@ class Reading_EMG:
         self.n_channels=1
         self.channels=[]
         self.channelsFiltered=[]
+        self.channelsEnveloped=[]
         self.channelsNames=[]
+        self.df_signals = pd.DataFrame()
         
         self.path = path
         self.filename = filename
+        
         # self.day_number = day_number
     
         mat = scipy.io.loadmat(self.path+self.filename)
@@ -41,18 +44,24 @@ class Reading_EMG:
         
         self.channels = np.empty((self.n_channels, 0)).tolist()
         self.channelsFiltered = np.empty((self.n_channels, 0)).tolist()
+        self.channelsEnveloped = np.empty((self.n_channels, 0)).tolist()
         self.channelsNames = np.empty((self.n_channels, 0)).tolist()
 
         ## channel 0 is the time array
         self.ch_time = mat['Data'][0, 0].flatten()
         self.ch_time_name = mat['channelNames'][0][0][0]
-        # print(f'time ch: {self.ch_time.shape}')
+        print(f'time ch: {self.ch_time[0]}, {self.ch_time[-1]}, {self.ch_time.shape}')
+        
+        self.df_signals[self.ch_time_name] = self.ch_time
         
         i=0
         for num_ch in np.arange(ids_channels[0], ids_channels[1]+1):
             self.channels[i] = mat['Data'][0, num_ch].flatten()
             self.channelsNames[i] = mat['channelNames'][0][num_ch][0]
+        
             i+=1
+
+        print(self.df_signals)
 
         # print(f'channels: {len(self.channels)}, {len(self.channels[0])}, {len(self.channelsNames)}')
 
@@ -80,18 +89,18 @@ class Reading_EMG:
         
         
     def filterHighPass(self, emg, fc):
-        sos = signal.butter(10, fc, btype='highpass', fs=self.sampling_rate, output='sos')
-        filtered = signal.sosfilt(sos, emg)
+        sos = signal.butter(3, fc, btype='highpass', fs=self.sampling_rate, output='sos')
+        filtered = signal.sosfiltfilt(sos, emg)
         # scipy.signal.sosfiltfilt
         return filtered
 
     def filterLowPass(self, emg, fc):
-        sos = signal.butter(10, fc, btype='lowpass', fs=self.sampling_rate, output='sos')
-        filtered = signal.sosfilt(sos, emg)
+        sos = signal.butter(3, fc, btype='lowpass', fs=self.sampling_rate, output='sos')
+        filtered = signal.sosfiltfilt(sos, emg)
         return filtered
 
     def filterBandPass(self, emg, fc1, fc2):
-        sos = signal.butter(5, [fc1,fc2], btype='bandpass', fs=self.sampling_rate, output='sos')
+        sos = signal.butter(3, [fc1,fc2], btype='bandpass', fs=self.sampling_rate, output='sos')
         # filtered = signal.sosfilt(sos, emg)
         filtered = signal.sosfiltfilt(sos, emg)
         return filtered
@@ -125,6 +134,48 @@ class Reading_EMG:
             i+=1
         
         return 0
+
+
+    def envelopeFilter(self):
+        
+        fc = 6 ## 6 Hz low pass filter
+        i=0
+        for ch, ch_n in zip(self.channelsFiltered, self.channelsNames):
+            print(f'filtering {ch_n}')
+            self.channelsEnveloped[i] = self.filterLowPass(np.absolute(ch), fc)
+            
+            self.df_signals[ch_n] = self.channelsEnveloped[i]
+            
+            i+=1
+        
+        return 0
+        
+    
+    def flex_ext(self, arr_time_max, arr_time_min):
+        
+        fig, ax = plt.subplots()
+        fig.canvas.mpl_connect('key_press_event', self.on_press)
+        
+        if arr_time_min[0] < arr_time_max[0]:
+            id0=0
+        else:
+            id0=1
+        
+        for val0, val1 in zip(arr_time_min[0:], arr_time_max[id0:]):
+            tmin = self.ch_time[0] + val0
+            tmax = self.ch_time[0] + val1
+            df_sel = self.df_signals.loc[(self.df_signals[self.ch_time_name]>=tmin) & (self.df_signals[self.ch_time_name]<tmax)]
+            ## VLO RT
+            arr_vlr = df_sel.iloc[:,2].to_numpy()
+            print(f'sel: {len(arr_vlr)}')
+            
+            len_ref = 2000
+            f_poly = signal.resample_poly(arr_vlr, len_ref, len(arr_vlr))
+            print(f'sel: {len(f_poly)}\n')
+            ax.plot(f_poly)
+            
+        return 0
+        
         
 
     def plotSignals(self):
@@ -224,7 +275,7 @@ class Reading_EMG:
         return 0
         
         
-    def plotFilteredSignals(self, ids_emg, title_emg, patient_number, session_name):
+    def plotFilteredSignals(self, ids_emg, title_emg, patient_number, session_name, session_number, list_act_emg, channels_names):
         
         fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(10, 7), sharex=True, sharey=True, squeeze=False)
         fig.canvas.mpl_connect('key_press_event', self.on_press)
@@ -232,11 +283,19 @@ class Reading_EMG:
         ax = ax.reshape(-1)
         
         # cont=0
-        for ch, ch_n, id_emg in zip(self.channelsFiltered, self.channelsNames, ids_emg):
-            ax[id_emg].plot(self.ch_time, ch, label=ch_n)
+        # for ch, ch_n, id_emg in zip(self.channelsFiltered, self.channelsNames, ids_emg):
+        for ch, id_emg in zip(self.channelsFiltered, ids_emg):
+            ax[id_emg].plot(self.ch_time, ch, label=channels_names[id_emg])
             ax[id_emg].legend()
             # cont+=1
         
+        # for id_ax, ch_n in enumerate(channels_names):
+            # ax[id_ax]
+            # ax.legend()
+                
+        
+        
+        ## select 5 seconds range of data at the middle of the recordings
         id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
         id02 = (id01 + (self.sampling_rate*5)).astype(int)  
         
@@ -246,8 +305,74 @@ class Reading_EMG:
         ax[6].set_xlabel(self.ch_time_name+' [s]')
         ax[7].set_xlabel(self.ch_time_name+' [s]')
         
-        fig.suptitle(f'{self.filename}\n{title_emg}')
-        plt.savefig(f'../docs/figures/sep12_2023/ebc{patient_number}{session_name}.png', bbox_inches='tight')
+        ## frame with red color means potential muscular activity
+        # ax[0].tick_params(color='red',labelcolor='red')
+        for id_emg in list_act_emg:
+            for spine in ax[id_emg].spines.values():
+                spine.set_edgecolor('tab:orange')
+                spine.set_linewidth(2)
+        
+        ## saving plot png file
+        # fig.suptitle(f'{self.filename}\n{title_emg}')
+        fig.suptitle(f'P-{patient_number} session {session_number}')
+        # plt.savefig(f'../docs/figures/oct02_2023/ebc{patient_number}{session_name}.png', bbox_inches='tight')
+        
+        return 0
+    
+    
+    def plotSegmentedSignals(self, ids_emg, title_emg, patient_number, session_name, session_number, list_act_emg, channels_names, arr_time_max, arr_time_min):
+        
+        fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(10, 7), sharex=True, sharey=True, squeeze=False)
+        fig.canvas.mpl_connect('key_press_event', self.on_press)
+        
+        ax = ax.reshape(-1)
+        
+        # cont=0
+        # for ch, ch_n, id_emg in zip(self.channelsFiltered, self.channelsNames, ids_emg):
+        for ch, id_emg in zip(self.channelsEnveloped, ids_emg):
+            ax[id_emg].plot(self.ch_time, ch, label=channels_names[id_emg])
+            ax[id_emg].legend()
+            
+        
+            if id_emg % 2 == 0:
+                print(f'id_emg % 2 == 0: {id_emg}, {channels_names[id_emg]}')
+                for x_val in arr_time_max:
+                    ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:orange')
+                for x_val in arr_time_min:
+                    ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple')
+            else:
+                print(f'id_emg % 2 != 0: {id_emg}, {channels_names[id_emg]}')
+                for x_val in arr_time_max:
+                    ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple')
+                for x_val in arr_time_min:
+                    ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:orange')
+                
+            # cont+=1
+        
+        # for id_ax, ch_n in enumerate(channels_names):
+            # ax[id_ax]
+            # ax.legend()
+                
+        ## select 5 seconds range of data at the middle of the recordings
+        id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
+        id02 = (id01 + (self.sampling_rate*5)).astype(int)  
+        
+        ax[0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
+        ax[0].set_ylim([-100,100])
+        # ax[0].set_title(self.filename)
+        ax[6].set_xlabel(self.ch_time_name+' [s]')
+        ax[7].set_xlabel(self.ch_time_name+' [s]')
+        
+        # ## frame with orange color means potential muscular activity
+        # for id_emg in list_act_emg:
+            # for spine in ax[id_emg].spines.values():
+                # spine.set_edgecolor('tab:orange')
+                # spine.set_linewidth(2)
+        
+        ## saving plot png file
+        # fig.suptitle(f'{self.filename}\n{title_emg}')
+        fig.suptitle(f'P-{patient_number} session {session_number}')
+        # plt.savefig(f'../docs/figures/oct02_2023/ebc{patient_number}{session_name}.png', bbox_inches='tight')
         
         return 0
     
