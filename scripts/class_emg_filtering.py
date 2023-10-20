@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import sys
+import seaborn as sns
 
 class Reading_EMG:
 
@@ -18,7 +19,7 @@ class Reading_EMG:
         self.channelsFiltered=[]
         self.channelsEnveloped=[]
         self.channelsNames=[]
-        self.df_signals = pd.DataFrame()
+        self.df_EnvelopedSignals = pd.DataFrame()
         
         self.path = path
         self.filename = filename
@@ -52,7 +53,7 @@ class Reading_EMG:
         self.ch_time_name = mat['channelNames'][0][0][0]
         print(f'time ch: {self.ch_time[0]}, {self.ch_time[-1]}, {self.ch_time.shape}')
         
-        self.df_signals[self.ch_time_name] = self.ch_time
+        self.df_EnvelopedSignals[self.ch_time_name] = self.ch_time
         
         i=0
         for num_ch in np.arange(ids_channels[0], ids_channels[1]+1):
@@ -61,7 +62,7 @@ class Reading_EMG:
         
             i+=1
 
-        print(self.df_signals)
+        print(self.df_EnvelopedSignals)
 
         # print(f'channels: {len(self.channels)}, {len(self.channels[0])}, {len(self.channelsNames)}')
 
@@ -143,36 +144,79 @@ class Reading_EMG:
         for ch, ch_n in zip(self.channelsFiltered, self.channelsNames):
             print(f'filtering {ch_n}')
             self.channelsEnveloped[i] = self.filterLowPass(np.absolute(ch), fc)
-            
-            self.df_signals[ch_n] = self.channelsEnveloped[i]
+            ## channelsEnveloped in a pandas DataFrame
+            self.df_EnvelopedSignals[ch_n] = self.channelsEnveloped[i]
             
             i+=1
         
         return 0
         
     
-    def flex_ext(self, arr_time_max, arr_time_min):
+    def flexion_extension(self, arr_time_max, arr_time_min, signal_name):
         
-        fig, ax = plt.subplots()
+        
+        fig, ax = plt.subplots(nrows=1,ncols=2, figsize=(7,3.5), sharex=True, sharey=True)
         fig.canvas.mpl_connect('key_press_event', self.on_press)
         
+        # df_fef = pd.DataFrame()
+        df_fle = pd.DataFrame()
+        df_ext = pd.DataFrame()
+        len_ref = 2000
+        
+        x_range = np.linspace(0,100,len_ref)
+        df_fle['cycle']=x_range
+        df_ext['cycle']=x_range
+        
+        
+        
+        ## selecting first index; first index of min distance: starting with flexion
         if arr_time_min[0] < arr_time_max[0]:
             id0=0
         else:
             id0=1
         
-        for val0, val1 in zip(arr_time_min[0:], arr_time_max[id0:]):
-            tmin = self.ch_time[0] + val0
-            tmax = self.ch_time[0] + val1
-            df_sel = self.df_signals.loc[(self.df_signals[self.ch_time_name]>=tmin) & (self.df_signals[self.ch_time_name]<tmax)]
-            ## VLO RT
-            arr_vlr = df_sel.iloc[:,2].to_numpy()
-            print(f'sel: {len(arr_vlr)}')
+        i=0
+        for val0, val1, val2 in zip(arr_time_min[0:], arr_time_max[id0:], arr_time_min[1:]):
             
-            len_ref = 2000
-            f_poly = signal.resample_poly(arr_vlr, len_ref, len(arr_vlr))
-            print(f'sel: {len(f_poly)}\n')
-            ax.plot(f_poly)
+            t0 = self.ch_time[0] + val0
+            t1 = self.ch_time[0] + val1
+            t2 = self.ch_time[0] + val2
+            
+            arr_a = self.df_EnvelopedSignals.loc[(self.df_EnvelopedSignals[self.ch_time_name]>=t0) & (self.df_EnvelopedSignals[self.ch_time_name]<t1), [signal_name]].to_numpy()
+            
+            arr_b = self.df_EnvelopedSignals.loc[(self.df_EnvelopedSignals[self.ch_time_name]>=t1) & (self.df_EnvelopedSignals[self.ch_time_name]<t2), [signal_name]].to_numpy()
+            
+            ## VLO RT
+            # arr_vlr = df_sel.iloc[:,2].to_numpy()
+            # print(f'sel: {len(arr_a)}, {len(arr_b)}')
+            
+            arr_a = signal.resample_poly(arr_a, len_ref, len(arr_a), padtype='line')
+            arr_b = signal.resample_poly(arr_b, len_ref, len(arr_b), padtype='line')
+            
+            # arr_r = np.concatenate([arr_a, arr_b])
+            
+            # print(f'sel: {len(arr_r)}\n')
+            # ax.plot(arr_r)
+            df_fle[i] = arr_a.flatten()
+            df_ext[i] = arr_b.flatten()
+            
+            i=i+1
+        
+        df_fle = df_fle.melt(id_vars=['cycle'], var_name='cols', value_name='vals')
+        df_ext = df_ext.melt(id_vars=['cycle'], var_name='cols', value_name='vals')
+        
+        # print(f'df_fef:\n{df_fef}')
+        sns.lineplot(ax=ax[0], x="cycle", y='vals', errorbar="sd", estimator='mean', data=df_fle)
+        sns.lineplot(ax=ax[1], x="cycle", y='vals', errorbar="sd", estimator='mean', data=df_ext)
+        
+        # ax.set_title(signal_name)
+        ax[0].set_title(f'{signal_name} extension')
+        ax[1].set_title(f'{signal_name} flexion')
+        ax[0].set_xlabel('percent extension [%]')
+        ax[1].set_xlabel('percentage flexion [%]')
+        ax[0].set_ylabel('amplitude')
+        ax[1].set_ylabel('amplitude')
+        fig.tight_layout()
             
         return 0
         

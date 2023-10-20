@@ -178,8 +178,9 @@ def main(args):
     # print(f'max and min:\n{max_list},\n{min_list}')
     
     sample_rate_tracking = 120 ## samples per second (Hz)
-    arr_time_max = np.array(max_list)/sample_rate_tracking
-    arr_time_min = np.array(min_list)/sample_rate_tracking
+    ## time in seconds
+    arr_time_max = np.array(max_list)/sample_rate_tracking - 0.1
+    arr_time_min = np.array(min_list)/sample_rate_tracking - 0.1
     
     ## plot signal distance
     # plot_distance(JCD_norm, max_list, min_list)
@@ -191,7 +192,7 @@ def main(args):
     file_channels = [9,16]
 
     obj_emg = Reading_EMG(path, filename, file_channels)
-    obj_emg.plotSignals()
+    # obj_emg.plotSignals()
     obj_emg.filteringSignals()
     obj_emg.envelopeFilter()
     
@@ -207,7 +208,13 @@ def main(args):
     
     obj_emg.plotSegmentedSignals(ids_emg_plot, title_emg, patient_number,session_name, file_number+1, act_emg, channels_names, arr_time_max, arr_time_min)
     
-    obj_emg.flex_ext(arr_time_max, arr_time_min)
+    signal_name = 'TIB.ANT. LT, uV'
+    obj_emg.flexion_extension(arr_time_min, arr_time_max, signal_name)
+    
+    signal_name = 'VLO RT, uV'
+    obj_emg.flexion_extension(arr_time_max, arr_time_min, signal_name)
+    
+    
     
     # obj_emg.plotSegmentedSignals()
     

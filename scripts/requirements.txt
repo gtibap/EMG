@@ -4,3 +4,5 @@ matplotlib
 scipy
 PyWavelets
 kineticstoolkit
+c3d
+seaborn
