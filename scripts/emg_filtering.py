@@ -41,6 +41,7 @@ def main(args):
                         '006':['EBC 006 S1 E3.mat','EBC 006 S8 E3.mat','EBC006 s15 e3.mat'],
                         '009':['ebc_009 _s01_e3.mat','ebc_009 _s08_e3.mat','ebc_009 _s14_e3.mat'],
                         '012':['ebc_012 _s02_e3.mat','ebc_012 _s07_e3.mat'],
+                        '015':['ebc_015 _s02_e3.mat','ebc_015 _s07_e3.mat','ebc_015 _s13_e2.mat'],
                         '018':['EBC018_S3_E3.mat','EBC018_S8_E3.mat','EBC018_S12_e3.mat'],
                         '019':['ebc_019_s01_e3.mat','ebc_019_s10_e3.mat','ebc_019_s14_e3.mat'],
                         '022':['ebc_022_s02_e3.mat'],
@@ -74,13 +75,14 @@ def main(args):
     ## Documents/EMG/docs/figures/sep06_2023/  
                         
     ## ids of the eight required channels: muscular signals EMG without the insole signals
-    list_ids_channels = {'001':[[9,16]]*2,
+    list_ids_channels = {'001':[[9,16]]*1,
                          '002':[[9,16]]*2,
                          '003':[[9,16]]*2,
                          '004':[[9,16]]*3,
                          '006':[[9,16]]*3,
                          '009':[[9,16]]*3,
                          '012':[[9,16]]*2,
+                         '015':[[9,16]]*3,
                          '018':[[9,16],[9,16],[1,8]],
                          '019':[[9,16]]*3,
                          '022':[[9,16]],
@@ -108,14 +110,17 @@ def main(args):
                          '059':[[9,16]]*2,
                          '060':[[9,16]]*2,
                         }
-                        
-    list_emg_sorted = {'001':[[7,0,6,4,2,5,3]]*2,
+    
+    ## sorting plots to present each lead in the same place                    
+    list_emg_sorted = {'001':[[7,0,6,4,2,5,3]]*1,
                        '002':[[7,0,6,4,2,5,3]]*2,
                        '003':[[5,7,3,0,6,4,2,1]]*2,
                        '004':[[5,7,3,0,6,4,2,1]]*3,
                        '006':[[5,7,3,0,6,4,2,1]]*3,
+                       '015':[[5,7,3,0,6,4,2,1],[5,7,3,0,6,4,2,1],[5,7,3,0,4,2,1,6]],
                        '018':[[7,2,4,1,6,5,0,3]]*3,
                        '024':[[7,2,4,1,6,5,0,3]]*3,
+                       '027':[[7,2,4,1,6,5,0,3]]*3,
                        '030':[[7,2,4,1,6,5,0,3]]*3,
                        '031':[[7,2,4,1,6,5,0,3]]*3,
                        '032':[[7,2,4,1,6,5,0,3]]*3,
@@ -131,6 +136,7 @@ def main(args):
                        '058':[[2,4,0,6,3,1,5,7]]*3,
                        '056':[[7,5,1,3,6,4,0,2]],
                        '059':[[7,5,1,3,6,4,0,2]]*2,
+                       '060':[[7,5,1,3,6,4,0,2]]*2,
                        
                        '':[],
                         }
@@ -138,8 +144,10 @@ def main(args):
     list_emg_titles = {'001':'A - T10 (discharge) -> B - T11 (12 months)',
                        '004':'B - C4 (discharge)  -> B - C4 (6 months)',
                        '006':'A - L2 (6 weeks)    -> B - L2 (12 months)',
+                       '015':'? - ? -> ? - ?',
                        '018':'B - C4 (3 months)   -> A - C4 (6 months)',
                        '024':'B - T5 (discharge)  -> C - L1 (12 months)',
+                       '027':'? - ? -> ? - ?',
                        '030':'A - T10 (discharge) -> A - T11 (6 months)',
                        '031':'B - C4 (discharge)  -> D - C6 (12 months)',
                        '032':'C - C4 (discharge)  -> D - C7 (12 months)',
@@ -148,6 +156,8 @@ def main(args):
                        '039':'A - C4 (discharge)  -> A - C2 (9 months)',
                        '042':'A - T10 (discharge) -> A - T10 (6 months)',
                        '045':'A - C6 (discharge)  -> A - C7 (6 months)',
+                       '048':'? - ? -> ? - ?',
+                       '060':'? - ? -> ? - ?',
                        }
     
     list_session_names={0:'a',
@@ -155,16 +165,38 @@ def main(args):
                         2:'c'
                         }
                         
+    list_activity_emg={'001':[[3]],
+                       '004':[[1,6],[],[0,1]],
+                       '006':[[0,1,2,3,5,6,7],[0,1,2,3,4,6,7],[0,1,2,3,4,6,7]],
+                       '015':[[0],[0,1,2,3,4,6,7],[0,1,4,5,]],
+                       '018':[[0],[0,1,2,4],[0,2,3,7]],
+                       '024':[[0,1,3],[0,1],[0,2,3,4]],
+                       '027':[[2,],[],[]],
+                       '030':[[1],[4,5],[5]],
+                       '031':[[4],[2,3,4],[]],
+                       '032':[[0,1,4,5],[1],[0,7]],
+                       '033':[[],[],[1,4]],
+                       '037':[[],[],[0]],
+                       '039':[[],[],[]],
+                       '042':[[0,1,2,5,6,7]],
+                       '045':[[0,1,3,6],[]],
+                       '048':[[1],[0,1,5,6,7],[1,3]],
+                       '060':[[],[],[]],
+                        }
+    
+    channels_names = ['VMO LT, uV', 'VMO RT, uV', 'VLO LT, uV', 'VLO RT, uV', 'LAT.GASTRO LT, uV', 'LAT.GASTRO RT, uV', 'TIB.ANT. LT, uV', 'TIB.ANT. RT, uV']
+                        
     files = list_files_names[patient_number]
     ids_channels = list_ids_channels[patient_number]
     ids_emg_sorted = list_emg_sorted[patient_number]
     title_emg = list_emg_titles[patient_number]
+    activity_emg = list_activity_emg[patient_number]
     
     filename = files[file_number]
     file_channels = ids_channels[file_number]
     ids_emg_plot = ids_emg_sorted[file_number]
     session_name = list_session_names[file_number]
-    
+    act_emg = activity_emg[file_number]
     
     
     print(f'files: {files}')
@@ -180,7 +212,7 @@ def main(args):
     # obj_emg.plotSelectedSignal(signal_number)
     
     obj_emg.filteringSignals()
-    obj_emg.plotFilteredSignals(ids_emg_plot, title_emg, patient_number, session_name)
+    obj_emg.plotFilteredSignals(ids_emg_plot, title_emg, patient_number,session_name, file_number+1, act_emg, channels_names)
     
     # ## open files
     # list_objs = []
@@ -191,8 +223,8 @@ def main(args):
     
     # list_objs[0].plotSignals()
     
-    # plt.ion()
-    # plt.show(block=True)
+    plt.ion()
+    plt.show(block=True)
     
     return 0
 

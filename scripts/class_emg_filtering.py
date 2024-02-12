@@ -125,8 +125,8 @@ class Reading_EMG:
         
     def filteringSignals(self):
         
-        fc1 = 50 ## 20 Hz high pass filter
-        fc2 = 500 ## Hz
+        fc1 = 50 ## 50 Hz high pass filter
+        fc2 = 500 ## 500 Hz low pass filter
 
         i=0
         for ch, ch_n in zip(self.channels, self.channelsNames):
@@ -359,7 +359,7 @@ class Reading_EMG:
         ## saving plot png file
         # fig.suptitle(f'{self.filename}\n{title_emg}')
         fig.suptitle(f'P-{patient_number} session {session_number}')
-        # plt.savefig(f'../docs/figures/oct02_2023/ebc{patient_number}{session_name}.png', bbox_inches='tight')
+        plt.savefig(f'../docs/figures/oct02_2023/ebc{patient_number}{session_name}.png', bbox_inches='tight')
         
         return 0
     
