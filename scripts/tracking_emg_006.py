@@ -148,8 +148,17 @@ def main(args):
     JD_Marker3 = df.iloc[:,128:131].to_numpy()
     JD_Marker4 = df.iloc[:,131:134].to_numpy()
     
-    # fig, ax = plt.subplots()
-    # ax.plot(CD_Marker1[:,1], label='original')
+    # JCD_Marker = np.linalg.norm(JD_Marker3 - CD_Marker4, axis=1)
+    # fig1, ax1 = plt.subplots()
+    # ax1.plot(JCD_Marker, label='original')
+    # ax1.legend()
+    
+    # fig2, ax2 = plt.subplots()
+    # fig3, ax3 = plt.subplots()
+    # fig4, ax4 = plt.subplots()
+    # ax1.plot(CD_Marker1[:,0], label='original')
+    # ax2.plot(CD_Marker1[:,1], label='original')
+    # ax3.plot(CD_Marker1[:,2], label='original')
     
     ## smoothing every component (x, y, z) of the markers location
     CD_Marker1 = smooth_filter(CD_Marker1)
@@ -161,7 +170,14 @@ def main(args):
     JD_Marker3 = smooth_filter(JD_Marker3)
     JD_Marker4 = smooth_filter(JD_Marker4)
     
-    # ax.plot(CD_Marker1[:,1], label='smooth')
+    # JCD_Marker = np.linalg.norm(JD_Marker3 - CD_Marker4, axis=1)
+    # ax1.plot(JCD_Marker, label='filtered')
+    # ax1.legend()
+    
+    
+    # ax1.plot(CD_Marker1[:,0], label='smooth')
+    # ax2.plot(CD_Marker1[:,1], label='smooth')
+    # ax3.plot(CD_Marker1[:,2], label='smooth')
         
     # print(f'CD_Marker1:\n{CD_Marker1}\n shape: {CD_Marker1.shape}')
     
@@ -170,6 +186,9 @@ def main(args):
     JD_center = (JD_Marker1 + JD_Marker2 + JD_Marker3 + JD_Marker4)/4
     ## calculating distance between the two markers centers 
     JCD_norm = np.linalg.norm(JD_center - CD_center, axis=1)
+    # ax4.plot(JCD_norm, label='JCD_norm')
+    # ax1.plot(JCD_norm, label='average')
+    # ax1.legend()
     
     # print(f'jcd: {JCD_norm.shape[0]/120}')
     
@@ -179,8 +198,9 @@ def main(args):
     
     sample_rate_tracking = 120 ## samples per second (Hz)
     ## time in seconds
-    arr_time_max = np.array(max_list)/sample_rate_tracking - 0.1
-    arr_time_min = np.array(min_list)/sample_rate_tracking - 0.1
+    t_delay=0.1
+    arr_time_max = np.array(max_list)/sample_rate_tracking - t_delay
+    arr_time_min = np.array(min_list)/sample_rate_tracking - t_delay
     
     ## plot signal distance
     # plot_distance(JCD_norm, max_list, min_list)
@@ -208,9 +228,11 @@ def main(args):
     
     obj_emg.plotSegmentedSignals(ids_emg_plot, title_emg, patient_number,session_name, file_number+1, act_emg, channels_names, arr_time_max, arr_time_min)
     
-    signal_name = 'TIB.ANT. LT, uV'
-    obj_emg.flexion_extension(arr_time_min, arr_time_max, signal_name)
+    ## left leg we exchange min and max
+    # signal_name = 'TIB.ANT. LT, uV'
+    # obj_emg.flexion_extension(arr_time_min, arr_time_max, signal_name)
     
+    ## right leg we keep min and max
     signal_name = 'VLO RT, uV'
     obj_emg.flexion_extension(arr_time_max, arr_time_min, signal_name)
     

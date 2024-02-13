@@ -63,7 +63,13 @@ class Reading_EMG:
             i+=1
 
         print(self.df_EnvelopedSignals)
-
+        
+        num_ch=17
+        ch_switch = mat['Data'][0, num_ch].flatten()
+        name_switch = mat['channelNames'][0][num_ch][0]
+        
+        print(f'channel switch: {name_switch}, {len(ch_switch)}, {ch_switch}')
+        
         # print(f'channels: {len(self.channels)}, {len(self.channels[0])}, {len(self.channelsNames)}')
 
 
@@ -182,8 +188,10 @@ class Reading_EMG:
             t1 = self.ch_time[0] + val1
             t2 = self.ch_time[0] + val2
             
+            ## extension
             arr_a = self.df_EnvelopedSignals.loc[(self.df_EnvelopedSignals[self.ch_time_name]>=t0) & (self.df_EnvelopedSignals[self.ch_time_name]<t1), [signal_name]].to_numpy()
             
+            ## flexion
             arr_b = self.df_EnvelopedSignals.loc[(self.df_EnvelopedSignals[self.ch_time_name]>=t1) & (self.df_EnvelopedSignals[self.ch_time_name]<t2), [signal_name]].to_numpy()
             
             ## VLO RT
@@ -197,17 +205,23 @@ class Reading_EMG:
             
             # print(f'sel: {len(arr_r)}\n')
             # ax.plot(arr_r)
-            df_fle[i] = arr_a.flatten()
-            df_ext[i] = arr_b.flatten()
+            df_ext[i] = arr_a.flatten()
+            df_fle[i] = arr_b.flatten()
+            
             
             i=i+1
         
-        df_fle = df_fle.melt(id_vars=['cycle'], var_name='cols', value_name='vals')
-        df_ext = df_ext.melt(id_vars=['cycle'], var_name='cols', value_name='vals')
+        # print(f'df_ext.\n{df_ext_sel}')
+        # print(f'df_fle.\n{df_fle}')
+        color = 'tab:blue'
+        self.plot_alpha(df_ext, color, ax[0])
+        self.plot_alpha(df_fle, color, ax[1])
         
+        # df_ext = df_ext.melt(id_vars=['cycle'], var_name='cols', value_name='vals')
+        # df_fle = df_fle.melt(id_vars=['cycle'], var_name='cols', value_name='vals')
         # print(f'df_fef:\n{df_fef}')
-        sns.lineplot(ax=ax[0], x="cycle", y='vals', errorbar="sd", estimator='mean', data=df_fle)
-        sns.lineplot(ax=ax[1], x="cycle", y='vals', errorbar="sd", estimator='mean', data=df_ext)
+        # sns.lineplot(ax=ax[0], x="cycle", y='vals', errorbar="sd", estimator='mean', data=df_fle)
+        # sns.lineplot(ax=ax[1], x="cycle", y='vals', errorbar="sd", estimator='mean', data=df_ext)
         
         # ax.set_title(signal_name)
         ax[0].set_title(f'{signal_name} extension')
@@ -219,6 +233,21 @@ class Reading_EMG:
         fig.tight_layout()
             
         return 0
+        
+
+    def plot_alpha(self, df, color, ax):
+        
+        x = df.iloc[:,0].tolist()
+        y = df.iloc[:,1:].median(axis=1).tolist()
+        ymax = df.iloc[:,1:].max(axis=1).tolist()
+        ymin = df.iloc[:,1:].min(axis=1).tolist()
+        alpha_fill = 0.3
+        
+        ax.plot(x, y, color=color)
+        # ax.fill_between(x, ymax, ymin, color=color, hatch=pattern, alpha=alpha_fill, label=sel_label)
+        ax.fill_between(x, ymax, ymin, color=color, alpha=alpha_fill,)
+        
+        return ax
         
         
 
@@ -359,7 +388,7 @@ class Reading_EMG:
         ## saving plot png file
         # fig.suptitle(f'{self.filename}\n{title_emg}')
         fig.suptitle(f'P-{patient_number} session {session_number}')
-        plt.savefig(f'../docs/figures/oct02_2023/ebc{patient_number}{session_name}.png', bbox_inches='tight')
+        # plt.savefig(f'../docs/figures/oct02_2023/ebc{patient_number}{session_name}.png', bbox_inches='tight')
         
         return 0
     
@@ -378,12 +407,14 @@ class Reading_EMG:
             ax[id_emg].legend()
             
         
+            ## left leg
             if id_emg % 2 == 0:
                 print(f'id_emg % 2 == 0: {id_emg}, {channels_names[id_emg]}')
                 for x_val in arr_time_max:
                     ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:orange')
                 for x_val in arr_time_min:
                     ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple')
+            ## right leg
             else:
                 print(f'id_emg % 2 != 0: {id_emg}, {channels_names[id_emg]}')
                 for x_val in arr_time_max:
