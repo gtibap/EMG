@@ -106,50 +106,70 @@ def plot_distance(JCD_norm, max_list, min_list):
 
 def main(args):
     
-    path = '../data/priority_patients/kinematics/ebc024/'
-    session = ['s1/','s9/','s13/'] 
-    filename = '../data/motive_tracking/tracking_006_s1/e1.csv'
+    
+    # path = '../data/priority_patients/kinematics/ebc024/'
+    # session = ['s1/','s9/','s13/'] 
+    # filename = '../data/motive_tracking/tracking_006_s1/e1.csv'
+    filename = '../data/priority_patients/kinematics/ebc024/s1/Take 2022-05-06 01.48.53 PM.csv'
     filenames = ['']
     # filename_emg = '../data/motive_tracking/tracking_006_s1/ebc_006_s01_e1.mat'
     ## reading csv file. Header includes: Frame, Time, ... 
     df = pd.read_csv(filename, header=5)
     # print(f'{df.columns}')
     # print(f'{df}')
-    # print(f'{df.iloc[:,6].tolist()}')
     
-    ## for EBC006_s1 we selected markers on the right (droite) leg: four at the cuisse and four at the jambe
+    ## right leg
+    ## thigh markers Unlabeled 6538 and 4692
+    ## leg markers Unlabeled 5461 and 5498
+    
+    ## csv file columns
+    
+    ## Unlabeled:4692 columns (DP,DQ,DR) -> [119:122]
+    ## Unlabeled:6538 columns (EE,EF,EG) -> [134:137]
+    
+    ## Unlabeled:5461 columns (DY,DZ,EA) -> [128:131]
+    ## Unlabeled:5498 columns (EB,EC,ED) -> [131:134]
+    
+    ## two first thigh; two last leg
+    list_ids_x = [119, 134, 128, 131,]
+    
+    # for id_x in list_ids_x:
+        # print(f'{df.iloc[:,id_x]}')
     
     ## how many missing values in the selected columns?
-    print('\nMissing values:')
-    print(f'CD_Marker1: {df.iloc[:,110].isnull().sum()}')
-    print(f'CD_Marker2: {df.iloc[:,113].isnull().sum()}')
-    print(f'CD_Marker3: {df.iloc[:,116].isnull().sum()}')
-    print(f'CD_Marker4: {df.iloc[:,119].isnull().sum()}')
-    print(f'JD_Marker1: {df.iloc[:,122].isnull().sum()}')
-    print(f'JD_Marker2: {df.iloc[:,125].isnull().sum()}')
-    print(f'JD_Marker3: {df.iloc[:,128].isnull().sum()}')
-    print(f'JD_Marker4: {df.iloc[:,131].isnull().sum()}')
+    print('\nMissing values before interpolation:')
+    for i, id_x in enumerate(list_ids_x):
+        print(f'Marker {i}: {df.iloc[:,id_x].isnull().sum()}')
+    
     print('\n')
         
     ## filling missing data
-    df.iloc[:,110:113].interpolate(method="cubicspline", inplace=True, limit_direction='both')
-    df.iloc[:,113:116].interpolate(method="cubicspline", inplace=True, limit_direction='both')
-    df.iloc[:,116:119].interpolate(method="cubicspline", inplace=True, limit_direction='both')
-    df.iloc[:,119:122].interpolate(method="cubicspline", inplace=True, limit_direction='both')
-    df.iloc[:,122:125].interpolate(method="cubicspline", inplace=True, limit_direction='both')
-    df.iloc[:,125:128].interpolate(method="cubicspline", inplace=True, limit_direction='both')
-    df.iloc[:,128:131].interpolate(method="cubicspline", inplace=True, limit_direction='both')
-    df.iloc[:,131:134].interpolate(method="cubicspline", inplace=True, limit_direction='both')
+    for id_x in list_ids_x:
+        df.iloc[:,id_x+0].interpolate(method="cubicspline", inplace=True, limit_direction='both')
+        df.iloc[:,id_x+1].interpolate(method="cubicspline", inplace=True, limit_direction='both')
+        df.iloc[:,id_x+2].interpolate(method="cubicspline", inplace=True, limit_direction='both')
     
+    # fig, ax = plt.subplots(nrows=4,ncols=1)
+    col=2
     ## converting selected columns to numpy arrays
-    CD_Marker1 = df.iloc[:,110:113].to_numpy()
-    CD_Marker2 = df.iloc[:,113:116].to_numpy()
-    CD_Marker3 = df.iloc[:,116:119].to_numpy()
-    CD_Marker4 = df.iloc[:,119:122].to_numpy()
-    JD_Marker1 = df.iloc[:,122:125].to_numpy()
-    JD_Marker2 = df.iloc[:,125:128].to_numpy()
-    JD_Marker3 = df.iloc[:,128:131].to_numpy()
-    JD_Marker4 = df.iloc[:,131:134].to_numpy()
+    markers_arr = np.empty([len(list_ids_x), len(df), 3])
+    for i, id_x in enumerate(list_ids_x):
+        markers_arr[i] = df.iloc[:,id_x:id_x+3].to_numpy()
+        # ax[i].plot(markers_arr[i,:,col], label='original')
+        markers_arr[i] = smooth_filter(markers_arr[i])
+        # ax[i].plot(markers_arr[i,:,col], label='smooth')
+    
+    print(f'markers_arr:\n{markers_arr}')
+    # plt.show()
+    
+    # CD_Marker1 = df.iloc[:,110:113].to_numpy()
+    # CD_Marker2 = df.iloc[:,113:116].to_numpy()
+    # CD_Marker3 = df.iloc[:,116:119].to_numpy()
+    # CD_Marker4 = df.iloc[:,119:122].to_numpy()
+    # JD_Marker1 = df.iloc[:,122:125].to_numpy()
+    # JD_Marker2 = df.iloc[:,125:128].to_numpy()
+    # JD_Marker3 = df.iloc[:,128:131].to_numpy()
+    # JD_Marker4 = df.iloc[:,131:134].to_numpy()
     
     # JCD_Marker = np.linalg.norm(JD_Marker3 - CD_Marker4, axis=1)
     # fig1, ax1 = plt.subplots()
@@ -164,14 +184,14 @@ def main(args):
     # ax3.plot(CD_Marker1[:,2], label='original')
     
     ## smoothing every component (x, y, z) of the markers location
-    CD_Marker1 = smooth_filter(CD_Marker1)
-    CD_Marker2 = smooth_filter(CD_Marker2)
-    CD_Marker3 = smooth_filter(CD_Marker3)
-    CD_Marker4 = smooth_filter(CD_Marker4)
-    JD_Marker1 = smooth_filter(JD_Marker1)
-    JD_Marker2 = smooth_filter(JD_Marker2)
-    JD_Marker3 = smooth_filter(JD_Marker3)
-    JD_Marker4 = smooth_filter(JD_Marker4)
+    # CD_Marker1 = smooth_filter(CD_Marker1)
+    # CD_Marker2 = smooth_filter(CD_Marker2)
+    # CD_Marker3 = smooth_filter(CD_Marker3)
+    # CD_Marker4 = smooth_filter(CD_Marker4)
+    # JD_Marker1 = smooth_filter(JD_Marker1)
+    # JD_Marker2 = smooth_filter(JD_Marker2)
+    # JD_Marker3 = smooth_filter(JD_Marker3)
+    # JD_Marker4 = smooth_filter(JD_Marker4)
     
     # JCD_Marker = np.linalg.norm(JD_Marker3 - CD_Marker4, axis=1)
     # ax1.plot(JCD_Marker, label='filtered')
@@ -185,13 +205,22 @@ def main(args):
     # print(f'CD_Marker1:\n{CD_Marker1}\n shape: {CD_Marker1.shape}')
     
     ## calculating mean points for both CD markers and JD markers
-    CD_center = (CD_Marker1 + CD_Marker2 + CD_Marker3 + CD_Marker4)/4
-    JD_center = (JD_Marker1 + JD_Marker2 + JD_Marker3 + JD_Marker4)/4
+    # CD_center = (CD_Marker1 + CD_Marker2 + CD_Marker3 + CD_Marker4)/4
+    # JD_center = (JD_Marker1 + JD_Marker2 + JD_Marker3 + JD_Marker4)/4
+
+    CD_center = (markers_arr[0] + markers_arr[1])/2
+    JD_center = (markers_arr[2] + markers_arr[3])/2
+    
+    
     ## calculating distance between the two markers centers 
     JCD_norm = np.linalg.norm(JD_center - CD_center, axis=1)
+    
+    # fig2, ax2 = plt.subplots(nrows=1,ncols=1)
+    # ax2.plot(JCD_norm, label='JCD_norm')
     # ax4.plot(JCD_norm, label='JCD_norm')
     # ax1.plot(JCD_norm, label='average')
-    # ax1.legend()
+    # ax2.legend()
+    # plt.show()
     
     # print(f'jcd: {JCD_norm.shape[0]/120}')
     
@@ -201,7 +230,7 @@ def main(args):
     
     sample_rate_tracking = 120 ## samples per second (Hz)
     ## time in seconds
-    t_delay=0.1
+    t_delay=0.0
     arr_time_max = np.array(max_list)/sample_rate_tracking - t_delay
     arr_time_min = np.array(min_list)/sample_rate_tracking - t_delay
     
@@ -210,38 +239,32 @@ def main(args):
     
     #####
     ## EMG reading
-    path_kin = '../data/priority_patients/kinematics/ebc024/s1/Take 2022-05-06 01.48.53 PM.c3d' 
-    path_emg = '../data/priority_patients/EBC024/EBC24-S4-E3.mat' 
+    # path_kin = '../data/priority_patients/kinematics/ebc024/s1/Take 2022-05-06 01.48.53 PM.c3d'
+    # path_emg = '../data/priority_patients/EBC024/EBC24-S4-E3.mat'
+    path_emg = '../data/priority_patients/EBC024/'
     
-    ## right leg
-    ## thigh markers Unlabeled 6538 and 4692
-    ## leg markers Unlabeled 5461 and 5498
-    
-    ## csv file columns
-    ## Unlabeled:6538 columns (EE,EF,EG) -> [135:138]
-    ## Unlabeled:5461 columns (DY,DZ,EA) -> [129:132]
-    ## Unlabeled:5498 columns (EB,EC,ED) -> [132:135]
-    ## Unlabeled:4692 columns (DP,DQ,DR) -> [120:123]
-    
-    ## leg
-    
-    filename = 'ebc_006_s01_e1.mat'
+    # filename = 'ebc_006_s01_e1.mat'
+    filename = 'EBC24-S4-E3.mat'
     file_channels = [9,16]
 
-    obj_emg = Reading_EMG(path, filename, file_channels)
+    obj_emg = Reading_EMG(path_emg, filename, file_channels)
     # obj_emg.plotSignals()
     obj_emg.filteringSignals()
     obj_emg.envelopeFilter()
     
-    ids_emg_plot = [5,7,3,0,6,4,2,1]
-    title_emg = 'A - L2 (6 weeks)    -> B - L2 (12 months)'
-    patient_number = '006'
+    ids_emg_plot = [7,2,4,1,6,5,0,3]
+    title_emg = 'B - T5 (discharge)  -> C - L1 (12 months)'
+    patient_number = '024'
     session_name='a'
     file_number=0
-    act_emg=[0,1,2,3,5,6,7]
+    act_emg=[0,1,3]
     channels_names = ['VMO LT, uV', 'VMO RT, uV', 'VLO LT, uV', 'VLO RT, uV', 'LAT.GASTRO LT, uV', 'LAT.GASTRO RT, uV', 'TIB.ANT. LT, uV', 'TIB.ANT. RT, uV']
     
     # obj_emg.plotFilteredSignals(ids_emg_plot, title_emg, patient_number,session_name, file_number+1, act_emg, channels_names)
+    
+    ## Arrays max and min distance between markers from the right leg. Therefore, lines in the plot are as follows: 
+    ## orange: flexion; minimum distance
+    ## purple: extension: maximum distance
     
     obj_emg.plotSegmentedSignals(ids_emg_plot, title_emg, patient_number,session_name, file_number+1, act_emg, channels_names, arr_time_max, arr_time_min)
     
@@ -250,7 +273,8 @@ def main(args):
     # obj_emg.flexion_extension(arr_time_min, arr_time_max, signal_name)
     
     ## right leg we keep min and max
-    signal_name = 'VLO RT, uV'
+    # signal_name = 'VLO RT, uV'
+    signal_name = 'VMO RT, uV'
     obj_emg.flexion_extension(arr_time_max, arr_time_min, signal_name)
     
     

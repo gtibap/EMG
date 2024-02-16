@@ -160,7 +160,6 @@ class Reading_EMG:
     
     def flexion_extension(self, arr_time_max, arr_time_min, signal_name):
         
-        
         fig, ax = plt.subplots(nrows=1,ncols=2, figsize=(7,3.5), sharex=True, sharey=True)
         fig.canvas.mpl_connect('key_press_event', self.on_press)
         
@@ -184,9 +183,9 @@ class Reading_EMG:
         i=0
         for val0, val1, val2 in zip(arr_time_min[0:], arr_time_max[id0:], arr_time_min[1:]):
             
-            t0 = self.ch_time[0] + val0
-            t1 = self.ch_time[0] + val1
-            t2 = self.ch_time[0] + val2
+            t0 = self.ch_time[0] + val0  ## flexion
+            t1 = self.ch_time[0] + val1  ## extension
+            t2 = self.ch_time[0] + val2  ## flexion
             
             ## extension
             arr_a = self.df_EnvelopedSignals.loc[(self.df_EnvelopedSignals[self.ch_time_name]>=t0) & (self.df_EnvelopedSignals[self.ch_time_name]<t1), [signal_name]].to_numpy()
@@ -231,6 +230,8 @@ class Reading_EMG:
         ax[0].set_ylabel('amplitude')
         ax[1].set_ylabel('amplitude')
         fig.tight_layout()
+        
+        # plt.savefig(f'../data/priority_patients/EBC024/figures/EBC024_cycle.png', bbox_inches='tight')
             
         return 0
         
@@ -399,6 +400,7 @@ class Reading_EMG:
         fig.canvas.mpl_connect('key_press_event', self.on_press)
         
         ax = ax.reshape(-1)
+        # ax = ax.flatten()
         
         # cont=0
         # for ch, ch_n, id_emg in zip(self.channelsFiltered, self.channelsNames, ids_emg):
@@ -411,18 +413,24 @@ class Reading_EMG:
             if id_emg % 2 == 0:
                 print(f'id_emg % 2 == 0: {id_emg}, {channels_names[id_emg]}')
                 for x_val in arr_time_max:
-                    ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:orange')
+                    p_f = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:orange', label='flexion')
                 for x_val in arr_time_min:
-                    ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple')
+                    p_e = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple', label='extension')
             ## right leg
             else:
                 print(f'id_emg % 2 != 0: {id_emg}, {channels_names[id_emg]}')
                 for x_val in arr_time_max:
-                    ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple')
+                    p_e = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple', label='extension')
                 for x_val in arr_time_min:
-                    ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:orange')
+                    p_f = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:orange', label='flexion')
                 
             # cont+=1
+        
+        # handles, labels = ax.get_legend_handles_labels()
+        # handles, labels = fig.gca().get_legend_handles_labels()
+        # fig.legend(handles, labels, loc='upper center')
+        # labels = ["flexion", "extension"] 
+        # fig.legend([p_f, p_e], labels=labels, loc="upper right") 
         
         # for id_ax, ch_n in enumerate(channels_names):
             # ax[id_ax]
@@ -433,7 +441,7 @@ class Reading_EMG:
         id02 = (id01 + (self.sampling_rate*5)).astype(int)  
         
         ax[0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
-        ax[0].set_ylim([-100,100])
+        ax[0].set_ylim([-50,50])
         # ax[0].set_title(self.filename)
         ax[6].set_xlabel(self.ch_time_name+' [s]')
         ax[7].set_xlabel(self.ch_time_name+' [s]')
@@ -444,10 +452,13 @@ class Reading_EMG:
                 # spine.set_edgecolor('tab:orange')
                 # spine.set_linewidth(2)
         
+        
+        
         ## saving plot png file
         # fig.suptitle(f'{self.filename}\n{title_emg}')
         fig.suptitle(f'P-{patient_number} session {session_number}')
         # plt.savefig(f'../docs/figures/oct02_2023/ebc{patient_number}{session_name}.png', bbox_inches='tight')
+        # plt.savefig(f'../data/priority_patients/EBC024/figures/EBC024_segmented.png', bbox_inches='tight')
         
         return 0
     
