@@ -27,13 +27,13 @@ class Reading_EMG:
         # self.day_number = day_number
     
         mat = scipy.io.loadmat(self.path+self.filename)
-        print(f'\n{self.filename}')
+        # print(f'\n{self.filename}')
         # print(f'dictionary {mat}')
-        print('Header:',  mat['__header__'])
-        print('Channel Names:',  mat['channelNames'])
+        # print('Header:',  mat['__header__'])
+        # print('Channel Names:',  mat['channelNames'])
         
         self.sampling_rate = mat['samplingRate'][0,0]
-        print(f'sample rate: {self.sampling_rate}')
+        # print(f'sample rate: {self.sampling_rate}')
         # ## number of channels plus one to include the Time channel (channel 0)
         
         # self.n_channels = mat['noChans'][0,0]+1
@@ -51,7 +51,7 @@ class Reading_EMG:
         ## channel 0 is the time array
         self.ch_time = mat['Data'][0, 0].flatten()
         self.ch_time_name = mat['channelNames'][0][0][0]
-        print(f'time ch: {self.ch_time[0]}, {self.ch_time[-1]}, {self.ch_time.shape}')
+        # print(f'time ch: {self.ch_time[0]}, {self.ch_time[-1]}, {self.ch_time.shape}')
         
         self.df_EnvelopedSignals[self.ch_time_name] = self.ch_time
         
@@ -62,13 +62,13 @@ class Reading_EMG:
         
             i+=1
 
-        print(self.df_EnvelopedSignals)
+        # print(self.df_EnvelopedSignals)
         
-        num_ch=17
-        ch_switch = mat['Data'][0, num_ch].flatten()
-        name_switch = mat['channelNames'][0][num_ch][0]
+        num_ch=ids_channels[-1]+1
+        # ch_switch = mat['Data'][0, num_ch].flatten()
+        # name_switch = mat['channelNames'][0][num_ch][0]
         
-        print(f'channel switch: {name_switch}, {len(ch_switch)}, {ch_switch}')
+        # print(f'channel switch: {name_switch}, {len(ch_switch)}, {ch_switch}')
         
         # print(f'channels: {len(self.channels)}, {len(self.channels[0])}, {len(self.channelsNames)}')
 
@@ -152,7 +152,6 @@ class Reading_EMG:
             self.channelsEnveloped[i] = self.filterLowPass(np.absolute(ch), fc)
             ## channelsEnveloped in a pandas DataFrame
             self.df_EnvelopedSignals[ch_n] = self.channelsEnveloped[i]
-            
             i+=1
         
         return 0
@@ -388,8 +387,62 @@ class Reading_EMG:
         
         ## saving plot png file
         # fig.suptitle(f'{self.filename}\n{title_emg}')
-        fig.suptitle(f'P-{patient_number} session {session_number}')
-        # plt.savefig(f'../docs/figures/oct02_2023/ebc{patient_number}{session_name}.png', bbox_inches='tight')
+        # fig.suptitle(f'P-{patient_number} session {session_number}')
+        fig.suptitle(f'P-{patient_number}')
+        # plt.savefig(f'../docs/figures/feb19_2024/ebc{patient_number}{session_name}.png', bbox_inches='tight')
+        
+        return 0
+        
+        
+    def plotEnvelopedSignals(self, ids_emg, title_emg, patient_number, session_name, session_number, list_act_emg, channels_names):
+        
+        fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(10, 7), sharex=True, sharey=True, squeeze=False)
+        fig.canvas.mpl_connect('key_press_event', self.on_press)
+        
+        ax = ax.reshape(-1)
+        
+        # cont=0
+        # for ch, ch_n, id_emg in zip(self.channelsFiltered, self.channelsNames, ids_emg):
+        for ch_fil, ch_env, id_emg in zip(self.channelsFiltered, self.channelsEnveloped, ids_emg):
+            ch_n = channels_names[id_emg]
+            ax[id_emg].plot(self.ch_time, ch_fil, label=ch_n)
+            ax[id_emg].plot(self.ch_time, ch_env)
+            
+            # self.channelsEnveloped[id_emg]
+            # self.df_EnvelopedSignals[]
+            
+            
+            ax[id_emg].legend()
+            # cont+=1
+        
+        # for id_ax, ch_n in enumerate(channels_names):
+            # ax[id_ax]
+            # ax.legend()
+                
+        
+        
+        ## select 5 seconds range of data at the middle of the recordings
+        id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
+        id02 = (id01 + (self.sampling_rate*5)).astype(int)  
+        
+        ax[0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
+        ax[0].set_ylim([-100,100])
+        # ax[0].set_title(self.filename)
+        ax[6].set_xlabel(self.ch_time_name+' [s]')
+        ax[7].set_xlabel(self.ch_time_name+' [s]')
+        
+        ## frame with red color means potential muscular activity
+        # ax[0].tick_params(color='red',labelcolor='red')
+        for id_emg in list_act_emg:
+            for spine in ax[id_emg].spines.values():
+                spine.set_edgecolor('tab:orange')
+                spine.set_linewidth(2)
+        
+        ## saving plot png file
+        # fig.suptitle(f'{self.filename}\n{title_emg}')
+        # fig.suptitle(f'P-{patient_number} session {session_number}')
+        fig.suptitle(f'P-{patient_number}')
+        # plt.savefig(f'../docs/figures/feb19_2024/ebc{patient_number}{session_name}.png', bbox_inches='tight')
         
         return 0
     
@@ -441,7 +494,7 @@ class Reading_EMG:
         id02 = (id01 + (self.sampling_rate*5)).astype(int)  
         
         ax[0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
-        ax[0].set_ylim([-50,50])
+        ax[0].set_ylim([-10,50])
         # ax[0].set_title(self.filename)
         ax[6].set_xlabel(self.ch_time_name+' [s]')
         ax[7].set_xlabel(self.ch_time_name+' [s]')
