@@ -9,6 +9,76 @@ from class_emg_filtering import Reading_EMG
 import matplotlib.pyplot as plt
 import sys
 
+def on_press(event):
+        # print('press', event.key)
+        sys.stdout.flush()
+        
+        if event.key == 'x':
+            plt.close('all')
+        else:
+            pass
+        return 0
+        
+def plotSignalsSeq(ax, obj_emg, signal):
+        
+        # cont=0
+        # for ch, ch_n, id_emg in zip(self.channelsFiltered, self.channelsNames, ids_emg):
+        ch_fil = obj_emg.getChannelsFiltered()
+        ch_env = obj_emg.getChannelsEnveloped()
+        ch_name = obj_emg.getChannelsNames()
+        ch_time = obj_emg.getChannelTime()
+        sampling_rate = obj_emg.getSamplingRate()
+        
+        ax.plot(ch_time, ch_fil[signal], label=ch_name[signal])
+        ax.plot(ch_time, ch_env[signal])
+        ax.legend()
+    
+        
+        # for ch_fil, ch_env, id_emg in zip(self.channelsFiltered, self.channelsEnveloped, ids_emg):
+            # ch_n = channels_names[id_emg]
+            # ax[id_emg].plot(self.ch_time, ch_fil, label=ch_n)
+            # ax[id_emg].plot(self.ch_time, ch_env)
+            
+            # self.channelsEnveloped[id_emg]
+            # self.df_EnvelopedSignals[]
+            
+            
+        # ax[id_emg].legend()
+            # cont+=1
+        
+        # for id_ax, ch_n in enumerate(channels_names):
+            # ax[id_ax]
+            # ax.legend()
+                
+        
+        
+        ## select 5 seconds range of data at the middle of the recordings
+        id01 = (len(ch_time)/2 - (sampling_rate*2.5)).astype(int)
+        id02 = (id01 + (sampling_rate*5)).astype(int)  
+        
+        ax.set_xlim([ch_time[id01],ch_time[id02]])
+        ax.set_ylim([-100,100])
+        # ax[0].set_title(self.filename)
+        ax.set_xlabel('time [s]')
+        
+        ## frame with red color means potential muscular activity
+        # ax[0].tick_params(color='red',labelcolor='red')
+        # for id_emg in list_act_emg:
+            # for spine in ax[id_emg].spines.values():
+                # spine.set_edgecolor('tab:orange')
+                # spine.set_linewidth(2)
+        
+        ## saving plot png file
+        # fig.suptitle(f'{self.filename}\n{title_emg}')
+        # fig.suptitle(f'P-{patient_number} session {session_number}')
+        # fig.suptitle(f'P-{patient_number}')
+        # plt.savefig(f'../docs/figures/feb19_2024/ebc{patient_number}{session_name}.png', bbox_inches='tight')
+        
+        return 
+    
+    
+
+
 def main(args):
     
     # Initialize parser
@@ -232,6 +302,11 @@ def main(args):
     # print(f'selected file: {filename}, channels: {file_channels}')
     
     
+    fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(8, 5), sharex=True, sharey=True, squeeze=False)
+    fig.canvas.mpl_connect('key_press_event', on_press)
+
+    fig.suptitle(f'P-{patient_number}')
+    ax = ax.reshape(-1)
     
     
     obj_emg = [[]]*len(files_list)
@@ -251,6 +326,7 @@ def main(args):
             obj_emg[i].envelopeFilter()
             obj_emg[i].plotEnvelopedSignals(ids_emg_plot, title_emg, patient_number,session_name, file_number+1, act_emg, channels_names)
             
+            plotSignalsSeq(ax[i], obj_emg[i], signal_number)
             # obj_emg[i].plotFilteredSignals(ids_emg_plot, title_emg, patient_number,session_name, file_number+1, act_emg, channels_names)
             
             print(f'done.')

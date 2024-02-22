@@ -548,6 +548,17 @@ class Reading_EMG:
     def getChannelsNames(self):
         return self.channelsNames
         
+    def getChannelsFiltered(self):
+        return self.channelsFiltered
+        
+    def getChannelsEnveloped(self):
+        return self.channelsEnveloped
+    
+    def getChannelTime(self):
+        return self.ch_time
+        
+    def getSamplingRate(self):
+        return self.sampling_rate
         
         
     
