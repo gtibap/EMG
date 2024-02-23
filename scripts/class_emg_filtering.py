@@ -1,4 +1,5 @@
 # import kineticstoolkit.lab as ktk
+from scipy.signal import savgol_filter
 import scipy.io
 from scipy import signal
 import numpy as np
@@ -19,7 +20,10 @@ class Reading_EMG:
         self.channelsFiltered=[]
         self.channelsEnveloped=[]
         self.channelsNames=[]
+        self.arr_time_max=[]
+        self.arr_time_min=[]
         self.df_EnvelopedSignals = pd.DataFrame()
+        
         
         self.path = path
         self.filename = filename
@@ -71,6 +75,130 @@ class Reading_EMG:
         # print(f'channel switch: {name_switch}, {len(ch_switch)}, {ch_switch}')
         
         # print(f'channels: {len(self.channels)}, {len(self.channels[0])}, {len(self.channelsNames)}')
+
+    def max_and_min(self, arr):
+            
+        max_list=[]
+        min_list=[]
+        win_size = 60
+        delta=10
+        id0=0
+        
+        while id0 < len(arr):
+            window = arr[id0:id0+win_size]
+            ids_max = np.argmax(window)
+            ids_min = np.argmin(window)
+            
+            max_list.append(ids_max+id0) 
+            min_list.append(ids_min+id0) 
+            id0 = id0 + delta
+        
+        ids_max, max_counts = np.unique(max_list, return_counts=True)
+        ids_min, min_counts = np.unique(min_list, return_counts=True)
+        
+        # print(f'max:\n{ids_max}, {max_counts}')
+        # print(f'min:\n{ids_min}, {min_counts}')
+        
+        ## ids occurrences greater than 1
+        sel_max = np.argwhere(max_counts > 1).reshape(1,-1)
+        sel_min = np.argwhere(min_counts > 1).reshape(1,-1)
+        
+        # print(f'indices max: {sel_max}')
+        # print(f'indices min: {sel_min}')
+        
+        ids_sel_max = ids_max[sel_max[0]]
+        ids_sel_min = ids_min[sel_min[0]]
+        
+        # print(f'values max: {ids_sel_max}')
+        # print(f'values min: {ids_sel_min}')
+
+        return ids_sel_max, ids_sel_min
+
+
+    def smooth_filter(self, arr):
+        arr[:,0]=savgol_filter(arr[:,0], window_length=60, polyorder=1, mode='mirror')
+        arr[:,1]=savgol_filter(arr[:,1], window_length=60, polyorder=1, mode='mirror')
+        arr[:,2]=savgol_filter(arr[:,2], window_length=60, polyorder=1, mode='mirror')
+        return arr
+
+
+
+    def kinematics(self, filename, list_ids_x,):
+    
+        # list_filenames=['Take 2022-07-04 10.23.53 AM.csv', 'Take 2022-07-04 10.37.36 AM.csv', 'Take 2022-07-04 10.52.59 AM.csv']
+        
+        ## four groups of markers
+        ## order: CG, JG, CD, JD
+        ## JD columns, marker1:(EB:EB+3), marker2:(EE:EE+3), marker4:(EH:EH+3), Unlabeled_377:(EK:EK+3)
+        ##
+        list_columns=[ [], [], [[],[],[],[131,134,137,140]]]
+        
+        ## calculate coordinates middle point of the markers for each body part
+        ## first: open files
+        # filename = path+list_filenames[record_number]
+        
+        print(f'reading markers file... ', end='')
+        try:
+            df = pd.read_csv(filename, header=5)
+        except ValueError:
+                print(f'error. Problem reading the file {filename}.')
+                return 0
+        print(f'done.')
+        
+        # print(f'data markers:\n{df}')
+        
+        ## column indexes read coordinates markers
+        # list_ids_x = list_columns[record_number][3]
+        # print(f'list_ids_x: {list_ids_x}')
+        
+        print('\nMissing values before interpolation:')
+        for i, id_x in enumerate(list_ids_x):
+            print(f'Marker {i}: {df.iloc[:,id_x].isnull().sum()}')
+            print(f'{df.iloc[:,id_x]}')
+        print('\n')
+        
+        ## filling missing data
+        for id_x in list_ids_x:
+            df.iloc[:,id_x+0].interpolate(method="cubicspline", inplace=True, limit_direction='both')
+            df.iloc[:,id_x+1].interpolate(method="cubicspline", inplace=True, limit_direction='both')
+            df.iloc[:,id_x+2].interpolate(method="cubicspline", inplace=True, limit_direction='both')
+
+        # fig, ax = plt.subplots(nrows=4,ncols=1)
+        # fig.canvas.mpl_connect('key_press_event', on_press)
+        # col=2
+
+        ## smoothing each component (x,y,z) of each marker
+        markers_arr = np.empty([len(list_ids_x), len(df), 3])
+        markers_sum = np.zeros([len(df), 3])
+        
+        for i, id_x in enumerate(list_ids_x):
+            markers_arr[i] = df.iloc[:,id_x:id_x+3].to_numpy()
+            # ax[i].plot(markers_arr[i,:,col], label='original')
+            markers_arr[i] = self.smooth_filter(markers_arr[i])
+            # ax[i].plot(markers_arr[i,:,col], label='smooth')
+            # ax[i].legend()
+            markers_sum += markers_arr[i]
+        
+        # print(f'markers_arr:\n{markers_arr}')
+        
+        marker_center = markers_sum / len(list_ids_x)
+        
+        ## finding maximums and minimums (positive and negative picks) of the X component of the marker_center
+        max_list, min_list = self.max_and_min(marker_center[:,0])
+        print(f'max and min:\n{max_list},\n{min_list}')
+        
+        sample_rate_tracking = 120 ## samples per second (Hz)
+        ## time in seconds
+        t_delay=0.0
+        self.arr_time_max = np.array(max_list)/sample_rate_tracking - t_delay
+        self.arr_time_min = np.array(min_list)/sample_rate_tracking - t_delay
+        
+        # for i in np.arange(3):
+            # ax[i].plot(marker_center[:,i],)
+        # plt.show()
+        
+        return 0
+
 
 
     def smoothingRMS(self, ch, window_size):
@@ -466,7 +594,7 @@ class Reading_EMG:
             if id_emg % 2 == 0:
                 print(f'id_emg % 2 == 0: {id_emg}, {channels_names[id_emg]}')
                 for x_val in arr_time_max:
-                    p_f = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:orange', label='flexion')
+                    p_f = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:green', label='flexion')
                 for x_val in arr_time_min:
                     p_e = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple', label='extension')
             ## right leg
@@ -475,7 +603,7 @@ class Reading_EMG:
                 for x_val in arr_time_max:
                     p_e = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple', label='extension')
                 for x_val in arr_time_min:
-                    p_f = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:orange', label='flexion')
+                    p_f = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:green', label='flexion')
                 
             # cont+=1
         
@@ -559,6 +687,12 @@ class Reading_EMG:
         
     def getSamplingRate(self):
         return self.sampling_rate
+        
+    def getExtensionTimeList(self):
+        return self.arr_time_max
+    
+    def getFlexionTimeList(self):
+        return self.arr_time_min
         
         
     
