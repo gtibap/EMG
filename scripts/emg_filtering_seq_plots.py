@@ -23,6 +23,7 @@ def on_press(event):
         else:
             pass
         return 0
+
         
 def plotSignalsSeq(ax, obj_emg, signal, arr_time_max, arr_time_min, flag_left_leg):
         
@@ -38,9 +39,8 @@ def plotSignalsSeq(ax, obj_emg, signal, arr_time_max, arr_time_min, flag_left_le
         ax.plot(ch_time, ch_env[signal])
         ax.legend()
         
-        
         ## left leg
-        if flag_left_leg == False:
+        if flag_left_leg:
             for x_val in arr_time_max:
                 p_f = ax.axvline(x = ch_time[0] + x_val, color = 'tab:green', label='flexion')
             for x_val in arr_time_min:
@@ -51,9 +51,6 @@ def plotSignalsSeq(ax, obj_emg, signal, arr_time_max, arr_time_min, flag_left_le
                 p_e = ax.axvline(x = ch_time[0] + x_val, color = 'tab:purple', label='extension')
             for x_val in arr_time_min:
                 p_f = ax.axvline(x = ch_time[0] + x_val, color = 'tab:green', label='flexion')
-        
-        
-        
          
         ## select 5 seconds range of data at the middle of the recordings
         id01 = (len(ch_time)/2 - (sampling_rate*2.5)).astype(int)
@@ -70,7 +67,7 @@ def plotSignalsSeq(ax, obj_emg, signal, arr_time_max, arr_time_min, flag_left_le
         # fig.suptitle(f'P-{patient_number}')
         # plt.savefig(f'../docs/figures/feb19_2024/EBC031_session_B.png', bbox_inches='tight')
         
-        return 
+        return 0
     
 
 def max_and_min(arr):
@@ -248,7 +245,7 @@ def main(args):
                         '031':[False,False,False]
     } 
         
-    ## four groups of markers for each recording (usually three: 5min, 15min, 30min)
+    ## four groups of markers for each recording [usually three: 5min (e1), 15min (e2), 30min (e3)]
     ## order: CG, JG, CD, JD
     ## '031' JD columns, marker1:(EB:EB+3), marker2:(EE:EE+3), marker4:(EH:EH+3), Unlabeled_377:(EK:EK+3)
     ##
@@ -282,16 +279,9 @@ def main(args):
                         '029':['ebc_029_s02_e3.mat','ebc_029_s09_e3.mat', 'ebc_029_s14_e3.mat'],
                         '030':['EBC030_S1_E3.mat','EBC030_S7_E3.mat','EBC30_S14_E3.mat'],
                         
-                        # '031':['EBC031_Baseline2.mat','EBC031_baseline1.mat','EBC Bed cycling_test.mat'],
-                        # '031':['EBC031_s2_e1.mat','EBC031_s2_e2.mat','EBC031_s2_e3.mat','EBC031_s2_baseline2'],
-                        # '031':['EBC031_baseline1.mat','EBC031_Baseline2.mat',],
-                        # '031':['EBC031S7e1.mat','EBC031_s7e2.mat','EBC031S7e3.mat'],
+                       
                         '031':['EBC031S7e1.mat', 'EBC031_s7e2.mat', 'EBC031S7e3.mat'],
-                        # '031':['EBC031_s2_e1.mat','EBC031_s2_e2.mat','EBC031_s2_e3.mat'],
-                        
-                        # '031':['EBC031S7e1.mat','EBC031_s7e2.mat','EBC031S7e3.mat'],
-                        # '031':['EBC031_S14_E1.mat','EBC031S14e2.mat','EBC031_s14_e3.mat'],
-                        # '031':['EBC031_s2_e3.mat','EBC031S7e3.mat','EBC031_s14_e3.mat'],
+                       
                         # '032':['EBC032_s1_e3.mat','EBC032S7e3.mat','EBC032S14e3.mat'],
                         '032':['EBC032_S1_e1.mat','EBC032_S1_E2.mat','EBC032_s1_e3.mat'],
                         # '032':['EBC032_s1_e3.mat','EBC032S7e3.mat','EBC032S14e3.mat'],
@@ -441,6 +431,10 @@ def main(args):
                        '060':[[],[],[]],
                         }
     
+    list_selected_channels={
+                        '031':['VL RT, uV'],
+                        }
+    
     channels_names = ['VMO LT, uV', 'VMO RT, uV', 'VLO LT, uV', 'VLO RT, uV', 'LAT.GASTRO LT, uV', 'LAT.GASTRO RT, uV', 'TIB.ANT. LT, uV', 'TIB.ANT. RT, uV']
     
     #################
@@ -465,19 +459,23 @@ def main(args):
     ids_emg_sorted = list_emg_sorted[patient_number]
     title_emg = list_emg_titles[patient_number]
     activity_emg = list_activity_emg[patient_number]
+    list_ch_cycle = list_selected_channels[patient_number]
     
     filename = files_list_emg[file_number]
     file_channels = ids_channels_emg[file_number]
     ids_emg_plot = ids_emg_sorted[file_number]
     session_name = list_session_names[file_number]
     act_emg = activity_emg[file_number]
+    name_ch_cycle = list_ch_cycle[0]
+    
     
     
     # print(f'files: {files_list}')
     # print(f'channels: {ids_channels}')
     # print(f'selected file: {filename}, channels: {file_channels}')
     
-    
+    ##############################################################################
+    ## canvas for the visualization plots EMG and vertical lines indicating flexion and extension
     fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(8, 5), sharex=True, sharey=True, squeeze=False)
     fig.canvas.mpl_connect('key_press_event', on_press)
 
@@ -487,6 +485,21 @@ def main(args):
     ax[0].set_ylabel('E1 (5 min)')
     ax[1].set_ylabel('E2 (15 min)')
     ax[2].set_ylabel('E3 (30 min)')
+    ## canvas for the visualization plots EMG and vertical lines indicating flexion and extension
+    ##############################################################################
+    ##############################################################################
+    # ## canvas for the visualization flexion and extension
+    fig01, ax01 = plt.subplots(nrows=3,ncols=1, figsize=(7,3.5), sharex=True, sharey=True)
+    fig01.canvas.mpl_connect('key_press_event', on_press)
+    ax01 = ax01.reshape(-1)
+    
+    fig01.suptitle(f'P-{patient_number} session B\n{name_ch_cycle}')
+    ax01[-1].set_xlabel('circular clock (h)')
+    ax01[0].set_ylabel('E1 (5 min)')
+    ax01[1].set_ylabel('E2 (15 min)')
+    ax01[2].set_ylabel('E3 (30 min)')
+    # ## canvas for the visualization flexion and extension
+    ##############################################################################
     
     
     obj_emg = [[]]*len(files_list_emg)
@@ -494,7 +507,7 @@ def main(args):
     i=0
     for filename_emg, file_channels_emg in zip(files_list_emg, ids_channels_emg):
         try:
-            print(f'reading file: {filename}, {file_channels}... ', end='')
+            print(f'reading file: {filename_emg}, {file_channels_emg}... ', end='')
             # create object class
             # list_objs[i] = Activity_Measurements()
             # list_objs[i].openFile(path, filename)
@@ -526,7 +539,11 @@ def main(args):
             # obj_emg[i].plotEnvelopedSignals(ids_emg_plot, title_emg, patient_number,session_name, file_number+1, act_emg, channels_names)
             
             plotSignalsSeq(ax[i], obj_emg[i], signal_number, arr_time_extension, arr_time_flexion, flag_left_leg)
-            plt.savefig(f'../docs/figures/feb19_2024/EBC031_session_B.png', bbox_inches='tight')
+            # plt.savefig(f'../docs/figures/feb19_2024/EBC031_session_B.png', bbox_inches='tight')
+            
+            obj_emg[i].plotFlexionExtension(ax01[i], arr_time_extension, arr_time_flexion, name_ch_cycle)
+            fig01.savefig(f'../docs/figures/feb19_2024/EBC031_session_B_cycle.png', bbox_inches='tight')
+            # plotFlexionExtension(ax01[i], obj_emg[i], signal_number, arr_time_extension, arr_time_flexion)
             
             # obj_emg[i].plotFilteredSignals(ids_emg_plot, title_emg, patient_number,session_name, file_number+1, act_emg, channels_names)
             
