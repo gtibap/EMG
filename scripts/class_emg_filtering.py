@@ -33,8 +33,8 @@ class Reading_EMG:
         mat = scipy.io.loadmat(self.path+self.filename)
         # print(f'\n{self.filename}')
         # print(f'dictionary {mat}')
-        # print('Header:',  mat['__header__'])
-        # print('Channel Names:',  mat['channelNames'])
+        print('Header:',  mat['__header__'])
+        print('Channel Names:',  mat['channelNames'])
         
         self.sampling_rate = mat['samplingRate'][0,0]
         # print(f'sample rate: {self.sampling_rate}')
@@ -265,7 +265,7 @@ class Reading_EMG:
 
         i=0
         for ch, ch_n in zip(self.channels, self.channelsNames):
-            print(f'filtering {ch_n}')
+            # print(f'filtering {ch_n}')
             self.channelsFiltered[i] = self.filterBandPass(ch, fc1, fc2)
             i+=1
         
@@ -277,7 +277,7 @@ class Reading_EMG:
         fc = 6 ## 6 Hz low pass filter
         i=0
         for ch, ch_n in zip(self.channelsFiltered, self.channelsNames):
-            print(f'filtering {ch_n}')
+            # print(f'filtering {ch_n}')
             self.channelsEnveloped[i] = self.filterLowPass(np.absolute(ch), fc)
             ## channelsEnveloped in a pandas DataFrame
             self.df_EnvelopedSignals[ch_n] = self.channelsEnveloped[i]
@@ -680,6 +680,63 @@ class Reading_EMG:
         # plt.savefig(f'../docs/figures/feb19_2024/ebc{patient_number}{session_name}.png', bbox_inches='tight')
         
         return 0
+    
+    
+    def plotEMGSession(self, ids_emg, channels_names, patient_number, session, moment):
+        
+        fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(10, 7), sharex=True, sharey=True, squeeze=False)
+        fig.canvas.mpl_connect('key_press_event', self.on_press)
+        
+        ax = ax.reshape(-1)
+        
+        # cont=0
+        # for ch, ch_n, id_emg in zip(self.channelsFiltered, self.channelsNames, ids_emg):
+        for ch_fil, ch_env, id_emg in zip(self.channelsFiltered, self.channelsEnveloped, ids_emg):
+            ch_n = channels_names[id_emg]
+            ax[id_emg].plot(self.ch_time, ch_fil, label=ch_n)
+            ax[id_emg].plot(self.ch_time, ch_env)
+            
+            # self.channelsEnveloped[id_emg]
+            # self.df_EnvelopedSignals[]
+            
+            
+            ax[id_emg].legend()
+            # cont+=1
+        
+        # for id_ax, ch_n in enumerate(channels_names):
+            # ax[id_ax]
+            # ax.legend()
+                
+        
+        
+        ## select 5 seconds range of data at the middle of the recordings
+        id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
+        id02 = (id01 + (self.sampling_rate*5)).astype(int)  
+        
+        ax[0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
+        ax[0].set_ylim([-100,100])
+        # ax[0].set_title(self.filename)
+        ax[6].set_xlabel(self.ch_time_name+' [s]')
+        ax[7].set_xlabel(self.ch_time_name+' [s]')
+        
+        if moment==0:
+            instant='cycling - at the beginning'
+        elif moment==1:
+            instant='cycling - at the middle'
+        elif moment==2:
+            instant='cycling - at the end'
+        else:
+            instant='not defined'
+        
+       
+        ## saving plot png file
+        # fig.suptitle(f'{self.filename}\n{title_emg}')
+        # fig.suptitle(f'P-{patient_number} session {session_number}')
+        fig.suptitle(f'EBC{patient_number} session {session}\n{instant}')
+        # plt.savefig(f'../docs/figures/feb19_2024/ebc{patient_number}{session_name}.png', bbox_inches='tight')
+        
+        return 0
+    
     
     
     def plotSegmentedSignals(self, ids_emg, title_emg, patient_number, session_name, session_number, list_act_emg, channels_names, arr_time_max, arr_time_min):
