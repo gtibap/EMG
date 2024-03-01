@@ -205,6 +205,8 @@ def main(args):
     
     parser.add_argument('-f', '--file_number', type = str, help = "Select file number, for example: 0")
     
+    parser.add_argument('-session', '--session', type = int, help = "Select file number, for example: 0")
+    
     parser.add_argument('-s', '--signal_number', type = str, help = "Select signal number, for example: 0")
     
     args = parser.parse_args()
@@ -216,8 +218,11 @@ def main(args):
     
     print(f'path and files: {path}, {patient_number}, {file_number}')
     
-    path_emg = path + 'emg/'
+    # path_emg = path + 'emg/'
     path_mov = path + 'mov/'
+    
+    path_emg = path+f'session_{session}/emg/'
+    path_mov = path+f'session_{session}/mov/'
     
     # ################
     # ## kinematics
@@ -542,7 +547,7 @@ def main(args):
             # plt.savefig(f'../docs/figures/feb19_2024/EBC031_session_B.png', bbox_inches='tight')
             
             obj_emg[i].plotFlexionExtension(ax01[i], arr_time_extension, arr_time_flexion, name_ch_cycle)
-            fig01.savefig(f'../docs/figures/feb19_2024/EBC031_session_B_cycle.png', bbox_inches='tight')
+            # fig01.savefig(f'../docs/figures/feb19_2024/EBC031_session_B_cycle.png', bbox_inches='tight')
             # plotFlexionExtension(ax01[i], obj_emg[i], signal_number, arr_time_extension, arr_time_flexion)
             
             # obj_emg[i].plotFilteredSignals(ids_emg_plot, title_emg, patient_number,session_name, file_number+1, act_emg, channels_names)

@@ -34,29 +34,18 @@ def main(args):
     # print(f'path and files: {path}, {patient_number}, {file_number}')
     print(f'path and files: {path_emg}, {patient_number}, {session}')
     
-    list_files_names = { # '003':['EBC003-J1.mat','EBC003-S7.1.mat','EBC003-S7.2.mat','EBC003-J14.mat'],
-                        # '037':['EBC37_S1_BASELINE1.mat','EBC037_S2_BASELINE2.mat', 'EBC037_S2_E1.mat','EBC037_S2_E2.mat','EBC037_S2_E3.mat', 'EBC037S7-Baseline1.mat','EBC037S7e1.mat','EBC037S7e2.mat','EBC037S7e3.mat','EBC037_S14_BASELINE1.mat','EBC037_S14_BASELINE2.mat','EBC037_S14_E1.mat','EBC037_S14_E2.mat','EBC039S14E2.mat','EBC037S14E3.mat'],
-                        # '':[],
-                        # '001':['EBC-PATIENT 1 S7.mat'],
-                        # '002':['EBC-PATIENT 2-1.mat','EBC002-S1.mat'],
-                        # '003':['EBC003-J1.mat','EBC003-J14.mat'],
-                        # '004':['EBC004-S1.mat','EBC004 S6.mat','EBC004  J13.mat'],
-                        # '006':['EBC 006 S1 E3.mat','EBC 006 S8 E3.mat','EBC006 s15 e3.mat'],
-                        # '009':['ebc_009 _s01_e3.mat','ebc_009 _s08_e3.mat','ebc_009 _s14_e3.mat'],
-                        # '012':['ebc_012 _s02_e3.mat','ebc_012 _s07_e3.mat'],
-                        # '015':['ebc_015 _s02_e3.mat','ebc_015 _s07_e3.mat','ebc_015 _s13_e2.mat'],
-                        # '018':['EBC018_S3_E3.mat','EBC018_S8_E3.mat','EBC018_S12_e3.mat'],
-                        # '019':['ebc_019_s01_e3.mat','ebc_019_s10_e3.mat','ebc_019_s14_e3.mat'],
-                        # '022':['ebc_022_s02_e3.mat'],
-                        # '024':['EBC24-S4-E3.mat','EBC24_s9_E3.mat','EBC024S13e3.mat'],
-                        # '027':['ebc_027_s02_e3.mat','ebc_027_s07_e3.mat','ebc_027_s14_e3.mat'],
-                        # '028':['ebc_028_s01_e3.mat','ebc_028_s07_e3.mat','ebc_028_s14_e3.mat'],
-                        # '029':['ebc_029_s02_e3.mat','ebc_029_s09_e3.mat', 'ebc_029_s14_e3.mat'],
-                        # '030':['EBC030_S1_E3.mat','EBC030_S7_E3.mat','EBC30_S14_E3.mat'],
-                        
+    list_files_names = {                         
                         '002':[['EBC_PATIENT_2.mat'],
                         ['EBC_PATIENT_2_1.mat'],
                         ['EBC002_S1.mat'],],
+                        
+                        '003':[['EBC003-J1.mat'],
+                        ['EBC003-S7.1.mat','EBC003-S7.2.mat'],
+                        ['EBC003-J14.mat'],],
+                        
+                        '004':[['EBC004_S1.mat'],
+                        ['EBC004_S6.mat'],
+                        ['EBC_Bed_cycling.mat','EBC004_J13.mat'],],
                         
                         '012':[['ebc_012_s02_e1.mat','ebc_012_s02_e2.mat','ebc_012_s02_e3.mat'],
                         ['ebc_012_s07_e1.mat','ebc_012_s07_e2.mat','ebc_012_s07_e3.mat'],],
@@ -111,24 +100,6 @@ def main(args):
                         ['EBC060-5MIN.mat','EBC060-15MIN.mat','EBC060-25MIN.mat'],
                         ['EBC060-S14-5MIN.mat','EBC060-S14-10MIN.mat','EBC060-S14-15MIN.mat'],],
                         
-                        # '033':['EBC033S3e3.mat','EBC033_S7_E3.mat','EBC033S14e3.mat'],
-                        # '037':['EBC037_S2_E3.mat','EBC037S7e3.mat','EBC037S14E3.mat'],
-                        # '039':['EBC039S1E3.mat','EBC039s7e3.mat','EBC039S14e3.mat'],
-                        # '040':['ebc_040_s01_e3.mat','ebc_040_s07_e3.mat','ebc_040_s14_e3.mat'],
-                        # '042':['EB042S730MIN.mat'],
-                        # '045':['EBC45-S2-25min.mat','EBC045S14e3.mat'],
-                        # '046':['ebc_046_s01_e3.mat','ebc_046_s06_e2_20min.mat','ebc_046_s13_e3.mat'],
-                        # '048':['ebc_048_s01_e3.mat','ebc_048_s07_e3.mat','ebc_048_s14_e3.mat'],
-                        # '052':['ebc_052_s01_e3.mat','ebc_052_s07_e3.mat','ebc_052_s14_e3.mat'],
-                        # '053':['ebc_053_s01_e3.mat','ebc_053_s07_e3.mat','ebc_053_s14_e3.mat'],
-                        # '054':['ebc_054_s01_e3.mat','ebc_054_s14_e3.mat'],
-                        # '056':['ebc_056_s01_e3.mat'],
-                        # '057':['ebc_057_s01_e3.mat','ebc_057_s07_e4.mat','ebc_057_s14_e4.mat'],
-                        # '058':['ebc_058_s01_e3.mat','ebc_058_s07_e2_25min.mat','ebc_058_s14_e2_25min.mat'],
-                        # '056':['ebc_056_s01_e3.mat'],
-                        # '059':['ebc_059_s07_e3.mat','ebc_059_s14_e3.mat'],
-                        # '060':['EBC060-25MIN.mat','EBC060-S14-15MIN.mat'],
-                        # 'test':['test2-config1.mat','test3-config2.mat'],
                         }
     
     # print(f'list_files_names {list_files_names[patient_number]}')
@@ -159,6 +130,14 @@ def main(args):
                          '002':[[[9,16]]*1,
                          [[9,16]]*1,
                          [[9,16]]*1,],
+                         
+                         '003':[[[9,16]]*1,
+                         [[9,16]]*2,
+                         [[9,16]]*1,],
+                         
+                         '004':[[[9,16]]*1,
+                         [[9,16]]*1,
+                         [[9,16]]*2,],
                          
                          '012':[[[9,16]]*3,
                          [[9,16],[9,16],[1,8]],],
@@ -246,6 +225,14 @@ def main(args):
                        '002':[[[7,0,6,4,2,5,3]]*1,
                        [[7,0,6,4,2,5,3]]*1,
                        [[7,0,6,4,2,5,3]]*1,],
+                       
+                       '003':[[[5,7,3,0,6,4,2,1]]*1,
+                       [[5,7,3,0,6,4,2,1]]*2,
+                       [[5,7,3,0,6,4,2,1]]*1,],
+                       
+                       '004':[[[5,7,3,0,6,4,2,1]]*1,
+                       [[5,7,3,0,6,4,2,1]]*1,
+                       [[5,7,3,0,6,4,2,1]]*2,],
                        
                        '012':[[[5,7,3,0,6,4,2,1]]*3,
                        [[5,7,3,0,6,4,2,1]]*3,],
