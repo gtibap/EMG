@@ -34,71 +34,129 @@ def main(args):
     # print(f'path and files: {path}, {patient_number}, {file_number}')
     print(f'path and files: {path_emg}, {patient_number}, {session}')
     
-    list_files_names = {                         
+    list_files_names = {
+                        ## no baseline
                         '002':[['EBC_PATIENT_2.mat'],
                         ['EBC_PATIENT_2_1.mat'],
                         ['EBC002_S1.mat'],],
                         
+                        ## no baseline
                         '003':[['EBC003-J1.mat'],
                         ['EBC003-S7.1.mat','EBC003-S7.2.mat'],
                         ['EBC003-J14.mat'],],
                         
+                        ## no baseline
                         '004':[['EBC004_S1.mat'],
                         ['EBC004_S6.mat'],
                         ['EBC_Bed_cycling.mat','EBC004_J13.mat'],],
-                        
-                        '012':[['ebc_012_s02_e1.mat','ebc_012_s02_e2.mat','ebc_012_s02_e3.mat'],
+
+                        ## no baseline
+                        '012':[['ebc_012_s02_b1.mat','ebc_012_s02_e1.mat','ebc_012_s02_e3.mat'],
                         ['ebc_012_s07_e1.mat','ebc_012_s07_e2.mat','ebc_012_s07_e3.mat'],],
                         
+                        ## no baseline
                         '018':[['EBC018-s3-e1.mat','EBC018_S2_E2.mat','EBC018_S3_E3.mat'],
                         ['ebc018_S8_e1.mat','EBC018_s8_e2.mat','EBC018_S8_E3.mat'],
                         ['EBC018_S12_e1.mat','EBC018_S12_E2.mat','EBC018_S12_e3.mat'],],
-                        
+
+                        ## no baseline
                         '022':[['ebc_022_s02_e1.mat','ebc_022_s02_e2-2-20min.mat','ebc_022_s02_e3.mat'],],
                         
-                        '031':[['EBC031_s2_e1.mat','EBC031_s2_e2.mat','EBC031_s2_e3.mat'],
-                        ['EBC031S7e1.mat', 'EBC031_s7e2.mat', 'EBC031S7e3.mat' ],
-                        ['EBC031_S14_E1.mat', 'EBC031S14e2.mat', 'EBC031_s14_e3.mat'],],
-                                                
-                        '032':[['EBC032_S1_e1.mat','EBC032_S1_E2.mat','EBC032_s1_e3.mat'],
-                        ['EBC032S7e1.mat','EBC032S7e2.mat','EBC032S7e3.mat'],
-                        ['EBC032S14e1.mat','EBC032S14e2.mat','EBC032S14e3.mat'],],
+                        '031':[
+                        ## session a, no baseline
+                        ['EBC031_s2_e1.mat','EBC031_s2_e2.mat','EBC031_s2_e3.mat'],
+                        ## session b, yes baseline
+                        ['EBC031_baseline1.mat', 'EBC031_s7e2.mat', 'EBC031S7e3.mat' ],
+                        ## session c, yes baseline but the bike moved a bit during the recording
+                        ['EBC031_S14_BASELINE1.mat', 'EBC031S14e2.mat', 'EBC031_s14_e3.mat'],
+                        ],
                         
-                        '037':[['EBC037_S2_E1.mat','EBC037_S2_E2.mat','EBC037_S2_E3.mat'],
-                        ['EBC037S7e1.mat','EBC037S7e2.mat','EBC037S7e3.mat'],
-                        ['EBC037_S14_E1.mat','EBC037_S14_E2.mat','EBC037S14E3.mat'],],
+                        # EBC032_s1_baseline1.mat                     
+                        '032':[
+                        ## session a, yes, baseline but with pedaling at the end of the recording 
+                        ['EBC032_s1_baseline1.mat','EBC032_S1_E2.mat','EBC032_s1_e3.mat'],
+                        ## session b, yes, baseline
+                        ['EBC032S7-Baseline1.mat','EBC032S7e1.mat','EBC032S7e3.mat'], #'EBC032S7e2.mat'
+                        ## session c, yes, baseline
+                        ['EBC032-Baseline1.mat','EBC032S14e1.mat','EBC032S14e3.mat'], #'EBC032S14e2.mat'
+                        ],
                         
-                        '039':[['EBC039_S2_E1.mat','ebc039S1E2.mat','EBC039S1E3.mat'],
-                        ['EBC039s7e1.mat','EBC039s7e2.mat','EBC039s7e3.mat'],
-                        ['EBC039S14e1.mat','EBC039S14e2.mat','EBC039S14e3.mat'],],
+                        '037':[
+                        ## session a, 
+                        ['EBC37_S1_BASELINE1.mat','EBC037_S2_E1.mat','EBC037_S2_E3.mat'], #'EBC037_S2_E2.mat'
+                        ## session b,
+                        ['EBC037S7-Baseline1.mat','EBC037S7e1.mat','EBC037S7e3.mat'], #'EBC037S7e2.mat'
+                        ## session c,
+                        ['EBC037_S14_BASELINE1.mat','EBC037_S14_E1.mat','EBC037S14E3.mat'], #'EBC037_S14_E2.mat'
+                        ],
                         
-                        '040':[['ebc_040_s01_e1.mat','ebc_040_s01_e2.mat','ebc_040_s01_e3.mat'],
-                        ['ebc_040_s07_e1.mat','ebc_040_s07_e2.mat','ebc_040_s07_e3.mat'],
-                        ['ebc_040_s14_e1.mat','ebc_040_s14_e2.mat','ebc_040_s14_e3.mat'],],
-                        
-                        '045':[['EBC45-S2-5min.mat','EBC45-S2-15min.mat','EBC45-S2-25min.mat'],
-                        ['EBC045S14e1.mat','EBC045S14e2.mat','EBC045S14e3.mat'],],
-                        
-                        '048':[['ebc_048_s01_e1.mat','ebc_048_s01_e2.mat','ebc_048_s01_e3.mat'],
-                        ['ebc_048_s07_e1.mat','ebc_048_s07_e2.mat','ebc_048_s07_e3.mat'],
-                        ['ebc_048_s14_e1.mat','ebc_048_s14_e2.mat','ebc_048_s14_e3.mat'],],
-                        
-                        '052':[['ebc_052_s01_e1.mat','ebc_052_s01_e2.mat','ebc_052_s01_e3.mat'],
-                        ['ebc_052_s07_e2.mat','ebc_052_s07_e2_25min.mat','ebc_052_s07_e3.mat'],
-                        ['ebc_052_s14_e1.mat','ebc_052_s14_e2.mat','ebc_052_s14_e2_25min.mat'],],
-                        
-                        '055':[['ebc_055_s01_e1.mat','ebc_055_s01_e2.mat','ebc_055_s01_e3.mat'],
-                        ['ebc_055_s07_e1.mat','ebc_055_s07_e2.mat','ebc_055_s07_e3.mat'],
-                        ['ebc_055_s14_e1.mat','ebc_055_s14_e2.mat','ebc_055_s14_e3.mat'],],
+                        '039':[
+                        ## session a
+                        ['EBC039_BASELINE1.mat','EBC039_S2_E1.mat','EBC039S1E3.mat'],#'ebc039S1E2.mat',
+                        ## session b
+                        ['EBC039S7-baseline1.mat','EBC039s7e1.mat','EBC039s7e3.mat'],#'EBC039s7e2.mat'
+                        ## session c
+                        ['EBC039S14-Baseline1.mat','EBC039S14e1.mat','EBC039S14e3.mat'],#'EBC039S14e2.mat'
+                        ],
                         
                         
-                        '057':[['ebc_057_s01_e1.mat','ebc_057_s01_e2.mat','ebc_057_s01_e3.mat'],
-                        ['ebc_057_s07_e1.mat','ebc_057_s07_e2.mat','ebc_057_s07_e4.mat'],
-                        ['ebc_057_s14_e1.mat','ebc_057_s14_e2.mat','ebc_057_s14_e4.mat'],],
+                        '040':[
+                        ['ebc_040_s01_b1.mat','ebc_040_s01_e1.mat','ebc_040_s01_e3.mat'],#'ebc_040_s01_e2.mat',
+                        ['ebc_040_s07_b1.mat','ebc_040_s07_e1.mat','ebc_040_s07_e3.mat'],#'ebc_040_s07_e2.mat',
+                        ## session c, no baseline
+                        ['ebc_040_s14_b1.mat','ebc_040_s14_e1.mat','ebc_040_s14_e3.mat'],#'ebc_040_s14_e2.mat',
+                        ],
                         
-                        '060':[['EBC060-TEST.mat','EBC060-TEST2.mat','EBC060-TEST3.mat'],
-                        ['EBC060-5MIN.mat','EBC060-15MIN.mat','EBC060-25MIN.mat'],
-                        ['EBC060-S14-5MIN.mat','EBC060-S14-10MIN.mat','EBC060-S14-15MIN.mat'],],
+                        
+                        # '045':[['EBC45-S2-30min.mat'],
+                        # ['EBC045S14e1.mat','EBC045S14e2.mat','EBC045S14e3.mat'],],
+                        
+                        # '045':[['EBC45-S2-Baseline.mat','EBC45-S2-5min.mat','EBC45-S2-15min.mat'],
+                        # ['EBC045S14e1.mat','EBC045S14e2.mat','EBC045S14e3.mat'],],
+                        
+                        '045':[
+                        ## session a, no baseline
+                        ['EBC45-S2-5min.mat','EBC45-S2-15min.mat','EBC45-S2-25min.mat'],#'EBC45-S2-Baseline.mat'
+                        ## session b, yes baseline
+                        ['EBC045S14Baseline1.mat','EBC045S14e1.mat','EBC045S14e3.mat'],#'EBC045S14e2.mat',
+                        ],
+                        
+                        
+                        '048':[
+                        ## session a, no baseline
+                        ['ebc_048_s01_b1.mat','ebc_048_s01_e1.mat','ebc_048_s01_e3.mat'],#ebc_048_s01_e2.mat
+                        ## session b, no baseline
+                        ['ebc_048_s07_b1.mat','ebc_048_s07_e1.mat','ebc_048_s07_e3.mat'],#ebc_048_s07_e2.mat
+                        ## session b, yes baseline
+                        ['ebc_048_s14_b1.mat','ebc_048_s14_e1.mat','ebc_048_s14_e3.mat'],#ebc_048_s14_e2.mat,
+                        ],
+
+
+                        '052':[
+                        ## session a, yes baseline
+                        ['ebc_052_s01_b1.mat','ebc_052_s01_e1.mat','ebc_052_s01_e3.mat'],#'ebc_052_s01_e2.mat',
+                        ['ebc_052_s07_b1.mat','ebc_052_s07_e2.mat','ebc_052_s07_e3.mat'],#'ebc_052_s07_e2_25min.mat',
+                        ## session c, no baseline
+                        ['ebc_052_s14_e1.mat','ebc_052_s14_e2.mat','ebc_052_s14_e2_25min.mat'],
+                        ],
+                        
+                        '055':[
+                        ['ebc_055_s01_b1.mat','ebc_055_s01_e1.mat','ebc_055_s01_e3.mat'],#'ebc_055_s01_e2.mat',
+                        ['ebc_055_s07_b1.mat','ebc_055_s07_e1.mat','ebc_055_s07_e3.mat'],#'ebc_055_s07_e2.mat'
+                        ['ebc_055_s14_b1.mat','ebc_055_s14_e1.mat','ebc_055_s14_e3.mat'],#'ebc_055_s14_e2.mat',
+                        ],
+                        
+                        '057':[
+                        ['ebc_057_s01_b1.mat','ebc_057_s01_e1.mat','ebc_057_s01_e3.mat'],#'ebc_057_s01_e2.mat',
+                        ['ebc_057_s07_b1.mat','ebc_057_s07_e1.mat','ebc_057_s07_e4.mat'],#'ebc_057_s07_e2.mat',
+                        ['ebc_057_s14_b1.mat','ebc_057_s14_e1.mat','ebc_057_s14_e4.mat'],#'ebc_057_s14_e2.mat',
+                        ],
+                        
+                        '060':[
+                        ['EBC060-TEST.mat','EBC060-TEST2.mat','EBC060-TEST3.mat'],
+                        ['EBC060_BASELINE.mat','EBC060-5MIN.mat','EBC060-25MIN.mat'],#'EBC060-15MIN.mat',
+                        ['EBC060-S14-BASELINE.mat','EBC060-S14-5MIN.mat','EBC060-S14-15MIN.mat'],#'EBC060-S14-10MIN.mat',
+                        ],
                         
                         }
     

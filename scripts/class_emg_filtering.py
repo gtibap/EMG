@@ -34,7 +34,7 @@ class Reading_EMG:
         # print(f'\n{self.filename}')
         # print(f'dictionary {mat}')
         print('Header:',  mat['__header__'])
-        print('Channel Names:',  mat['channelNames'])
+        # print('Channel Names:',  mat['channelNames'])
         
         self.sampling_rate = mat['samplingRate'][0,0]
         # print(f'sample rate: {self.sampling_rate}')
