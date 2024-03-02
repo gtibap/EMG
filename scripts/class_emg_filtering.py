@@ -682,7 +682,7 @@ class Reading_EMG:
         return 0
     
     
-    def plotEMGSession(self, ids_emg, channels_names, patient_number, session, moment):
+    def plotEMGSession(self, ids_emg, channels_names, patient_number, session, moment, baseline):
         
         fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(10, 7), sharex=True, sharey=True, squeeze=False)
         fig.canvas.mpl_connect('key_press_event', self.on_press)
@@ -708,19 +708,23 @@ class Reading_EMG:
             # ax.legend()
                 
         
-        
+        # delta_t = (self.sampling_rate*5).astype(int)
         ## select 5 seconds range of data at the middle of the recordings
         id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
-        id02 = (id01 + (self.sampling_rate*5)).astype(int)  
+        id02 = (id01 + (self.sampling_rate*5)).astype(int)
         
         ax[0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
-        ax[0].set_ylim([-100,100])
+        ax[0].set_ylim([-50,50])
         # ax[0].set_title(self.filename)
         ax[6].set_xlabel(self.ch_time_name+' [s]')
         ax[7].set_xlabel(self.ch_time_name+' [s]')
         
         if moment==0:
-            instant='cycling - at the beginning'
+            if baseline:
+                instant='baseline - at the beginning'
+            else:
+                instant='cycling - at the beginning'
+                
         elif moment==1:
             instant='cycling - at the middle'
         elif moment==2:
@@ -733,7 +737,7 @@ class Reading_EMG:
         # fig.suptitle(f'{self.filename}\n{title_emg}')
         # fig.suptitle(f'P-{patient_number} session {session_number}')
         fig.suptitle(f'EBC{patient_number} session {session}\n{instant}')
-        # plt.savefig(f'../docs/figures/feb19_2024/ebc{patient_number}{session_name}.png', bbox_inches='tight')
+        plt.savefig(f'../docs/figures/march_02_2024/ebc{patient_number}{session}_{moment}.png', bbox_inches='tight')
         
         return 0
     

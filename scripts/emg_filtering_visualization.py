@@ -24,7 +24,7 @@ def main(args):
     
     args = parser.parse_args()
 
-    path_emg=args.dir_name
+    path_emg=args.dir_name+f'EBC{args.patient_number}/'
     patient_number=args.patient_number
     session=args.session
     # file_number=int(args.file_number)
@@ -127,7 +127,7 @@ def main(args):
                         ['ebc_048_s01_b1.mat','ebc_048_s01_e1.mat','ebc_048_s01_e3.mat'],#ebc_048_s01_e2.mat
                         ## session b, no baseline
                         ['ebc_048_s07_b1.mat','ebc_048_s07_e1.mat','ebc_048_s07_e3.mat'],#ebc_048_s07_e2.mat
-                        ## session b, yes baseline
+                        ## session c, yes baseline
                         ['ebc_048_s14_b1.mat','ebc_048_s14_e1.mat','ebc_048_s14_e3.mat'],#ebc_048_s14_e2.mat,
                         ],
 
@@ -160,6 +160,26 @@ def main(args):
                         
                         }
     
+    
+    list_baseline = {
+                        '002':[False, False, False],
+                        '003':[False, False, False],
+                        '004':[False, False, False],
+                        '012':[False, False],
+                        '018':[False, False, False],
+                        '022':[False],
+                        '031':[False, True, True],
+                        '032':[True, True, True],
+                        '037':[True, True, True],
+                        '039':[True, True, True],
+                        '040':[True, True, False],
+                        '045':[False, True],
+                        '048':[False, False, True],
+                        '052':[True, True, False],
+                        '055':[True, True, True],
+                        '057':[True, True, True],
+                        '060':[True, True, True],
+                    }
     # print(f'list_files_names {list_files_names[patient_number]}')
     # print(f'selected files {list_files_names[patient_number][session]}')
     
@@ -374,7 +394,9 @@ def main(args):
     files_names = list_files_names[patient_number][session]
     list_channels = list_ids_channels[patient_number][session]
     ids_emg_sorted = list_emg_sorted[patient_number][session]
+    baseline = list_baseline[patient_number][session]
     sn = list_session_names[session]
+    
     
     # print(f'ids_channels: {ids_channels}')
     
@@ -410,7 +432,7 @@ def main(args):
             
             obj_emg[i].filteringSignals()
             obj_emg[i].envelopeFilter()
-            obj_emg[i].plotEMGSession(emg_sorted, channels_names, patient_number, sn, i)
+            obj_emg[i].plotEMGSession(emg_sorted, channels_names, patient_number, sn, i, baseline)
             
             print(f'done.')
             
