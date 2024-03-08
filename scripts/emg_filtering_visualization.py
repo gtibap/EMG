@@ -49,18 +49,128 @@ def main(args):
                         '004':[['EBC004_S1.mat'],
                         ['EBC004_S6.mat'],
                         ['EBC_Bed_cycling.mat','EBC004_J13.mat'],],
-
+                        
+                        ## no baseline
+                        '005':[['EBC Bed cycling.mat'],
+                        ['ebc test.mat','EBC005 S7.mat'],
+                        ['EBC Bed cycling-3.mat','EBC 15min.mat'],],
+                        
+                        ## no baseline
+                        '006':[['EBC006 S1 E1.mat','EBC006 S1 E2.mat','EBC 006 S1 E3.mat'],
+                        ['EBC 006 S8 E1.mat','EBC 006 S8 E2.mat','EBC 006 S8 E3.mat'],
+                        ['EBC006 s15 E1.mat','EBC006 s15 E2.mat','EBC006 s15 e3.mat'],],
+                        
+                        ## no baseline
+                        '007':[['ebc_007 _s01_e1.mat','ebc_007 _s01_e2.mat','ebc_007 _s01_e3.mat'],
+                        ['ebc_007 _s07_e1.mat','ebc_007 _s07_e2.mat','ebc_007 _s07_e3.mat'],
+                        ['ebc_007 _s14_e1.mat','ebc_007 _s14_e2.mat','ebc_007 _s14_e3.mat'],],
+                        
+                        ## no baseline
+                        '008':[['ebc_008 _s01_e1.mat','ebc_008 _s01_e2.mat','ebc_008 _s01_e3.mat'],
+                        ['ebc_008 _s07_e1.mat','ebc_008 _s07_e2.mat',],
+                        ['ebc_008 _s14_e1.mat','ebc_008 _s14_e2.mat','ebc_008 _s14_e3_OK.mat'],],
+                        
+                        ## no baseline
+                        '009':[['ebc_009 _s01_e1.mat','ebc_009 _s01_e2.mat','ebc_009 _s01_e3.mat'],
+                        ['ebc_009 _s08_e1.mat','ebc_009 _s08_e2.mat','ebc_009 _s08_e3.mat'],
+                        ['ebc_009 _s14_e1.mat','ebc_009 _s14_e2.mat','ebc_009 _s14_e3.mat'],],
+                        
+                        ## no baseline
+                        '010':[['ebc_010 _s08_e1.mat','ebc_010 _s08_e2.mat','ebc_010 _s08_e3.mat'],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '011':[['ebc_011 _s02_e1.mat','ebc_011 _s02_e2.mat','ebc_011 _s02_e3.mat','ebc_011 _s02_e4.mat'],
+                        ['ebc_011 _s07_e1.mat','ebc_011 _s07_e2.mat','ebc_011 _s07_e3.mat'],
+                        ['ebc_011 _s14_e1.mat','ebc_011 _s14_e2-1.mat','ebc_011 _s14_e3.mat'],],
+                        
                         ## no baseline
                         '012':[['ebc_012_s02_b1.mat','ebc_012_s02_e1.mat','ebc_012_s02_e3.mat'],
                         ['ebc_012_s07_e1.mat','ebc_012_s07_e2.mat','ebc_012_s07_e3.mat'],],
                         
                         ## no baseline
+                        '013':[['ebc_013 _s03_e1.mat','ebc_013 _s03_e2.mat','ebc_013 _s03_e3.mat'],
+                        ['EBC013_crank_C_1.mat','EBC013_crank_L_1.mat','EBC013_crank_TC_1.mat'],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '014':[['ebc_014 _s01_e1.mat','ebc_014 _s01_e2.mat','ebc_014 _s01_e3.mat'],
+                        ['ebc_014 _s07_e1.mat','ebc_014 _s07_e2.mat','ebc_014 _s07_e3.mat'],
+                        ['ebc_014 _s14_e1.mat','ebc_014 _s14_e2.mat','ebc_014 _s14_e3.mat'],],
+                        
+                        ## no baseline
+                        '015':[['ebc_015 _s02_e1.mat','ebc_015 _s02_e2.mat','ebc_015 _s02_e3.mat'],
+                        ['ebc_015 _s07_e1.mat','ebc_015 _s07_e2.mat','ebc_015 _s07_e3.mat'],
+                        ['ebc_015 _s13_e1.mat','ebc_015 _s13_e2.mat'],],
+                        
+                        ## no baseline
+                        '016':[['ebc_016 _s01_e1.mat','ebc_016 _s01_e2.mat','ebc_016 _s01_e3.mat'],
+                        ['ebc_016 _s07_e1.mat','ebc_016 _s07_e2.mat','ebc_016 _s07_e3.mat'],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '017':[['ebc_017 _s01_e1.mat'],
+                        ['ebc_017_s07_e1.mat','ebc_017_s07_e2.mat','ebc_017_s07_e3.mat'],
+                        ['ebc_017_s14_e1.mat','ebc_017_s14_e2.mat','ebc_017_s14_e3.mat'],],
+                        
+                        ## no baseline
                         '018':[['EBC018-s3-e1.mat','EBC018_S2_E2.mat','EBC018_S3_E3.mat'],
                         ['ebc018_S8_e1.mat','EBC018_s8_e2.mat','EBC018_S8_E3.mat'],
                         ['EBC018_S12_e1.mat','EBC018_S12_E2.mat','EBC018_S12_e3.mat'],],
+                        
+                        ## no baseline
+                        '019':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '020':[['','',''],
+                        ['','',''],
+                        ['','',''],],
 
                         ## no baseline
                         '022':[['ebc_022_s02_e1.mat','ebc_022_s02_e2-2-20min.mat','ebc_022_s02_e3.mat'],],
+                        
+                        ## no baseline
+                        '023':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '024':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '025':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '026':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '027':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '028':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '029':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '030':[['','',''],
+                        ['','',''],
+                        ['','',''],],
                         
                         '031':[
                         ## session a, no baseline
@@ -80,6 +190,16 @@ def main(args):
                         ## session c, yes, baseline
                         ['EBC032-Baseline1.mat','EBC032S14e1.mat','EBC032S14e3.mat'], #'EBC032S14e2.mat'
                         ],
+                        
+                        ## no baseline
+                        '033':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '036':[['','',''],
+                        ['','',''],
+                        ['','',''],],
                         
                         '037':[
                         ## session a, 
@@ -107,12 +227,10 @@ def main(args):
                         ['ebc_040_s14_b1.mat','ebc_040_s14_e1.mat','ebc_040_s14_e3.mat'],#'ebc_040_s14_e2.mat',
                         ],
                         
-                        
-                        # '045':[['EBC45-S2-30min.mat'],
-                        # ['EBC045S14e1.mat','EBC045S14e2.mat','EBC045S14e3.mat'],],
-                        
-                        # '045':[['EBC45-S2-Baseline.mat','EBC45-S2-5min.mat','EBC45-S2-15min.mat'],
-                        # ['EBC045S14e1.mat','EBC045S14e2.mat','EBC045S14e3.mat'],],
+                        ## no baseline
+                        '042':[['','',''],
+                        ['','',''],
+                        ['','',''],],
                         
                         '045':[
                         ## session a, no baseline
@@ -121,6 +239,10 @@ def main(args):
                         ['EBC045S14Baseline1.mat','EBC045S14e1.mat','EBC045S14e3.mat'],#'EBC045S14e2.mat',
                         ],
                         
+                        ## no baseline
+                        '046':[['','',''],
+                        ['','',''],
+                        ['','',''],],
                         
                         '048':[
                         ## session a, no baseline
@@ -130,7 +252,21 @@ def main(args):
                         ## session c, yes baseline
                         ['ebc_048_s14_b1.mat','ebc_048_s14_e1.mat','ebc_048_s14_e3.mat'],#ebc_048_s14_e2.mat,
                         ],
+                        
+                        ## no baseline
+                        '049':[['','',''],
+                        ['','',''],
+                        ['','',''],],
 
+                        ## no baseline
+                        '050':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '051':[['','',''],
+                        ['','',''],
+                        ['','',''],],
 
                         '052':[
                         ## session a, yes baseline
@@ -140,11 +276,26 @@ def main(args):
                         ['ebc_052_s14_e1.mat','ebc_052_s14_e2.mat','ebc_052_s14_e2_25min.mat'],
                         ],
                         
+                        ## no baseline
+                        '053':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '054':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
                         '055':[
                         ['ebc_055_s01_b1.mat','ebc_055_s01_e1.mat','ebc_055_s01_e3.mat'],#'ebc_055_s01_e2.mat',
                         ['ebc_055_s07_b1.mat','ebc_055_s07_e1.mat','ebc_055_s07_e3.mat'],#'ebc_055_s07_e2.mat'
                         ['ebc_055_s14_b1.mat','ebc_055_s14_e1.mat','ebc_055_s14_e3.mat'],#'ebc_055_s14_e2.mat',
                         ],
+                        
+                        ## no baseline
+                        '056':[['','',''],
+                        ['','',''],
+                        ['','',''],],
                         
                         '057':[
                         ['ebc_057_s01_b1.mat','ebc_057_s01_e1.mat','ebc_057_s01_e3.mat'],#'ebc_057_s01_e2.mat',
@@ -152,19 +303,59 @@ def main(args):
                         ['ebc_057_s14_b1.mat','ebc_057_s14_e1.mat','ebc_057_s14_e4.mat'],#'ebc_057_s14_e2.mat',
                         ],
                         
+                        ## no baseline
+                        '058':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '059':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
                         '060':[
                         ['EBC060-TEST.mat','EBC060-TEST2.mat','EBC060-TEST3.mat'],
                         ['EBC060_BASELINE.mat','EBC060-5MIN.mat','EBC060-25MIN.mat'],#'EBC060-15MIN.mat',
                         ['EBC060-S14-BASELINE.mat','EBC060-S14-5MIN.mat','EBC060-S14-15MIN.mat'],#'EBC060-S14-10MIN.mat',
                         ],
                         
+                        ## no baseline
+                        '061':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '062':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '063':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '065':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
+                        ## no baseline
+                        '066':[['','',''],
+                        ['','',''],
+                        ['','',''],],
+                        
                         }
     
     
+    ## non-baseline=False, baseline present=True; for each session (a,b,c)
     list_baseline = {
                         '002':[False, False, False],
                         '003':[False, False, False],
                         '004':[False, False, False],
+                        '005':[False, True, False],
+                        '006':[False, False, False],
+                        '007':[False, False, False],
+                        '008':[False, False, False],
                         '012':[False, False],
                         '018':[False, False, False],
                         '022':[False],
@@ -216,6 +407,22 @@ def main(args):
                          '004':[[[9,16]]*1,
                          [[9,16]]*1,
                          [[9,16]]*2,],
+                         
+                         '005':[[[9,16]]*1,
+                         [[9,16]]*2,
+                         [[9,16]]*2,],
+                         
+                         '006':[[[9,16]]*3,
+                         [[9,16]]*3,
+                         [[9,16]]*3,],
+                         
+                         '007':[[[9,16]]*3,
+                         [[9,16]]*3,
+                         [[9,16]]*3,],
+                         
+                         '008':[[[9,16]]*3,
+                         [[9,16]]*3,
+                         [[9,16]]*3,],
                          
                          '012':[[[9,16]]*3,
                          [[9,16],[9,16],[1,8]],],
@@ -311,6 +518,22 @@ def main(args):
                        '004':[[[5,7,3,0,6,4,2,1]]*1,
                        [[5,7,3,0,6,4,2,1]]*1,
                        [[5,7,3,0,6,4,2,1]]*2,],
+                       
+                       '005':[[[5,7,3,0,6,4,2,1]]*1,
+                       [[5,7,3,0,6,4,2,1]]*2,
+                       [[5,7,3,0,6,4,2,1]]*2,],
+                       
+                       '006':[[[5,7,3,0,6,4,2,1]]*3,
+                       [[5,7,3,0,6,4,2,1]]*3,
+                       [[5,7,3,0,6,4,2,1]]*3,],
+                       
+                       '007':[[[5,7,3,0,6,4,2,1]]*3,
+                       [[5,7,3,0,6,4,2,1]]*3,
+                       [[5,7,3,0,6,4,2,1]]*3,],
+                       
+                       '008':[[[5,7,3,0,6,4,2,1]]*3,
+                       [[5,7,3,0,6,4,2,1]]*3,
+                       [[5,7,3,0,6,4,2,1]]*3,],
                        
                        '012':[[[5,7,3,0,6,4,2,1]]*3,
                        [[5,7,3,0,6,4,2,1]]*3,],
