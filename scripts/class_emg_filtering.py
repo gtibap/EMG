@@ -7,6 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import sys
 import seaborn as sns
+import os 
 
 class Reading_EMG:
 
@@ -737,7 +738,16 @@ class Reading_EMG:
         # fig.suptitle(f'{self.filename}\n{title_emg}')
         # fig.suptitle(f'P-{patient_number} session {session_number}')
         fig.suptitle(f'EBC{patient_number} session {session}\n{instant}')
-        plt.savefig(f'../docs/figures/march_02_2024/ebc{patient_number}{session}_{moment}.png', bbox_inches='tight')
+        
+        path_out=f'../docs/figures/march_02_2024/EBC{patient_number}'
+        # checking if the directory
+        # exist or not. 
+        if not os.path.isdir(path_out): 
+            # if directory is  
+            # not present then create it. 
+            os.makedirs(path_out) 
+        
+        plt.savefig(f'{path_out}/ebc{patient_number}{session}_{moment}.png', bbox_inches='tight')
         
         return 0
     
