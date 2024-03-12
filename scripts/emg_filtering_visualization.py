@@ -18,8 +18,6 @@ def main(args):
     parser.add_argument('-d', '--dir_name', type = str, help = "Select directory, for example: EBC032/EBC033/")
     parser.add_argument('-p', '--patient_number', type = str, help = "Select file number, for example: 033")
     
-    # parser.add_argument('-f', '--file_number', type = str, help = "Select file number, for example: 0")
-    
     parser.add_argument('-s', '--session', type = int, help = "Select session (0,1,2), for example: 0")
     
     args = parser.parse_args()
@@ -27,18 +25,23 @@ def main(args):
     path_emg=args.dir_name+f'EBC{args.patient_number}/'
     patient_number=args.patient_number
     session=args.session
-    # file_number=int(args.file_number)
-    # signal_number=int(args.signal_number)
-    
     
     # print(f'path and files: {path}, {patient_number}, {file_number}')
     print(f'path and files: {path_emg}, {patient_number}, {session}')
     
     list_files_names = {
                         ## no baseline
-                        '002':[['EBC_PATIENT_2.mat'],
-                        ['EBC_PATIENT_2_1.mat'],
-                        ['EBC002_S1.mat'],],
+                        '001':[['EBC-PATIENT 2.mat'],
+                        ['EBC-PATIENT 2-1.mat'],
+                        ['EBC-PATIENT 1 S7.mat'],],
+                        
+                        '002':[['EBC002-S1.mat'],
+                        ['EBC002-S8.mat'],
+                        ['EBC002 S14.mat'],],
+                        
+                        # '002':[['EBC_PATIENT_2.mat'],
+                        # ['EBC_PATIENT_2_1.mat'],
+                        # ['EBC002_S1.mat'],],
                         
                         ## no baseline
                         '003':[['EBC003-J1.mat'],
@@ -263,10 +266,10 @@ def main(args):
                         ['ebc_050_s07_e1.mat','ebc_050_s07_e2.mat','ebc_050_s07_e3.mat'],#ebc_050_s07_b1.mat
                         ['ebc_050_s14_b1.mat','ebc_050_s14_e2.mat','ebc_050_s14_e3.mat'],],
                         
-                        ## no baseline
+                        ## baseline
                         '051':[['ebc_051_s01_b1.mat','ebc_051_s01_e2.mat','ebc_051_s01_e2_20min.mat'],
-                        ['ebc_051_s07_e1.mat','ebc_051_s07_e4.mat','ebc_051_s07_e9.mat'],
-                        ['ebc_051_s14_e1.mat','ebc_051_s14_e5.mat','ebc_051_s14_e11.mat'],],
+                        ['ebc_051_s07_e1.mat','ebc_051_s07_e4.mat','ebc_051_s07_e8.mat'],
+                        ['ebc_051_s14_e1.mat','ebc_051_s14_e5.mat','ebc_051_s14_e10.mat'],],
 
                         '052':[
                         ## session a, yes baseline
@@ -276,7 +279,7 @@ def main(args):
                         ['ebc_052_s14_e1.mat','ebc_052_s14_e2.mat','ebc_052_s14_e2_25min.mat'],
                         ],
                         
-                        ## no baseline
+                        ## baseline
                         '053':[['ebc_053_s01_b1.mat','ebc_053_s01_e2.mat','ebc_053_s01_e3.mat'],
                         ['ebc_053_s07_b1.mat','ebc_053_s07_e2.mat','ebc_053_s07_e3.mat'],
                         ['ebc_053_s14_b1.mat','ebc_053_s14_e2.mat','ebc_053_s14_e3.mat'],],
@@ -292,7 +295,7 @@ def main(args):
                         ['ebc_055_s14_b1.mat','ebc_055_s14_e1.mat','ebc_055_s14_e3.mat'],#'ebc_055_s14_e2.mat',
                         ],
                         
-                        ## no baseline
+                        ## baseline
                         '056':[['ebc_056_s01_b1.mat','ebc_056_s01_e2.mat','ebc_056_s01_e3.mat'],
                         [],
                         [],],
@@ -303,12 +306,12 @@ def main(args):
                         ['ebc_057_s14_b1.mat','ebc_057_s14_e1.mat','ebc_057_s14_e4.mat'],#'ebc_057_s14_e2.mat',
                         ],
                         
-                        ## no baseline
+                        ## baseline
                         '058':[['ebc_058_s01_b1.mat','ebc_058_s01_e2.mat','ebc_058_s01_e3.mat'],
                         ['ebc_058_s07_b1.mat','ebc_058_s07_e2.mat','ebc_058_s07_e2_25min.mat'],
                         ['ebc_058_s14_b1.mat','ebc_058_s14_e2.mat','ebc_058_s14_e2_25min.mat'],],
                         
-                        ## no baseline
+                        ## baseline
                         '059':[['EBC059-Baseline1.mat','EBC059S1-Baseline2.mat',],
                         ['ebc_059_s07_b1.mat','ebc_059_s07_e2.mat','ebc_059_s07_e3.mat'],
                         ['ebc_059_s14_e1.mat','ebc_059_s14_e2.mat','ebc_059_s14_e3.mat'],],
@@ -319,28 +322,28 @@ def main(args):
                         ['EBC060-S14-BASELINE.mat','EBC060-S14-5MIN.mat','EBC060-S14-15MIN.mat'],#'EBC060-S14-10MIN.mat',
                         ],
                         
-                        ## no baseline
+                        ## baseline
                         '061':[['EBC061_BASELINE.mat','EBC061_S1_10 min.mat','EBC061_S1_30 min.mat'],
                         ['EBC061-S9_BASELINE.mat','EBC061-S9_10MIN.mat','EBC061-S9_30MIN.mat'],
                         ['EBC061-S14_BASELINE.mat','EBC061-S14_10MIN.mat','EBC061-S14_25MIN.mat'],],
                         
-                        ## no baseline
+                        ## baseline
                         '062':[['A_EBC Bed cycling_PRINCIPAL_baseline1.mat','ebc_62_s1_e2.mat','ebc_62_s1_e4.mat'],
-                        ['EBC062-S3_BASELINE-1.mat','EBC062-S3_15MIN.mat','EBC062-S3_25MIN.mat'],
-                        ['EBC062-S7_BASELINE-1.mat','EBC062-S7_15MIN.mat','EBC062-S7_25MIN.mat'],],
+                        ['EBC062-S3_BASELINE.mat','EBC062-S3_15MIN.mat','EBC062-S3_25MIN.mat'],
+                        ['EBC062-S7_BASELINE.mat','EBC062-S7_15MIN.mat','EBC062-S7_25MIN.mat'],],
                         
-                        ## no baseline
+                        ## baseline
                         '063':[['EBC_063_S01_B1.mat','EBC_063_S01_E1.mat','EBC_063_S01_E2.mat'],
-                        ['EBC063-S7_BASELINE.mat','EBC063-S7_15MIN_V4.mat','EBC063-S7_30MIN_V2.mat'],
-                        ['EBC_063_S14_B1.mat','EBC_063_S14_E2.mat','EBC_063_S14_E3.mat'],],
+                        ['EBC063-S7_5MIN_V2.mat','EBC063-S7_15MIN_V4.mat','EBC063-S7_25MIN_V4.mat'],
+                        ['EBC_063_S14_E1.mat','EBC_063_S14_E2.mat','EBC_063_S14_E3.mat'],],
                         
-                        ## no baseline
-                        '065':[['EBC065_S2_BASELINE.mat','EBC065_S2_10MIN.mat','EBC065_S2_25MIN.mat'],
-                        ['EBC065_S3_BASELINE.mat','EBC065_S3_10MIN.mat','EBC065_S3_25MIN.mat'],
+                        ## baseline
+                        '065':[['EBC065_S2_5MIN.mat','EBC065_S2_15MIN.mat','EBC065_S2_25MIN.mat'],
+                        ['EBC065_S3_5MIN.mat','EBC065_S3_15MIN.mat','EBC065_S3_25MIN.mat'],
                         [],],
                         
-                        ## no baseline
-                        '066':[['EBC066_S1_BASELINE.mat','EBC066_S1_10MIN.mat','EBC066_S1_25MIN.mat'],
+                        ## baseline
+                        '066':[['EBC066_S1_5MIN.mat','EBC066_S1_15MIN.mat','EBC066_S1_25MIN.mat'],
                         [],
                         [],],
                         
@@ -349,6 +352,7 @@ def main(args):
     
     ## non-baseline=False, baseline present=True; for each session (a,b,c)
     list_baseline = {
+                        '001':[False, False, False],
                         '002':[False, False, False],
                         '003':[False, False, False],
                         '004':[False, False, False],
@@ -390,21 +394,21 @@ def main(args):
                         '048':[False, False, True],
                         '049':[False, True, True],
                         '050':[False, False, True],
-                        '051':[True, True, False],
+                        '051':[True, False, True],
                         '052':[True, True, False],
-                        '053':[True, True, False],
-                        '054':[True, True, False],
+                        '053':[True, True, True],
+                        '054':[True, True, True],
                         '055':[True, True, True],
-                        '056':[True, True, False],
+                        '056':[True, True, True],
                         '057':[True, True, True],
-                        '058':[True, True, False],
+                        '058':[True, True, True],
                         '059':[True, True, False],
                         '060':[True, True, True],
-                        '061':[True, True, True],
+                        '061':[False, True, True],
                         '062':[True, True, True],
-                        '063':[True, True, True],
-                        '065':[True, True, True],
-                        '066':[True, True, True],
+                        '063':[False, False, False],
+                        '065':[False, False, False],
+                        '066':[False, True, True],
                     }
     # print(f'list_files_names {list_files_names[patient_number]}')
     # print(f'selected files {list_files_names[patient_number][session]}')
@@ -414,22 +418,9 @@ def main(args):
                         
     ## ids of the eight required channels: muscular signals EMG without the insole signals
     list_ids_channels = {
-                         # '001':[[9,16]]*1,
-                         # '002':[[9,16]]*2,
-                         # '003':[[9,16]]*2,
-                         # '004':[[9,16]]*3,
-                         # '006':[[9,16]]*3,
-                         # '009':[[9,16]]*3,
-                         # '012':[[9,16]]*2,
-                         # '015':[[9,16]]*3,
-                         # '018':[[9,16],[9,16],[1,8]],
-                         # '019':[[9,16]]*3,
-                         # '022':[[9,16]],
-                         # '024':[[9,16]]*3,
-                         # '027':[[9,16]]*3,
-                         # '028':[[9,16]]*3,
-                         # '029':[[9,16]]*3,
-                         # '030':[[9,16],[1,8],[1,8]],
+                         '001':[[[9,16]]*1,
+                         [[9,16]]*1,
+                         [[9,16]]*1,],
                          
                          '002':[[[9,16]]*1,
                          [[9,16]]*1,
@@ -591,21 +582,21 @@ def main(args):
                          [[1,8]]*3,
                          [[1,8]]*3,],
                          
-                         '051':[[[9,16]]*3,
-                         [[9,16]]*3,
-                         [[9,16]]*3,],
+                         '051':[[[1,8]]*3,
+                         [[1,8]]*3,
+                         [[1,8]]*3,],
                          
                          '052':[[[1,8]]*3,
                          [[1,8]]*3,
                          [[1,8]]*3,],
                          
-                         '053':[[[9,16]]*3,
-                         [[9,16]]*3,
-                         [[9,16]]*3,],
+                         '053':[[[1,8]]*3,
+                         [[1,8]]*3,
+                         [[1,8]]*3,],
                          
-                         '054':[[[9,16]]*3,
-                         [[9,16]]*3,
-                         [[9,16]]*3,],
+                         '054':[[[1,8]]*3,
+                         [[1,8]]*3,
+                         [[1,8]]*3,],
                          
                          '055':[[[1,8]]*3,
                          [[1,8]]*3,
@@ -631,11 +622,11 @@ def main(args):
                          [[9,16]]*3,
                          [[9,16]]*3,],
                          
-                         '061':[[[9,16]]*3,
+                         '061':[[[9,16],[9,16],[1,8]],
                          [[9,16]]*3,
                          [[9,16]]*3,],
                          
-                         '062':[[[9,16]]*3,
+                         '062':[[[1,8]]*3,
                          [[9,16]]*3,
                          [[9,16]]*3,],
                          
@@ -643,48 +634,29 @@ def main(args):
                          [[9,16]]*3,
                          [[9,16]]*3,],
                          
-                         '065':[[[9,16]]*3,
-                         [[9,16]]*3,
-                         [[9,16]]*3,],
+                         '065':[[[1,8]]*3,
+                         [[1,8]]*3,
+                         [[1,8]]*3,],
                          
-                         '066':[[[9,16]]*3,
-                         [[9,16]]*3,
-                         [[9,16]]*3,],
-                         
-                         # '033':[[1,8]]*3,
-                         # '037':[[1,8]]*3,
-                         # '039':[[1,8]]*3,
-                         # '040':[[1,8]]*3,
-                         # '042':[[1,8]],
-                         # '045':[[9,16]]*2,
-                         # '046':[[9,16]]*3,
-                         # '048':[[1,8]]*3,
-                         # '052':[[1,8]]*3,
-                         # '053':[[1,8]]*3,
-                         # '054':[[1,8]]*2,
-                         # '056':[[9,16]],
-                         # '057':[[9,16]]*3,
-                         # '058':[[9,16]]*3,
-                         # '059':[[9,16]]*2,
-                         # '060':[[9,16]]*2,
+                         '066':[[[1,8]]*3,
+                         [[1,8]]*3,
+                         [[1,8]]*3,],
+                    
                         }
     
     ## sorting plots to present each lead in the same place                    
     list_emg_sorted = {
-                       # '001':[[7,0,6,4,2,5,3]]*1,
-                       # '002':[[7,0,6,4,2,5,3]]*2,
-                       # '003':[[5,7,3,0,6,4,2,1]]*2,
-                       # '004':[[5,7,3,0,6,4,2,1]]*3,
-                       # '006':[[5,7,3,0,6,4,2,1]]*3,
-                       # '015':[[5,7,3,0,6,4,2,1],[5,7,3,0,6,4,2,1],[5,7,3,0,4,2,1,6]],
-                       # '018':[[7,2,4,1,6,5,0,3]]*3,
-                       # '024':[[7,2,4,1,6,5,0,3]]*3,
-                       # '027':[[7,2,4,1,6,5,0,3]]*3,
-                       # '030':[[7,2,4,1,6,5,0,3]]*3,
-                       
-                       '002':[[[7,0,6,4,2,5,3]]*1,
-                       [[7,0,6,4,2,5,3]]*1,
+                       '001':[[[3,1,7,5,2,0,6,4]]*1,
+                       [[3,1,7,5,2,0,6,4]]*1,
                        [[7,0,6,4,2,5,3]]*1,],
+                       
+                       '002':[[[5,7,3,0,6,4,2,1]]*1,
+                       [[5,7,1,3,4,6,0,2]]*1,
+                       [[5,7,3,0,6,4,2,1]]*1,],
+                       
+                       # '002':[[[7,0,6,4,2,5,3]]*1,
+                       # [[7,0,6,4,2,5,3]]*1,
+                       # [[7,0,6,4,2,5,3]]*1,],
                        
                        '003':[[[5,7,3,0,6,4,2,1]]*1,
                        [[5,7,3,0,6,4,2,1]]*2,
@@ -842,9 +814,9 @@ def main(args):
                        [[7,5,3,1,0,2,4,6]]*3,
                        [[0,2,6,4,1,7,5,3]]*3,],
                        
-                       '051':[[[5,3,7,1,4,0,6,2]]*3,
-                       [[6,2,0,4,7,3,1,5]]*3,
-                       [[7,5,3,1,2,0,6,4]]*3,],
+                       '051':[[[0,2,6,4,1,7,5,3]]*3,
+                       [[0,2,6,4,1,7,5,3]]*3,
+                       [[0,2,6,4,1,7,5,3]]*3,],
                        
                        '052':[[[2,4,0,6,3,1,5,7]]*3,
                        [[2,4,0,6,3,1,5,7]]*3,
@@ -874,47 +846,33 @@ def main(args):
                        [[2,4,0,6,3,1,5,7]]*3,
                        [[2,4,0,6,3,1,5,7]]*3,],
                        
-                       '059':[[[2,4,0,6,3,1,5,7]]*3,
-                       [[2,4,0,6,3,1,5,7]]*3,
-                       [[2,4,0,6,3,1,5,7]]*3,],
+                       '059':[[[7,5,1,3,6,4,0,2]]*3,
+                       [[7,5,1,3,6,4,0,2]]*3,
+                       [[7,5,1,3,6,4,0,2]]*3,],
                        
                        '060':[[[7,5,1,3,6,4,0,2]]*3,
                        [[7,5,1,3,6,4,0,2]]*3,
                        [[7,5,1,3,6,4,0,2]]*3,],
                        
                        '061':[[[7,5,1,3,6,4,0,2]]*3,
-                       [[7,5,1,3,6,4,0,2]]*3,
-                       [[7,5,1,3,6,4,0,2]]*3,],
+                       [[3,1,7,5,2,0,6,4]]*3,
+                       [[3,1,7,5,2,0,6,4]]*3,],
                        
-                       '062':[[[7,5,1,3,6,4,0,2]]*3,
-                       [[7,5,1,3,6,4,0,2]]*3,
-                       [[7,5,1,3,6,4,0,2]]*3,],
+                       '062':[[[3,1,7,5,2,0,6,4]]*3,
+                       [[3,1,7,5,2,0,6,4]]*3,
+                       [[3,1,7,5,2,0,6,4]]*3,],
                        
-                       '063':[[[7,5,1,3,6,4,0,2]]*3,
-                       [[7,5,1,3,6,4,0,2]]*3,
-                       [[7,5,1,3,6,4,0,2]]*3,],
+                       '063':[[[3,1,7,5,2,0,6,4]]*3,
+                       [[3,1,7,5,2,0,6,4]]*3,
+                       [[3,1,7,5,2,0,6,4]]*3,],
                        
-                       '065':[[[7,5,1,3,6,4,0,2]]*3,
-                       [[7,5,1,3,6,4,0,2]]*3,
-                       [[7,5,1,3,6,4,0,2]]*3,],
+                       '065':[[[3,1,7,5,2,0,6,4]]*3,
+                       [[3,1,7,5,2,0,6,4]]*3,
+                       [[3,1,7,5,2,0,6,4]]*3,],
                        
-                       '066':[[[7,5,1,3,6,4,0,2]]*3,
-                       [[7,5,1,3,6,4,0,2]]*3,
-                       [[7,5,1,3,6,4,0,2]]*3,],
-                       
-                       # '033':[[7,2,4,1,6,5,0,3]]*3,
-                       # '037':[[7,2,4,1,6,5,0,3],[7,2,4,1,6,5,0,3],[2,4,1,6,5,0,3]],
-                       # '039':[[7,2,4,1,6,5,0,3]]*3,
-                       # '042':[[0,6,5,7,2,4,3,1]],
-                       # '045':[[4,6,7,1,0,5,3,2],[5,3,7,1,4,0,6,2]],
-                       # '048':[[5,3,7,1,4,0,6,2],[6,2,0,4,7,3,1,5],[7,5,3,1,2,0,6,4]],
-                       # '052':[[2,4,0,6,3,1,5,7]]*3,
-                       # '053':[[2,4,0,6,3,1,5,7]]*3,
-                       # '054':[[2,4,0,6,3,1,5,7]]*2,
-                       # '058':[[2,4,0,6,3,1,5,7]]*3,
-                       # '056':[[7,5,1,3,6,4,0,2]],
-                       # '059':[[7,5,1,3,6,4,0,2]]*2,
-                       # '060':[[7,5,1,3,6,4,0,2]]*2,
+                       '066':[[[3,1,7,5,2,0,6,4]]*3,
+                       [[3,1,7,5,2,0,6,4]]*3,
+                       [[3,1,7,5,2,0,6,4]]*3,],
                        
                        '':[],
                         }
