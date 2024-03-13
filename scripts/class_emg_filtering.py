@@ -739,7 +739,7 @@ class Reading_EMG:
         # fig.suptitle(f'P-{patient_number} session {session_number}')
         fig.suptitle(f'EBC{patient_number} session {session}\n{instant}')
         
-        path_out=f'../docs/figures/march_02_2024/EBC{patient_number}'
+        path_out=f'../docs/figures/march_12_2024/EBC{patient_number}'
         # checking if the directory
         # exist or not. 
         if not os.path.isdir(path_out): 

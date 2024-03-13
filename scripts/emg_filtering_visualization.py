@@ -199,7 +199,7 @@ def main(args):
                         ['EBC033_S7_BASELINE1.mat','EBC033_S7_E2.mat','EBC033_S7_E3.mat'],
                         ['EBC033S14-Baseline1.mat','EBC033S14e2.mat','EBC033S14e3.mat'],],
                         
-                        ## no baseline
+                        ## baseline
                         '036':[['ebc_036_s02_b1.mat','ebc_036_s02_e2.mat','ebc_036_s02_e3.mat'],
                         ['ebc_036_s06_b1.mat','ebc_036_s06_e2.mat','ebc_036_s06_e3.mat'],
                         ['ebc_036_s14_b1.mat','ebc_036_s14_e2.mat','ebc_036_s14_e3.mat'],],
@@ -212,6 +212,11 @@ def main(args):
                         ## session c,
                         ['EBC037_S14_BASELINE1.mat','EBC037_S14_E1.mat','EBC037S14E3.mat'], #'EBC037_S14_E2.mat'
                         ],
+                        
+                        ## baseline
+                        '038':[['EBC038S1-Baseline.mat','EBC038S1e1.mat','EBC038S1e2.mat'],
+                        ['EBC038_S8_BASELINE1.mat','EBC038S8E2.mat','EBC038S8E3.mat'],
+                        ['EBC038S14-baseline1.mat','EBC038S14e2.mat','EBC038S14e3.mat'],],
                         
                         '039':[
                         ## session a
@@ -386,6 +391,7 @@ def main(args):
                         '033':[True, True, True],
                         '036':[True, True, True],
                         '037':[True, True, True],
+                        '038':[True, True, True],
                         '039':[True, True, True],
                         '040':[True, True, False],
                         '042':[True, False, False],
@@ -548,6 +554,10 @@ def main(args):
                          [[9,16]]*3,],
                          
                          '037':[[[1,8]]*3,
+                         [[1,8]]*3,
+                         [[1,8]]*3,],
+                         
+                         '038':[[[1,8]]*3,
                          [[1,8]]*3,
                          [[1,8]]*3,],
                          
@@ -782,6 +792,10 @@ def main(args):
                        '037':[[[7,2,4,1,6,5,0,3]]*3,
                        [[7,2,4,1,6,5,0,3]]*3,
                        [[7,2,4,1,6,5,0,3],[7,2,4,1,6,5,0,3],[2,4,1,6,5,0,3,7]],],
+                       
+                       '038':[[[7,2,4,1,6,5,0,3]]*3,
+                       [[7,2,4,1,6,5,0,3]]*3,
+                       [[7,2,4,1,6,5,0,3]]*3,],
                        
                        '039':[[[7,2,4,1,6,5,0,3]]*3,
                        [[7,2,4,1,6,5,0,3]]*3,
