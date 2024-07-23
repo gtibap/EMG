@@ -69,6 +69,10 @@ class Reading_EMG:
             i+=1
 
         # print(self.df_EnvelopedSignals)
+
+        # print(f'channels sinc: {self.channelsNames[-1]}\n{self.channels[-1]}')
+        # plt.plot(self.channels[-1])
+        # plt.show()
         
         # num_ch=ids_channels[-1]+1
         # ch_switch = mat['Data'][0, num_ch].flatten()
@@ -489,7 +493,7 @@ class Reading_EMG:
 
     def plotSignals(self):
         # print(f'\nids channels: {ids_channels}')
-        fig, ax = plt.subplots(nrows=8, ncols=1, sharex=True, sharey=True)
+        fig, ax = plt.subplots(nrows=len(self.channels), ncols=1, sharex=True, sharey=True,)
         fig.canvas.mpl_connect('key_press_event', self.on_press)
         
         cont=0
@@ -497,8 +501,9 @@ class Reading_EMG:
             ax[cont].plot(self.ch_time, ch, label=ch_n)
             ax[cont].legend()
             cont+=1
-        
-        ax[0].set_ylim([-100,100])
+
+        ax[0].set_ylim([-100,100])            
+        # ax[-1].set_ylim([-0.1, 1.1])    
         ax[0].set_title(self.filename)
         ax[cont-1].set_xlabel(self.ch_time_name+' [s]')
 
