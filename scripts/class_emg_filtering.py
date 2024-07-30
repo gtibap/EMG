@@ -34,8 +34,8 @@ class Reading_EMG:
         mat = scipy.io.loadmat(self.path+self.filename)
         # print(f'\n{self.filename}')
         # print(f'dictionary {mat}')
-        print('Header:',  mat['__header__'])
-        print('Channel Names:',  mat['channelNames'])
+        # print('Header:',  mat['__header__'])
+        # print('Channel Names:',  mat['channelNames'])
         
         self.sampling_rate = mat['samplingRate'][0,0]
         # print(f'sample rate: {self.sampling_rate}')
@@ -775,14 +775,14 @@ class Reading_EMG:
         
             ## left leg
             if id_emg % 2 == 0:
-                print(f'id_emg % 2 == 0: {id_emg}, {channels_names[id_emg]}')
+                # print(f'id_emg % 2 == 0: {id_emg}, {channels_names[id_emg]}')
                 for x_val in arr_time_max:
                     p_f = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:green', label='flexion')
                 for x_val in arr_time_min:
                     p_e = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple', label='extension')
             ## right leg
             else:
-                print(f'id_emg % 2 != 0: {id_emg}, {channels_names[id_emg]}')
+                # print(f'id_emg % 2 != 0: {id_emg}, {channels_names[id_emg]}')
                 for x_val in arr_time_max:
                     p_e = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple', label='extension')
                 for x_val in arr_time_min:

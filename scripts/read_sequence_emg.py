@@ -117,7 +117,7 @@ def plot_angles(arr, max_list, min_list):
  
 def main(args):
 
-    path = '../data/VL/' 
+    path = '../../data/VL/' 
     filename_csv = 'VL_active_assis_labels.csv'
     # filename = '../data/VL/VL_active_assis_labels.csv'
     # filename_emg = '../data/motive_tracking/tracking_006_s1/ebc_006_s01_e1.mat'
