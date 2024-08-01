@@ -95,7 +95,7 @@ def max_and_min(arr):
     delta=10
     id0=0
     
-    while id0 < len(arr):
+    while (id0+win_size) <= len(arr):
         window = arr[id0:id0+win_size]
         ids_max = np.argmax(window)
         ids_min = np.argmin(window)
@@ -143,8 +143,20 @@ def plot_angles(arr, max_list, min_list):
     # plt.show()
    
     return 0
- 
+
+def on_press(event):
+    # print('press', event.key)
+    sys.stdout.flush()
+    
+    if event.key == 'x':
+        plt.close('all')
+    else:
+        pass
+    return 0
+
 def main(args):
+
+    # plt.ion()  # turning interactive mode on
 
     path = '../../data/VL/' 
     # filename_csv = 'VL_active_assis_labels.csv'
@@ -152,7 +164,9 @@ def main(args):
     # filename_emg = '../data/motive_tracking/tracking_006_s1/ebc_006_s01_e1.mat'
 
     ## selecting recording: active: 'ac', baseline: 'bl', and '05', '10','15','20','25', and'30' minutes
-    sel_rec = '30'
+    # sel_rec = '30'
+    sel_rec = args[1]
+    print(f'selection: {sel_rec}')
 
     ## read markers ids (names) that were observed in Mokka from the c3d file and recorded in markers_list.py
     mokka_ids =  recordings.VL_markers
@@ -232,20 +246,26 @@ def main(args):
     plt.plot(np.rad2deg(ang_r))
     plt.plot(np.rad2deg(ang_l))
 
+    # plt.show()
+    # return 0
+
+
     ## finding location of maximums and minimums (positive and negative picks) of the angles' vector to identify the sample' number for max. flexion and max. extension for each leg. Maximum values 
     ids_max_r, ids_min_r = max_and_min(ang_r)
     ids_max_l, ids_min_l = max_and_min(ang_l)
     
     ## reading emg signals
 
-    emg_files = recordings.VL_emg_files
+    # emg_files = recordings.VL_emg_files
     ## first reading EMG
     # filename_emg = 'BED CYCLING_active_assis.mat'
-    filename_emg = emg_files[sel_rec]
+    # filename_emg = emg_files[sel_rec]
+    filename_emg = recordings.VL_emg_files[sel_rec]
 
-    sel_channels = recordings.VL_emg_channels
+    # sel_channels = recordings.VL_emg_channels[sel_rec]
     # file_channels = [1,9]
-    file_channels = sel_channels[sel_rec]
+    # file_channels = sel_channels[sel_rec]
+    file_channels = recordings.VL_emg_channels[sel_rec]
     print(f'file channels: {file_channels}')
 
     obj_emg = Reading_EMG(path, filename_emg, file_channels)
@@ -268,6 +288,9 @@ def main(args):
     # arr_time_min = np.array(ids_min_r)/sample_rate_tracking + t_delay
     # print(f'max and min:\n{max_list},\n{min_list}')
 
+    print(f'arr_time_max: {arr_time_max}')
+    print(f'arr_time_min: {arr_time_min}')
+
     # plot_angles(ang_r, ids_max_r, ids_min_r)
     # plot_angles(ang_l, ids_max_l, ids_min_l)
 
@@ -275,22 +298,39 @@ def main(args):
     obj_emg.plotSignals()
     
     obj_emg.filteringSignals()
+
     obj_emg.envelopeFilter()
 
     # ids_emg_plot = [5,7,3,0,6,4,2,1]
-    ids_emg_plot = [1,3,7,5,0,2,6,4]
+    # ids_emg_plot = [1,3,7,5,0,2,6,4]
+    ids_emg_plot = recordings.VL_channels_sorted[sel_rec]
+
     title_emg = 'A - L2 (6 weeks)    -> B - L2 (12 months)'
     patient_number = '006'
     session_name='a'
     file_number=0
-    act_emg=[0,1,2,3,5,6,7]
+    act_emg=[0,1,2,3,4,5,6,7]
     channels_names = ['VMO LT, uV', 'VMO RT, uV', 'VLO LT, uV', 'VLO RT, uV', 'LAT.GASTRO LT, uV', 'LAT.GASTRO RT, uV', 'TIB.ANT. LT, uV', 'TIB.ANT. RT, uV']
-    
+
+    # channels_names = recordings.VL_emg_names[sel_rec]
     # obj_emg.plotFilteredSignals(ids_emg_plot, title_emg, patient_number,session_name, file_number+1, act_emg, channels_names)
     
-    obj_emg.plotSegmentedSignals(ids_emg_plot, title_emg, patient_number,session_name, file_number+1, act_emg, channels_names, arr_time_max, arr_time_min)
-    
+    signal_name = 'VLO RT, uV'
+
+    num_cycles = len(arr_time_min)
+    if num_cycles > 10:
+        obj_emg.plotSegmentedSignals(ids_emg_plot, title_emg, patient_number,session_name, file_number+1, act_emg, channels_names, arr_time_max, arr_time_min, True)
+
+        fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(7,3.5), sharex=True, sharey=True)
+        fig.canvas.mpl_connect('key_press_event', on_press)
+        sel_max = arr_time_max[0:10]
+        sel_min = arr_time_min[0:10]
+        obj_emg.plotFlexionExtension(ax, sel_max, sel_min, signal_name)
+    else:
+        obj_emg.plotSegmentedSignals(ids_emg_plot, title_emg, patient_number,session_name, file_number+1, act_emg, channels_names, arr_time_max, arr_time_min, False)
+  
     plt.show()
+
 
     return 0
 

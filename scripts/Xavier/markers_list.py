@@ -72,3 +72,25 @@ VL_csv_files = {
     '30': 'VL_30min_assis.csv',
 }
 
+VL_emg_names = {
+    'ac': ['VMO RT, uV', 'VLO RT, uV', 'TIB.ANT. RT, uV', 'LAT. GASTRO RT, uV', 'VMO LT, uV', 'VLO LT, uV', 'TIB.ANT. LT, uV', 'LAT. GASTRO LT, uV', 'Ultium EMG.Sync, On'],
+    'bl': ['VMO RT, uV', 'VLO RT, uV', 'TIB.ANT. RT, uV', 'LAT. GASTRO RT, uV', 'VMO LT, uV', 'VLO LT, uV', 'TIB.ANT. LT, uV', 'LAT. GASTRO LT, uV', 'Ultium EMG.Sync, On'],
+    '05': ['VMO RT, uV', 'VLO RT, uV', 'TIB.ANT. RT, uV', 'LAT. GASTRO RT, uV', 'VMO LT, uV', 'VLO LT, uV', 'TIB.ANT. LT, uV', 'LAT. GASTRO LT, uV', 'Ultium EMG.Sync, On'],
+    '10': ['VMO RT, uV', 'VLO RT, uV', 'TIB.ANT. RT, uV', 'LAT. GASTRO RT, uV', 'VMO LT, uV', 'VLO LT, uV', 'TIB.ANT. LT, uV', 'LAT. GASTRO LT, uV', 'Ultium EMG.Sync, On'],
+    '15': ['VMO RT, uV', 'VLO RT, uV', 'TIB.ANT. RT, uV', 'LAT. GASTRO RT, uV', 'VMO LT, uV', 'VLO LT, uV', 'TIB.ANT. LT, uV', 'LAT. GASTRO LT, uV', 'Ultium EMG.Sync, On'],
+    '20': ['VMO RT, uV', 'VLO RT, uV', 'TIB.ANT. RT, uV', 'LAT. GASTRO RT, uV', 'VMO LT, uV', 'VLO LT, uV', 'TIB.ANT. LT, uV', 'LAT. GASTRO LT, uV', 'Ultium EMG.Sync, On'],
+    '25': ['VMO RT, uV', 'VLO RT, uV', 'TIB.ANT. RT, uV', 'LAT. GASTRO RT, uV', 'VMO LT, uV', 'VLO LT, uV', 'TIB.ANT. LT, uV', 'LAT. GASTRO LT, uV', 'Ultium EMG.Sync, On'],
+    '30': ['VMO RT, uV', 'VLO RT, uV', 'TIB.ANT. RT, uV', 'LAT. GASTRO RT, uV', 'VMO LT, uV', 'VLO LT, uV', 'TIB.ANT. LT, uV', 'LAT. GASTRO LT, uV', 'Ultium EMG.Sync, On'],
+}
+
+VL_channels_sorted = {
+    'ac': [1,3,7,5,0,2,6,4],
+    'bl': [1,3,7,5,0,2,6,4],
+    '05': [1,3,7,5,0,2,6,4],
+    '10': [1,3,7,5,0,2,6,4],
+    '15': [1,3,7,5,0,2,6,4],
+    '20': [1,3,7,5,0,2,6,4],
+    '25': [1,3,7,5,0,2,6,4],
+    '30': [1,3,7,5,0,2,6,4],
+}
+

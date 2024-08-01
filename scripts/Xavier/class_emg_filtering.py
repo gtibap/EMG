@@ -376,15 +376,16 @@ class Reading_EMG:
         # fig.canvas.mpl_connect('key_press_event', self.on_press)
         
         # df_fef = pd.DataFrame()
-        df_fle = pd.DataFrame()
         df_ext = pd.DataFrame()
+        df_fle = pd.DataFrame()
         ## resampling all selected segments to have same number of samples
         len_ref = 2400
         
         # x_range = np.linspace(0,100,len_ref)
         x_range = np.arange(len_ref)
-        df_fle['cycle']=x_range
-        df_ext['cycle']=x_range+len_ref
+        df_ext['cycle']=x_range
+        df_fle['cycle']=x_range+len_ref
+        
         
         ## selecting first index; first index of min distance: starting with flexion
         if arr_time_min[0] < arr_time_max[0]:
@@ -393,11 +394,16 @@ class Reading_EMG:
             id0=1
         
         i=0
+        
         for val0, val1, val2 in zip(arr_time_min[0:], arr_time_max[id0:], arr_time_min[1:]):
             
-            t0 = self.ch_time[0] + val0  ## flexion
-            t1 = self.ch_time[0] + val1  ## extension
-            t2 = self.ch_time[0] + val2  ## flexion
+            # t0 = self.ch_time[0] + val0  ## flexion
+            # t1 = self.ch_time[0] + val1  ## extension
+            # t2 = self.ch_time[0] + val2  ## flexion
+
+            t0 = val0  ## flexion
+            t1 = val1  ## extension
+            t2 = val2  ## flexion
             
             ## extension
             arr_a = self.df_EnvelopedSignals.loc[(self.df_EnvelopedSignals[self.ch_time_name]>=t0) & (self.df_EnvelopedSignals[self.ch_time_name]<t1), [signal_name]].to_numpy()
@@ -407,7 +413,7 @@ class Reading_EMG:
             
             ## VLO RT
             # arr_vlr = df_sel.iloc[:,2].to_numpy()
-            # print(f'sel: {len(arr_a)}, {len(arr_b)}')
+            print(f'sel: {len(arr_a)}, {len(arr_b)}')
             
             arr_a = signal.resample_poly(arr_a, len_ref, len(arr_a), padtype='line')
             arr_b = signal.resample_poly(arr_b, len_ref, len(arr_b), padtype='line')
@@ -424,8 +430,8 @@ class Reading_EMG:
         # print(f'df_ext.\n{df_ext_sel}')
         # print(f'df_fle.\n{df_fle}')
         color = 'tab:blue'
-        self.plot_alpha(df_ext, color, ax)
-        self.plot_alpha(df_fle, color, ax)
+        ax, pos_y1 = self.plot_alpha(df_ext, color, ax)
+        ax, pos_y2 = self.plot_alpha(df_fle, color, ax)
         
         
         ## vertical lines to delimit extension and flexion
@@ -434,15 +440,15 @@ class Reading_EMG:
         ax.axvline(x = 2*len_ref, color = 'tab:green')
         
         pos_x = int((1/6)*len_ref)
-        pos_y = int(35)
-        ax.annotate('extension', xy=(pos_x, pos_y),
+        # pos_y = int(35)
+        ax.annotate('extension', xy=(pos_x, pos_y1),
                     color='blue',
                     bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
                     )
                     
         pos_x = int((1/6)*len_ref) + len_ref
-        pos_y = int(35)
-        ax.annotate('flexion', xy=(pos_x, pos_y),
+        # pos_y = int(35)
+        ax.annotate('flexion', xy=(pos_x, pos_y2),
                     color='blue',
                     bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
                     )
@@ -452,6 +458,8 @@ class Reading_EMG:
         print(f'list_xticks: {list_xticks}')
         ax.set_xticks(list_xticks)
         ax.set_xticklabels(['9','12','3','6','9'])
+
+        ax.set_ylim(0.5, 20.0)
         
         # df_ext = df_ext.melt(id_vars=['cycle'], var_name='cols', value_name='vals')
         # df_fle = df_fle.melt(id_vars=['cycle'], var_name='cols', value_name='vals')
@@ -486,8 +494,10 @@ class Reading_EMG:
         ax.plot(x, y, color=color)
         # ax.fill_between(x, ymax, ymin, color=color, hatch=pattern, alpha=alpha_fill, label=sel_label)
         ax.fill_between(x, ymax, ymin, color=color, alpha=alpha_fill,)
+
+        val_max = np.max(ymax)
         
-        return ax
+        return ax, val_max
         
         
 
@@ -758,7 +768,7 @@ class Reading_EMG:
     
     
     
-    def plotSegmentedSignals(self, ids_emg, title_emg, patient_number, session_name, session_number, list_act_emg, channels_names, arr_time_max, arr_time_min):
+    def plotSegmentedSignals(self, ids_emg, title_emg, patient_number, session_name, session_number, list_act_emg, channels_names, arr_time_max, arr_time_min, flag):
         
         fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(10, 7), sharex=True, sharey=True, squeeze=False)
         fig.canvas.mpl_connect('key_press_event', self.on_press)
@@ -801,11 +811,16 @@ class Reading_EMG:
             # ax.legend()
                 
         ## select 5 seconds range of data at the middle of the recordings
-        id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
-        id02 = (id01 + (self.sampling_rate*5)).astype(int)  
+        if flag == False:
+            id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
+            id02 = (id01 + (self.sampling_rate*5)).astype(int)
+            ax[0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
+        else:
+            id01 = 0
+            id02 = arr_time_min[10]
+            ax[0].set_xlim([id01,id02])
         
-        ax[0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
-        ax[0].set_ylim([-10,50])
+        ax[0].set_ylim([-0.5,20])
         # ax[0].set_title(self.filename)
         ax[6].set_xlabel(self.ch_time_name+' [s]')
         ax[7].set_xlabel(self.ch_time_name+' [s]')
