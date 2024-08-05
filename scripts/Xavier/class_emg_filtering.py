@@ -787,16 +787,16 @@ class Reading_EMG:
             if id_emg % 2 == 0:
                 # print(f'id_emg % 2 == 0: {id_emg}, {channels_names[id_emg]}')
                 for x_val in arr_time_max:
-                    p_f = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:green', label='flexion')
+                    p_f = ax[id_emg].axvline(x = x_val, color = 'tab:green', label='flexion')
                 for x_val in arr_time_min:
-                    p_e = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple', label='extension')
+                    p_e = ax[id_emg].axvline(x = x_val, color = 'tab:purple', label='extension')
             ## right leg
             else:
                 # print(f'id_emg % 2 != 0: {id_emg}, {channels_names[id_emg]}')
                 for x_val in arr_time_max:
-                    p_e = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple', label='extension')
+                    p_e = ax[id_emg].axvline(x = x_val, color = 'tab:purple', label='extension')
                 for x_val in arr_time_min:
-                    p_f = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:green', label='flexion')
+                    p_f = ax[id_emg].axvline(x = x_val, color = 'tab:green', label='flexion')
                 
             # cont+=1
         
