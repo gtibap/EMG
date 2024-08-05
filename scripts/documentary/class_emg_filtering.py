@@ -377,21 +377,124 @@ class Reading_EMG:
         return 0
     
 
-    def plotFlexionExtension(self, ax, arr_time_max, arr_time_min, signal_name):
+    # def plotFlexionExtension(self, ax, arr_time_max, arr_time_min, signal_name):
+        
+    #     # fig, ax = plt.subplots(nrows=1,ncols=2, figsize=(7,3.5), sharex=True, sharey=True)
+    #     # fig.canvas.mpl_connect('key_press_event', self.on_press)
+        
+    #     # df_fef = pd.DataFrame()
+    #     df_fle = pd.DataFrame()
+    #     df_ext = pd.DataFrame()
+    #     ## resampling all selected segments to have same number of samples
+    #     len_ref = 2400
+        
+    #     # x_range = np.linspace(0,100,len_ref)
+    #     x_range = np.arange(len_ref)
+    #     df_fle['cycle']=x_range
+    #     df_ext['cycle']=x_range+len_ref
+        
+    #     ## selecting first index; first index of min distance: starting with flexion
+    #     if arr_time_min[0] < arr_time_max[0]:
+    #         id0=0
+    #     else:
+    #         id0=1
+        
+    #     i=0
+    #     for val0, val1, val2 in zip(arr_time_min[0:], arr_time_max[id0:], arr_time_min[1:]):
+            
+    #         t0 = self.ch_time[0] + val0  ## flexion
+    #         t1 = self.ch_time[0] + val1  ## extension
+    #         t2 = self.ch_time[0] + val2  ## flexion
+            
+    #         ## extension
+    #         arr_a = self.df_EnvelopedSignals.loc[(self.df_EnvelopedSignals[self.ch_time_name]>=t0) & (self.df_EnvelopedSignals[self.ch_time_name]<t1), [signal_name]].to_numpy()
+            
+    #         ## flexion
+    #         arr_b = self.df_EnvelopedSignals.loc[(self.df_EnvelopedSignals[self.ch_time_name]>=t1) & (self.df_EnvelopedSignals[self.ch_time_name]<t2), [signal_name]].to_numpy()
+            
+    #         ## VLO RT
+    #         # arr_vlr = df_sel.iloc[:,2].to_numpy()
+    #         # print(f'sel: {len(arr_a)}, {len(arr_b)}')
+            
+    #         arr_a = signal.resample_poly(arr_a, len_ref, len(arr_a), padtype='line')
+    #         arr_b = signal.resample_poly(arr_b, len_ref, len(arr_b), padtype='line')
+            
+    #         # arr_r = np.concatenate([arr_a, arr_b])
+            
+    #         # print(f'sel: {len(arr_r)}\n')
+    #         # ax.plot(arr_r)
+    #         df_ext[i] = arr_a.flatten()
+    #         df_fle[i] = arr_b.flatten()
+            
+    #         i=i+1
+        
+    #     # print(f'df_ext.\n{df_ext_sel}')
+    #     # print(f'df_fle.\n{df_fle}')
+    #     color = 'tab:blue'
+    #     self.plot_alpha(df_ext, color, ax)
+    #     self.plot_alpha(df_fle, color, ax)
+        
+        
+    #     ## vertical lines to delimit extension and flexion
+    #     ax.axvline(x = 0, color = 'tab:green')
+    #     ax.axvline(x = len_ref, color = 'tab:purple')
+    #     ax.axvline(x = 2*len_ref, color = 'tab:green')
+        
+    #     pos_x = int((1/6)*len_ref)
+    #     pos_y = int(35)
+    #     ax.annotate('extension', xy=(pos_x, pos_y),
+    #                 color='blue',
+    #                 bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
+    #                 )
+                    
+    #     pos_x = int((1/6)*len_ref) + len_ref
+    #     pos_y = int(35)
+    #     ax.annotate('flexion', xy=(pos_x, pos_y),
+    #                 color='blue',
+    #                 bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
+    #                 )
+        
+        
+    #     list_xticks = np.arange(0, 2*len_ref+1, int(2*len_ref)/4)
+    #     print(f'list_xticks: {list_xticks}')
+    #     ax.set_xticks(list_xticks)
+    #     ax.set_xticklabels(['9','12','3','6','9'])
+        
+    #     # df_ext = df_ext.melt(id_vars=['cycle'], var_name='cols', value_name='vals')
+    #     # df_fle = df_fle.melt(id_vars=['cycle'], var_name='cols', value_name='vals')
+    #     # print(f'df_fef:\n{df_fef}')
+    #     # sns.lineplot(ax=ax[0], x="cycle", y='vals', errorbar="sd", estimator='mean', data=df_fle)
+    #     # sns.lineplot(ax=ax[1], x="cycle", y='vals', errorbar="sd", estimator='mean', data=df_ext)
+        
+    #     # ax.set_title(signal_name)
+    #     # ax[0].set_title(f'{signal_name} extension')
+    #     # ax[1].set_title(f'{signal_name} flexion')
+    #     # ax[0].set_xlabel('percent extension [%]')
+    #     # ax[1].set_xlabel('percentage flexion [%]')
+    #     # ax[0].set_ylabel('amplitude')
+    #     # ax[1].set_ylabel('amplitude')
+    #     # fig.tight_layout()
+        
+    #     # plt.savefig(f'../data/priority_patients/EBC024/figures/EBC024_cycle.png', bbox_inches='tight')
+            
+    #     return 0
+        
+    def plotFlexionExtension(self, ax, arr_time_max, arr_time_min, signal_name, right_side):
         
         # fig, ax = plt.subplots(nrows=1,ncols=2, figsize=(7,3.5), sharex=True, sharey=True)
         # fig.canvas.mpl_connect('key_press_event', self.on_press)
         
         # df_fef = pd.DataFrame()
-        df_fle = pd.DataFrame()
         df_ext = pd.DataFrame()
+        df_fle = pd.DataFrame()
         ## resampling all selected segments to have same number of samples
         len_ref = 2400
         
         # x_range = np.linspace(0,100,len_ref)
         x_range = np.arange(len_ref)
-        df_fle['cycle']=x_range
-        df_ext['cycle']=x_range+len_ref
+        df_ext['cycle']=x_range
+        df_fle['cycle']=x_range+len_ref
+        
         
         ## selecting first index; first index of min distance: starting with flexion
         if arr_time_min[0] < arr_time_max[0]:
@@ -400,11 +503,16 @@ class Reading_EMG:
             id0=1
         
         i=0
+        
         for val0, val1, val2 in zip(arr_time_min[0:], arr_time_max[id0:], arr_time_min[1:]):
             
-            t0 = self.ch_time[0] + val0  ## flexion
-            t1 = self.ch_time[0] + val1  ## extension
-            t2 = self.ch_time[0] + val2  ## flexion
+            # t0 = self.ch_time[0] + val0  ## flexion
+            # t1 = self.ch_time[0] + val1  ## extension
+            # t2 = self.ch_time[0] + val2  ## flexion
+
+            t0 = val0  ## flexion
+            t1 = val1  ## extension
+            t2 = val2  ## flexion
             
             ## extension
             arr_a = self.df_EnvelopedSignals.loc[(self.df_EnvelopedSignals[self.ch_time_name]>=t0) & (self.df_EnvelopedSignals[self.ch_time_name]<t1), [signal_name]].to_numpy()
@@ -414,7 +522,7 @@ class Reading_EMG:
             
             ## VLO RT
             # arr_vlr = df_sel.iloc[:,2].to_numpy()
-            # print(f'sel: {len(arr_a)}, {len(arr_b)}')
+            print(f'sel: {len(arr_a)}, {len(arr_b)}')
             
             arr_a = signal.resample_poly(arr_a, len_ref, len(arr_a), padtype='line')
             arr_b = signal.resample_poly(arr_b, len_ref, len(arr_b), padtype='line')
@@ -431,34 +539,56 @@ class Reading_EMG:
         # print(f'df_ext.\n{df_ext_sel}')
         # print(f'df_fle.\n{df_fle}')
         color = 'tab:blue'
-        self.plot_alpha(df_ext, color, ax)
-        self.plot_alpha(df_fle, color, ax)
+        ax, pos_y1 = self.plot_alpha(df_ext, color, ax)
+        ax, pos_y2 = self.plot_alpha(df_fle, color, ax)
         
-        
-        ## vertical lines to delimit extension and flexion
-        ax.axvline(x = 0, color = 'tab:green')
-        ax.axvline(x = len_ref, color = 'tab:purple')
-        ax.axvline(x = 2*len_ref, color = 'tab:green')
-        
-        pos_x = int((1/6)*len_ref)
-        pos_y = int(35)
-        ax.annotate('extension', xy=(pos_x, pos_y),
-                    color='blue',
-                    bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
-                    )
-                    
-        pos_x = int((1/6)*len_ref) + len_ref
-        pos_y = int(35)
-        ax.annotate('flexion', xy=(pos_x, pos_y),
-                    color='blue',
-                    bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
-                    )
+        if right_side == True:
+            ## vertical lines to delimit extension and flexion
+            ax.axvline(x = 0, color = 'tab:green')
+            ax.axvline(x = len_ref, color = 'tab:purple')
+            ax.axvline(x = 2*len_ref, color = 'tab:green')
+            
+            pos_x = int((1/6)*len_ref)
+            # pos_y = int(35)
+            ax.annotate('extension', xy=(pos_x, pos_y1),
+                        color='blue',
+                        bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
+                        )
+                        
+            pos_x = int((1/6)*len_ref) + len_ref
+            # pos_y = int(35)
+            ax.annotate('flexion', xy=(pos_x, pos_y2),
+                        color='blue',
+                        bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
+                        )
+        else:
+            ## vertical lines to delimit extension and flexion
+            ax.axvline(x = 0, color = 'tab:purple')
+            ax.axvline(x = len_ref, color = 'tab:green')
+            ax.axvline(x = 2*len_ref, color = 'tab:purple')
+            
+            pos_x = int((1/6)*len_ref)
+            # pos_y = int(35)
+            ax.annotate('flexion', xy=(pos_x, pos_y1),
+                        color='blue',
+                        bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
+                        )
+                        
+            pos_x = int((1/6)*len_ref) + len_ref
+            # pos_y = int(35)
+            ax.annotate('extension', xy=(pos_x, pos_y2),
+                        color='blue',
+                        bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
+                        )
+    
         
         
         list_xticks = np.arange(0, 2*len_ref+1, int(2*len_ref)/4)
         print(f'list_xticks: {list_xticks}')
         ax.set_xticks(list_xticks)
         ax.set_xticklabels(['9','12','3','6','9'])
+
+        ax.set_ylim(0.5, 5.0)
         
         # df_ext = df_ext.melt(id_vars=['cycle'], var_name='cols', value_name='vals')
         # df_fle = df_fle.melt(id_vars=['cycle'], var_name='cols', value_name='vals')
@@ -478,9 +608,22 @@ class Reading_EMG:
         # plt.savefig(f'../data/priority_patients/EBC024/figures/EBC024_cycle.png', bbox_inches='tight')
             
         return 0
-        
     
         
+
+    # def plot_alpha(self, df, color, ax):
+        
+    #     x = df.iloc[:,0].tolist()
+    #     y = df.iloc[:,1:].median(axis=1).tolist()
+    #     ymax = df.iloc[:,1:].max(axis=1).tolist()
+    #     ymin = df.iloc[:,1:].min(axis=1).tolist()
+    #     alpha_fill = 0.3
+        
+    #     ax.plot(x, y, color=color)
+    #     # ax.fill_between(x, ymax, ymin, color=color, hatch=pattern, alpha=alpha_fill, label=sel_label)
+    #     ax.fill_between(x, ymax, ymin, color=color, alpha=alpha_fill,)
+        
+    #     return ax
 
     def plot_alpha(self, df, color, ax):
         
@@ -493,9 +636,10 @@ class Reading_EMG:
         ax.plot(x, y, color=color)
         # ax.fill_between(x, ymax, ymin, color=color, hatch=pattern, alpha=alpha_fill, label=sel_label)
         ax.fill_between(x, ymax, ymin, color=color, alpha=alpha_fill,)
+
+        val_max = np.max(ymax)
         
-        return ax
-        
+        return ax, val_max
         
 
     def plotSignals(self, time_interval):
@@ -657,8 +801,6 @@ class Reading_EMG:
 
         df = self.df_EnvelopedSignals
         df_fil = df.loc[(df[self.ch_time_name]>=time_interval[0]) & (df[self.ch_time_name] < time_interval[1])]
-
-        # cont=0
         
         for id_emg in ids_emg:
             ch_n = channels_names[id_emg]
@@ -667,22 +809,8 @@ class Reading_EMG:
             ax[id_emg].plot(df_fil[self.ch_time_name], df_fil[ch_n],)
             
             ax[id_emg].legend()
-            # cont+=1
-        
-        # for id_ax, ch_n in enumerate(channels_names):
-            # ax[id_ax]
-            # ax.legend()
-                
-        
-        
-        ## select 5 seconds range of data at the middle of the recordings
-        # id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
-        # id02 = (id01 + (self.sampling_rate*5)).astype(int)  
-        
-        # ax[0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
-        # ax[0].set_xlim([70,80])
-        ax[0].set_xlim(time_interval)
 
+        ax[0].set_xlim(time_interval)
 
         ax[0].set_ylim([-10,10])
         # ax[0].set_title(self.filename)
@@ -775,35 +903,48 @@ class Reading_EMG:
     
     
     
-    def plotSegmentedSignals(self, ids_emg, title_emg, patient_number, session_name, session_number, list_act_emg, channels_names, arr_time_max, arr_time_min):
+    def plotSegmentedSignals(self, ids_emg, channels_names, arr_time_max, arr_time_min, time_interval):
         
         fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(10, 7), sharex=True, sharey=True, squeeze=False)
         fig.canvas.mpl_connect('key_press_event', self.on_press)
         
         ax = ax.reshape(-1)
-        # ax = ax.flatten()
         
+        df = self.df_data
+        df_org = df.loc[(df[self.ch_time_name]>=time_interval[0]) & (df[self.ch_time_name] < time_interval[1])]
+
+        df = self.df_EnvelopedSignals
+        df_fil = df.loc[(df[self.ch_time_name]>=time_interval[0]) & (df[self.ch_time_name] < time_interval[1])]
+        
+        for id_emg in ids_emg:
+            ch_n = channels_names[id_emg]
+            
+            ax[id_emg].plot(df_org[self.ch_time_name], df_org[ch_n], label=ch_n)
+            ax[id_emg].plot(df_fil[self.ch_time_name], df_fil[ch_n],)
+            
+            ax[id_emg].legend()
+
         # cont=0
         # for ch, ch_n, id_emg in zip(self.channelsFiltered, self.channelsNames, ids_emg):
-        for ch, id_emg in zip(self.channelsEnveloped, ids_emg):
-            ax[id_emg].plot(self.ch_time, ch, label=channels_names[id_emg])
-            ax[id_emg].legend()
+        # for ch, id_emg in zip(self.channelsEnveloped, ids_emg):
+        #     ax[id_emg].plot(self.ch_time, ch, label=channels_names[id_emg])
+        #     ax[id_emg].legend()
             
         
             ## left leg
             if id_emg % 2 == 0:
                 # print(f'id_emg % 2 == 0: {id_emg}, {channels_names[id_emg]}')
                 for x_val in arr_time_max:
-                    p_f = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:green', label='flexion')
+                    p_f = ax[id_emg].axvline(x = x_val, color = 'tab:green', label='flexion')
                 for x_val in arr_time_min:
-                    p_e = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple', label='extension')
+                    p_e = ax[id_emg].axvline(x = x_val, color = 'tab:purple', label='extension')
             ## right leg
             else:
                 # print(f'id_emg % 2 != 0: {id_emg}, {channels_names[id_emg]}')
                 for x_val in arr_time_max:
-                    p_e = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:purple', label='extension')
+                    p_e = ax[id_emg].axvline(x = x_val, color = 'tab:purple', label='extension')
                 for x_val in arr_time_min:
-                    p_f = ax[id_emg].axvline(x = self.ch_time[0] + x_val, color = 'tab:green', label='flexion')
+                    p_f = ax[id_emg].axvline(x = x_val, color = 'tab:green', label='flexion')
                 
             # cont+=1
         
@@ -818,11 +959,15 @@ class Reading_EMG:
             # ax.legend()
                 
         ## select 5 seconds range of data at the middle of the recordings
-        id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
-        id02 = (id01 + (self.sampling_rate*5)).astype(int)  
+        # id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
+        # id02 = (id01 + (self.sampling_rate*5)).astype(int)  
         
-        ax[0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
-        ax[0].set_ylim([-10,50])
+        # ax[0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
+        # ax[0].set_ylim([-10,50])
+
+        ax[0].set_xlim(time_interval)
+        ax[0].set_ylim([-10,10])
+
         # ax[0].set_title(self.filename)
         ax[6].set_xlabel(self.ch_time_name+' [s]')
         ax[7].set_xlabel(self.ch_time_name+' [s]')
@@ -837,7 +982,7 @@ class Reading_EMG:
         
         ## saving plot png file
         # fig.suptitle(f'{self.filename}\n{title_emg}')
-        fig.suptitle(f'P-{patient_number} session {session_number}')
+        # fig.suptitle(f'P-{patient_number} session {session_number}')
         # plt.savefig(f'../docs/figures/oct02_2023/ebc{patient_number}{session_name}.png', bbox_inches='tight')
         # plt.savefig(f'../data/priority_patients/EBC024/figures/EBC024_segmented.png', bbox_inches='tight')
         

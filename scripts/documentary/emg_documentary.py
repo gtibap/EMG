@@ -7,6 +7,7 @@ from sklearn.decomposition import PCA
 
 
 def markers_selection(df, mokka_ids, labels_markers):
+    ## change header titles for the chosen markers
         
     columns_ids = df.columns
     print(f'columns:{columns_ids}')
@@ -59,6 +60,8 @@ def smooth_filter(arr):
     return arr
 
 def flexion_extension_identification(df, labels_markers, sel):
+    ## estimate major and minor axes of a marker with an elliptical trajectory (right lower distal)
+    ## points projection to the estimated axes
 
     df = interpolation_filter(df,labels_markers[sel])
 
@@ -91,7 +94,9 @@ def flexion_extension_identification(df, labels_markers, sel):
     return arr_marker[:,0]
 
 
-def max_and_min(arr, df):
+def max_and_min(df, arr, percentage_delta_time):
+    ## identifying maximums and minimums in the x coordinate to identify periods of flexion and extension
+    ## flexion goes from a maximum to a minimum; extension from a minimum to a maximun
         
     max_list=[]
     min_list=[]
@@ -133,6 +138,19 @@ def max_and_min(arr, df):
     ids_sel_min = df.loc[ids_sel_min]['Time'].to_numpy()
     # print(f'min_time: {ids_sel_min}')
 
+    pp_max = ids_sel_max[1:]-ids_sel_max[:-1]
+    pp_min = ids_sel_min[1:]-ids_sel_min[:-1]
+
+    # print(f'pp_max: {pp_max}\npp_min: {pp_min}')
+    # print(f'median pp_max: {np.median(pp_max)}\nmedian pp_min: {np.median(pp_min)}')
+
+    lag_time = np.median(pp_max) * percentage_delta_time / 100
+
+    # print(f'lag time: {lag_time}')
+
+    ids_sel_max = ids_sel_max - lag_time
+    ids_sel_min = ids_sel_min - lag_time
+
     return ids_sel_max, ids_sel_min
 
 
@@ -162,8 +180,8 @@ def main(args):
     channels_names = ['VMO LT, uV', 'VMO RT, uV', 'VLO LT, uV', 'VLO RT, uV', 'LAT. GASTRO LT, uV', 'LAT. GASTRO RT, uV', 'TIB.ANT. LT, uV', 'TIB.ANT. RT, uV']
     ## plot channels
     
-    time_interval = [70, 80] ## 900 seconds are 15 min
-    # obj_emg.plotSignals(time_interval)
+    time_interval = [10, 20] ## 900 seconds are 15 min
+    obj_emg.plotSignals(time_interval)
 
     ## filtering emg signals
     obj_emg.filteringSignals()
@@ -190,15 +208,27 @@ def main(args):
     labels_markers = [['rlp_x','rlp_y','rlp_z'], ['rld_x','rld_y','rld_z']]
 
     df = markers_selection(df, mokka_ids, labels_markers)
-    print(f'final_header: {df.columns}')
+    # print(f'final_header: {df.columns}')
 
     selected_marker = 1
     arr_x = flexion_extension_identification(df, labels_markers, selected_marker)
 
-    max_list, min_list = max_and_min(df, arr_x)
-    print(f'indexes:\n max: {max_list}\n min: {min_list}')
+    ## according to experimental observations, the  maximum extension happens a time delta earlier than max value of the rld in the major axis. We have calculated that the delta time is approx. 7 % of the cycle time.
+    percentage_delta_time = 7 # percentage
+    arr_time_max, arr_time_min = max_and_min(df, arr_x, percentage_delta_time)
+    # print(f'arr time:\n max: {arr_time_max}\n min: {arr_time_min}')
 
-    
+    ## plotting emg with flexion extension annotations
+    obj_emg.plotSegmentedSignals(list_emg, channels_names, arr_time_max, arr_time_min, time_interval)
+
+    fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(7,3.5), sharex=True, sharey=True)
+    fig.canvas.mpl_connect('key_press_event', on_press)
+    sel_max = arr_time_max[0:20]
+    sel_min = arr_time_min[0:20]
+    signal_name = 'VLO LT, uV'
+    right_side = False
+    obj_emg.plotFlexionExtension(ax, sel_max, sel_min, signal_name, right_side)
+
 
     plt.show()
     return 0
