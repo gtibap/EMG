@@ -483,6 +483,8 @@ class Reading_EMG:
         
         # fig, ax = plt.subplots(nrows=1,ncols=2, figsize=(7,3.5), sharex=True, sharey=True)
         # fig.canvas.mpl_connect('key_press_event', self.on_press)
+
+        rms_list = list()
         
         # df_fef = pd.DataFrame()
         df_ext = pd.DataFrame()
@@ -510,9 +512,12 @@ class Reading_EMG:
             # t1 = self.ch_time[0] + val1  ## extension
             # t2 = self.ch_time[0] + val2  ## flexion
 
+
             t0 = val0  ## flexion
             t1 = val1  ## extension
             t2 = val2  ## flexion
+
+            print(f't0 t1 t2: {t0}, {t1}, {t2}')
             
             ## extension
             arr_a = self.df_EnvelopedSignals.loc[(self.df_EnvelopedSignals[self.ch_time_name]>=t0) & (self.df_EnvelopedSignals[self.ch_time_name]<t1), [signal_name]].to_numpy()
@@ -527,9 +532,15 @@ class Reading_EMG:
             arr_a = signal.resample_poly(arr_a, len_ref, len(arr_a), padtype='line')
             arr_b = signal.resample_poly(arr_b, len_ref, len(arr_b), padtype='line')
             
-            # arr_r = np.concatenate([arr_a, arr_b])
-            
-            # print(f'sel: {len(arr_r)}\n')
+            arr_r = np.concatenate([arr_a, arr_b]).flatten()
+
+            ## root mean square of each pedal cycle (lap, turn, revolution, )
+            rms_value = np.sqrt(np.mean(arr_r**2))
+            rms_list.append(rms_value)
+
+            # print(f'arr_r: {arr_r}')
+            # print(f'arr_r: {arr_r.flatten()}')
+            # print(f'len arr_r: {len(arr_r)}')
             # ax.plot(arr_r)
             df_ext[i] = arr_a.flatten()
             df_fle[i] = arr_b.flatten()
@@ -607,7 +618,7 @@ class Reading_EMG:
         
         # plt.savefig(f'../data/priority_patients/EBC024/figures/EBC024_cycle.png', bbox_inches='tight')
             
-        return 0
+        return rms_list
     
         
 
@@ -966,7 +977,7 @@ class Reading_EMG:
         # ax[0].set_ylim([-10,50])
 
         ax[0].set_xlim(time_interval)
-        ax[0].set_ylim([-10,10])
+        ax[0].set_ylim([0,5])
 
         # ax[0].set_title(self.filename)
         ax[6].set_xlabel(self.ch_time_name+' [s]')
