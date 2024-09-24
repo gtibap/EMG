@@ -23,6 +23,7 @@ class Reading_EMG:
         self.channelsNames=[]
         self.arr_time_max=[]
         self.arr_time_min=[]
+        self.df_FilteredSignals = pd.DataFrame()
         self.df_EnvelopedSignals = pd.DataFrame()
         
         
@@ -60,7 +61,9 @@ class Reading_EMG:
         self.ch_time_name = mat['channelNames'][0][0][0]
         # print(f'time ch: {self.ch_time[0]}, {self.ch_time[-1]}, {self.ch_time.shape}')
         
+        self.df_FilteredSignals[self.ch_time_name] = self.ch_time
         self.df_EnvelopedSignals[self.ch_time_name] = self.ch_time
+
         
         self.df_data = pd.DataFrame()
         self.df_data[self.ch_time_name] = self.ch_time
@@ -279,6 +282,7 @@ class Reading_EMG:
         for ch, ch_n in zip(self.channels, self.channelsNames):
             # print(f'filtering {ch_n}')
             self.channelsFiltered[i] = self.filterBandPass(ch, fc1, fc2)
+            self.df_FilteredSignals[ch_n] = self.channelsFiltered[i]
             i+=1
         
         return 0
@@ -658,6 +662,7 @@ class Reading_EMG:
         fig, ax = plt.subplots(nrows=len(self.channels), ncols=1, sharex=True, sharey=True,)
         fig.canvas.mpl_connect('key_press_event', self.on_press)
         df = self.df_data
+        # print(f'dataset: {df}')
         df = df.loc[(df[self.ch_time_name]>=time_interval[0]) & (df[self.ch_time_name]<time_interval[1])]
 
         cont=0
@@ -912,6 +917,149 @@ class Reading_EMG:
         
         return 0
     
+
+    def plot_slidingWindow(self, selected_channel, time_interval, size_sec):
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 4), sharey=True, squeeze=False)
+        fig.canvas.mpl_connect('key_press_event', self.on_press)
+        ax = np.array(ax).reshape(-1)
+
+        ## sliding window
+        sps = self.sampling_rate ## samples per second
+        window_size = int(sps*size_sec)
+
+        win = signal.windows.boxcar(window_size)
+
+        df_e = self.df_EnvelopedSignals.loc[(self.df_EnvelopedSignals[self.ch_time_name]>=time_interval[0]) & (self.df_EnvelopedSignals[self.ch_time_name]<time_interval[1])]
+
+        arr = df_e[selected_channel].to_numpy()
+        ## dot product between the window and the signal per sample
+        # arr_mod = np.rint(signal.convolve(arr, win, mode='same'))
+        arr_mod = np.rint(signal.convolve(arr, win, mode='same')) / window_size
+
+        time = df_e[self.ch_time_name].to_numpy()
+
+        ax[0].plot(time, arr_mod, label=selected_channel)
+        ax[0].set_xlim(time_interval[0]+10, time_interval[1]-10)
+        ax[0].set_ylim(0.5, 1.05)
+        ax[0].legend()
+        ax[0].set_xlabel(self.ch_time_name+' [s]')
+        ax[0].set_ylabel('muscular activity rates',)
+
+
+
+        return 0
+    
+
+    def plotEMG_filtered(self, selected_channel, time_interval):
+        
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(4, 3), sharey=True, squeeze=False)
+        fig.canvas.mpl_connect('key_press_event', self.on_press)
+        
+        # fig_d, ax_d = plt.subplots(nrows=5, ncols=6, figsize=(10, 7), sharey=True, squeeze=False)
+        # fig_d.canvas.mpl_connect('key_press_event', self.on_press)
+
+        ax = ax.reshape(-1)
+        # ax_d = ax_d.reshape(-1)
+
+        num_samples = len(ax) + 2
+        
+        # generate 10 samples equally separated in the selected time interval range
+        samples_list = np.linspace(time_interval[0], time_interval[1], num_samples)
+        # select 8 samples, excluding the first and the last ones
+        samples_list = samples_list[1:-1]
+        print(f'sample_list ({len(samples_list)}: {samples_list})')
+
+        df_d = self.df_data.loc[(self.df_data[self.ch_time_name]>=time_interval[0]) & (self.df_data[self.ch_time_name]<time_interval[1])]
+
+        df_s = self.df_FilteredSignals.loc[(self.df_FilteredSignals[self.ch_time_name]>=time_interval[0]) & (self.df_FilteredSignals[self.ch_time_name]<time_interval[1])]
+        df_e = self.df_EnvelopedSignals.loc[(self.df_EnvelopedSignals[self.ch_time_name]>=time_interval[0]) & (self.df_EnvelopedSignals[self.ch_time_name]<time_interval[1])]
+        print(f'signals:\n{df_s}\n{df_e}')
+
+        num_sec = 10 ## seconds
+        for i, sample in enumerate(samples_list):
+            ## number of samples
+            df_dd = df_d.loc[(df_d[self.ch_time_name]>=sample)&(df_d[self.ch_time_name]<sample+num_sec)]
+            df_ds = df_s.loc[(df_s[self.ch_time_name]>=sample)&(df_s[self.ch_time_name]<sample+num_sec)]
+            df_de = df_e.loc[(df_e[self.ch_time_name]>=sample)&(df_e[self.ch_time_name]<sample+num_sec)]
+
+            ax[i].plot(df_ds[self.ch_time_name], df_ds[selected_channel], label=selected_channel,)
+            ax[i].plot(df_de[self.ch_time_name], df_de[selected_channel],)
+            ax[i].legend()
+
+            # ax_d[i].plot(df_dd[self.ch_time_name], df_dd[selected_channel], label=selected_channel)
+            # ax[i].plot(self.ch_time, arr_envelo)
+            
+
+        ax[-1].set_ylim([-10,10])
+        # ax_d[-1].set_ylim([-10,10])
+        # ax[-1].set_xlabel(self.ch_time_name+' [s]')
+        ax[-1].set_ylabel('muscular activity',)
+
+        # cont=0
+        # for ch, ch_n, id_emg in zip(self.channelsFiltered, self.channelsNames, ids_emg):
+        # for ch_fil, ch_env, id_emg in zip(self.channelsFiltered, self.channelsEnveloped, ids_emg):
+        #     ch_n = channels_names[id_emg]
+        #     if ch_n == selected_channel:
+        #         for
+
+        #         ax[id_emg].plot(self.ch_time, ch_fil, label=ch_n)
+        #         ax[id_emg].plot(self.ch_time, ch_env)
+            
+        #     # self.channelsEnveloped[id_emg]
+        #     # self.df_EnvelopedSignals[]
+            
+            
+        #     ax[id_emg].legend()
+            # cont+=1
+        
+        # for id_ax, ch_n in enumerate(channels_names):
+            # ax[id_ax]
+            # ax.legend()
+                
+        
+        # delta_t = (self.sampling_rate*5).astype(int)
+        ## select 5 seconds range of data at the middle of the recordings
+        # id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
+        # id02 = (id01 + (self.sampling_rate*5)).astype(int)
+        
+        # ax[0].set_xlim([self.ch_time[id01],self.ch_time[id02]])
+        # ax[0].set_ylim([-50,50])
+        # # ax[0].set_title(self.filename)
+        # ax[6].set_xlabel(self.ch_time_name+' [s]')
+        # ax[7].set_xlabel(self.ch_time_name+' [s]')
+        
+        # if moment==0:
+        #     if baseline:
+        #         instant='baseline - at the beginning'
+        #     else:
+        #         instant='cycling - at the beginning'
+                
+        # elif moment==1:
+        #     instant='cycling - at the middle'
+        # elif moment==2:
+        #     instant='cycling - at the end'
+        # else:
+        #     instant='not defined'
+        
+       
+        # ## saving plot png file
+        # # fig.suptitle(f'{self.filename}\n{title_emg}')
+        # # fig.suptitle(f'P-{patient_number} session {session_number}')
+        # fig.suptitle(f'EBC{patient_number} session {session}\n{instant}')
+        
+        # path_out=f'../docs/figures/march_12_2024/EBC{patient_number}'
+        # # checking if the directory
+        # # exist or not. 
+        # if not os.path.isdir(path_out): 
+        #     # if directory is  
+        #     # not present then create it. 
+        #     os.makedirs(path_out) 
+        
+        # plt.savefig(f'{path_out}/ebc{patient_number}{session}_{moment}.png', bbox_inches='tight')
+        
+        return 0
+    
+
     
     
     def plotSegmentedSignals(self, ids_emg, channels_names, arr_time_max, arr_time_min, time_interval):
