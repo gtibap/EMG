@@ -156,14 +156,111 @@ files_list={
     'c_15':'BED CYCLING_15min_couché.mat',
     'c_20':'BED CYCLING_couché_20min.mat',
     },
-'S6':{},
-'S7':{},
-'S8':{},
-'S9':{},
-'XG':{},
-'XL':{},
-'PT':{},
+'S6':{
+    'a_bl':'BED CYCLING_baseline_assis.mat',
+    'a_07':'BED CYCLING_7min_assis.mat',
+    'a_10':'BED CYCLING_10min_assis.mat',
+    'a_15':'BED CYCLING_15min_assis.mat',
+    'a_20':'BED CYCLING_20min_assis.mat',
+    'a_25':'BED CYCLING_25min_assis.mat',
+    'a_29':'BED CYCLING_assis_29min.mat',
+
+    'c_bl':'BED CYCLING_baseline.mat',
+    'c_02':'BED CYCLING_2min_couché.mat',
+    'c_05':'BED CYCLING_5min_couché.mat',
+    'c_10':'BED CYCLING_10min_couché.mat',
+    'c_15':'BED CYCLING_15min_couché.mat',
+    'c_20':'BED CYCLING_20min_couché.mat',
+    'c_25':'BED CYCLING_25min_couché.mat',
+    'c_29':'BED CYCLING_couché_29min.mat',
+    },
+'S7':{
+    'a_bl':'BED CYCLING_baseline.mat',
+    'a_05':'BED CYCLING_5min_assis.mat',
+    'a_10':'BED CYCLING_10min_assis.mat',   
+    'a_15':'BED CYCLING_15min_assis.mat',   
+    'a_20':'BED CYCLING_20min_assis.mat',    
+    'a_25':'BED CYCLING_25min_assis.mat',    
+    'a_29':'BED CYCLING_29min_assis.mat',    
+
+    'c_bl':'BED CYCLING.mat',
+    'c_05':'BED CYCLING_5min_couché.mat',
+    'c_10':'BED CYCLING_10min_couché.mat',  
+    'c_15':'BED CYCLING_15min_couché.mat',   
+    'c_20':'BED CYCLING_20min_couché.mat',   
+    'c_25':'BED CYCLING_25min_couché.mat',   
+    'c_29':'BED CYCLING_29min_couché.mat',   
+    },
+'S8':{
+    'a_bl':'BED CYCLING_assis_baseline.mat',
+    'a_05':'BED CYCLING_assis_5min.mat',
+    'a_10':'BED CYCLING_assis_10min.mat',
+    'a_15':'BED CYCLING_15min_assis.mat',
+    'a_20':'BED CYCLING_20min_assis.mat',
+    'a_25':'BED CYCLING_25min_assis.mat',
+    'a_29':'BED CYCLING_29min_assis.mat',
+
+    'c_bl':'BED CYCLING_baseline_couché.mat',
+    'c_05':'BED CYCLING_couché_5min.mat',
+    'c_10':'BED CYCLING_10min_couché.mat',
+    'c_15':'BED CYCLING_15min_couché.mat',
+    'c_20':'BED CYCLING_20min_couché.mat',
+    'c_25':'BED CYCLING_25min_couché.mat',
+    'c_29':'BED CYCLING_29min_couché.mat',
+    },
+'S9':{
+    'a_bl':'BED CYCLING_assis_baseline.mat',
+    'a_01':'BED CYCLING_assis_1min.mat',
+    'a_05':'BED CYCLING_5min_assis.mat',
+    'a_10':'BED CYCLING_assis_10min.mat',
+    'a_15':'BED CYCLING_15min_assis.mat',
+    'a_20':'BED CYCLING_20min_assis.mat',
+    'a_25':'BED CYCLING_25min_assis.mat',
+    'a_29a':'BED CYCLING_29min_assis_actif.mat',
+    },
+'XG':{
+    'a_bl':'BED CYCLING.mat',
+    'a_05':'BED CYCLING_5min_assis.mat',
+    'a_10':'BED CYCLING_10-15min.mat',
+    'a_20':'BED CYCLING_20-25min_assis.mat',
+    'a_30':'BED CYCLING_post30min_assis.mat',
+    },
+'XL':{
+    'a_bl':'BED CYCLING_baseline_assis.mat',
+    'a_05':'BED CYCLING_5min_assis.mat',
+    'a_10':'BED CYCLING_10min_assis.mat',
+    'a_15':'BED CYCLING_15min_assis.mat',
+    'a_20':'BED CYCLING_20min_assis.mat',
+    'a_25':'BED CYCLING_25min_assis.mat',
+    'a_30':'BED CYCLING_30min_assis.mat',
+    },
+'PT':{
+    'a_bl':'BED CYCLING_baseline_assis.mat',
+    'a_05':'BED CYCLING_5min_assis.mat',
+    'a_10':'BED CYCLING_10min_assis.mat',
+    'a_15':'BED CYCLING_15min_assis.mat',
+    'a_20':'BED CYCLING_20min_assis.mat',
+    'a_25':'BED CYCLING_assis_25min.mat',
+    'a_29':'BED CYCLING_assis_29min.mat',
+
+    'c_bl':'BED CYCLING_couché_baseline.mat',
+    'c_02':'BED CYCLING_couché_2min.mat',
+    'c_05':'BED CYCLING_5min_couché.mat',
+    'c_10':'BED CYCLING_couché_10min.mat',
+    'c_15':'BED CYCLING_couché_15min.mat',
+    'c_20a':'BED CYCLING_20min_acitf_couché.mat',
+    'c_25':'BED CYCLING_couché_25min.mat',
+    },
 }
+
+
+
+
+
+
+
+
+
 
 
 
