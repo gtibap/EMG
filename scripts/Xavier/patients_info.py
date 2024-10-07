@@ -253,46 +253,60 @@ files_list={
     },
 }
 
+files_channels = {
+    'S2':{
+        'a_bl' :[1,9],
+        'a_05' :[1,9],
+        'a_10' :[1,9],
 
+        'c_bl' :[9,14],
+        'c_05' :[9,14],
+        'c_10' :[9,14],
+        'c_15a':[9,14],
+        },
 
+}
 
+signals_order = {
+    'S2':{
+        'a_bl' :[3,1,7,5,2,0,6,4],
+        'a_05' :[3,1,7,5,2,0,6,4],
+        'a_10' :[3,1,7,5,2,0,6,4],
 
+        'c_bl' :[3,1,5,2,0,4],
+        'c_05' :[3,1,5,2,0,4],
+        'c_10' :[3,1,5,2,0,4],
+        'c_15a':[3,1,5,2,0,4],
+        },
 
+}
 
+signals_title = {
+    'S2':{
+        'a_bl':'S2: ABT sitting baseline',
+        'a_05':'S2: ABT sitting 05 min',
+        'a_10':'S2: ABT sitting 10 min',
 
+        'c_bl':'S2: ABT lying baseline',
+        'c_05':'S2: ABT lying 05 min',
+        'c_10':'S2: ABT lying 10 min', 
+        'c_15a':'S2: ABT lying 15 min',
+        },
 
+}
 
+filenames_figures = {
+    'S2':{
+        'a_bl':'S2_sitting_bl.png',
+        'a_05':'S2_sitting_05.png',
+        'a_10':'S2_sitting_10.png',
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        'c_bl':'S2_lying_bl.png',
+        'c_05':'S2_lying_05.png',
+        'c_10':'S2_lying_10.png',
+        'c_15a':'S2_lying_15.png',
+    },
+}
 
 
 

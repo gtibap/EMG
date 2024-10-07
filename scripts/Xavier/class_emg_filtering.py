@@ -24,10 +24,13 @@ class Reading_EMG:
         self.arr_time_max=[]
         self.arr_time_min=[]
         self.df_EnvelopedSignals = pd.DataFrame()
-        
+        self.df_FilteredSignals = pd.DataFrame()
+        self.df_OriginalSignals = pd.DataFrame()
         
         self.path = path
         self.filename = filename
+
+        self.channels_ref = ['VMO LT, uV', 'VMO RT, uV', 'VLO LT, uV', 'VLO RT, uV', 'LAT. GASTRO LT, uV', 'LAT. GASTRO RT, uV', 'TIB.ANT. LT, uV', 'TIB.ANT. RT, uV']
         
         # self.day_number = day_number
     
@@ -35,7 +38,7 @@ class Reading_EMG:
         # print(f'\n{self.filename}')
         # print(f'dictionary {mat}')
         # print('Header:',  mat['__header__'])
-        # print('Channel Names:',  mat['channelNames'])
+        print('Channel Names:',  mat['channelNames'])
         
         self.sampling_rate = mat['samplingRate'][0,0]
         # print(f'sample rate: {self.sampling_rate}')
@@ -60,11 +63,14 @@ class Reading_EMG:
         # print(f'time ch: {self.ch_time[0]}, {self.ch_time[-1]}, {self.ch_time.shape}')
         
         self.df_EnvelopedSignals[self.ch_time_name] = self.ch_time
+        self.df_OriginalSignals[self.ch_time_name] = self.ch_time
         
         i=0
         for num_ch in np.arange(ids_channels[0], ids_channels[1]+1):
             self.channels[i] = mat['Data'][0, num_ch].flatten()
             self.channelsNames[i] = mat['channelNames'][0][num_ch][0]
+
+            self.df_OriginalSignals[self.channelsNames[i]] = self.channels[i]
         
             i+=1
 
@@ -272,6 +278,7 @@ class Reading_EMG:
         for ch, ch_n in zip(self.channels, self.channelsNames):
             # print(f'filtering {ch_n}')
             self.channelsFiltered[i] = self.filterBandPass(ch, fc1, fc2)
+            self.df_FilteredSignals[ch_n] = self.channelsFiltered[i]
             i+=1
         
         return 0
@@ -507,17 +514,74 @@ class Reading_EMG:
         fig.canvas.mpl_connect('key_press_event', self.on_press)
         
         cont=0
-        for ch, ch_n in zip(self.channels, self.channelsNames):
+        for ch_n in self.channelsNames:
+            ch = self.df_OriginalSignals[ch_n]
             ax[cont].plot(self.ch_time, ch, label=ch_n)
             ax[cont].legend()
             cont+=1
 
-        ax[0].set_ylim([-100,100])            
+        ax[0].set_ylim([-50,50])  
+        # ax[0].set_xlim([ 5,10])          
         # ax[-1].set_ylim([-0.1, 1.1])    
         ax[0].set_title(self.filename)
         ax[cont-1].set_xlabel(self.ch_time_name+' [s]')
 
         return 0
+
+    def plotSignalsFiltered(self):
+        # print(f'\nids channels: {ids_channels}')
+        fig, ax = plt.subplots(nrows=len(self.channels), ncols=1, sharex=True, sharey=True,)
+        fig.canvas.mpl_connect('key_press_event', self.on_press)
+        
+        cont=0
+        for ch_n in self.channelsNames:
+            ch_f = self.df_FilteredSignals[ch_n]
+            ch_e = self.df_EnvelopedSignals[ch_n]
+            ax[cont].plot(self.ch_time, ch_f, label=ch_n)
+            ax[cont].plot(self.ch_time, ch_e, )
+            ax[cont].legend()
+            cont+=1
+
+        ax[0].set_ylim([-50,50])
+        # ax[0].set_xlim([ 5,10])
+        # ax[-1].set_ylim([-0.1, 1.1])    
+        ax[0].set_title(self.filename)
+        ax[cont-1].set_xlabel(self.ch_time_name+' [s]')
+
+        return 0
+    
+    def plotSignalsFiltered_ordered(self, ids_emg, title, name_png):
+        
+        fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(10, 7), sharex=True, sharey=True, squeeze=False)
+        fig.canvas.mpl_connect('key_press_event', self.on_press)
+        
+        ax = ax.reshape(-1)
+       
+        # cont=0
+        # for ch, ch_n, id_emg in zip(self.channelsFiltered, self.channelsNames, ids_emg):
+        for ch_n, id_emg in zip(self.channelsNames, ids_emg):
+            ch_f = self.df_FilteredSignals[ch_n]
+            ch_e = self.df_EnvelopedSignals[ch_n]
+            ax[id_emg].plot(self.ch_time, ch_f, label=self.channels_ref[id_emg])
+            ax[id_emg].plot(self.ch_time, ch_e, )
+            ax[id_emg].legend()
+            # cont+=1
+
+        ax[0].set_ylim([-50,50])
+        ax[0].set_xlim([ 0,5])
+
+        fig.suptitle(title)
+        fig.supxlabel('time (s)')
+        fig.supylabel('amplitude')
+
+        ## saving plot png file
+        # fig.suptitle(f'{self.filename}\n{title_emg}')
+        # fig.suptitle(f'P-{patient_number} session {session_number}')
+        # fig.suptitle(f'P-{patient_number}')
+        plt.savefig(name_png, bbox_inches='tight')
+         
+        return 0
+    
         
     def plotSelectedSignal(self, signal_number):
         # print(f'\nids channels: {ids_channels}')
@@ -597,8 +661,56 @@ class Reading_EMG:
         ax[1][1].set_ylabel('power spectral density')
 
         return 0
+
+
+    def plotEMG_filtered(self, selected_channel, time_interval):
         
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(4, 3), sharey=True, squeeze=False)
+        fig.canvas.mpl_connect('key_press_event', self.on_press)
         
+        # fig_d, ax_d = plt.subplots(nrows=5, ncols=6, figsize=(10, 7), sharey=True, squeeze=False)
+        # fig_d.canvas.mpl_connect('key_press_event', self.on_press)
+
+        ax = ax.reshape(-1)
+        # ax_d = ax_d.reshape(-1)
+
+        num_samples = len(ax) + 2
+        
+        # generate 10 samples equally separated in the selected time interval range
+        samples_list = np.linspace(time_interval[0], time_interval[1], num_samples)
+        # select 8 samples, excluding the first and the last ones
+        samples_list = samples_list[1:-1]
+        print(f'sample_list ({len(samples_list)}: {samples_list})')
+
+        df_d = self.df_data.loc[(self.df_data[self.ch_time_name]>=time_interval[0]) & (self.df_data[self.ch_time_name]<time_interval[1])]
+
+        df_s = self.df_FilteredSignals.loc[(self.df_FilteredSignals[self.ch_time_name]>=time_interval[0]) & (self.df_FilteredSignals[self.ch_time_name]<time_interval[1])]
+        df_e = self.df_EnvelopedSignals.loc[(self.df_EnvelopedSignals[self.ch_time_name]>=time_interval[0]) & (self.df_EnvelopedSignals[self.ch_time_name]<time_interval[1])]
+        print(f'signals:\n{df_s}\n{df_e}')
+
+        num_sec = 10 ## seconds
+        for i, sample in enumerate(samples_list):
+            ## number of samples
+            df_dd = df_d.loc[(df_d[self.ch_time_name]>=sample)&(df_d[self.ch_time_name]<sample+num_sec)]
+            df_ds = df_s.loc[(df_s[self.ch_time_name]>=sample)&(df_s[self.ch_time_name]<sample+num_sec)]
+            df_de = df_e.loc[(df_e[self.ch_time_name]>=sample)&(df_e[self.ch_time_name]<sample+num_sec)]
+
+            ax[i].plot(df_ds[self.ch_time_name], df_ds[selected_channel], label=selected_channel,)
+            ax[i].plot(df_de[self.ch_time_name], df_de[selected_channel],)
+            ax[i].legend()
+
+            # ax_d[i].plot(df_dd[self.ch_time_name], df_dd[selected_channel], label=selected_channel)
+            # ax[i].plot(self.ch_time, arr_envelo)
+            
+
+        ax[-1].set_ylim([-10,10])
+        # ax_d[-1].set_ylim([-10,10])
+        # ax[-1].set_xlabel(self.ch_time_name+' [s]')
+        ax[-1].set_ylabel('muscular activity',)
+       
+        return 0    
+
+
     def plotFilteredSignals(self, ids_emg, title_emg, patient_number, session_name, session_number, list_act_emg, channels_names):
         
         fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(10, 7), sharex=True, sharey=True, squeeze=False)
@@ -616,8 +728,6 @@ class Reading_EMG:
         # for id_ax, ch_n in enumerate(channels_names):
             # ax[id_ax]
             # ax.legend()
-                
-        
         
         ## select 5 seconds range of data at the middle of the recordings
         id01 = (len(self.ch_time)/2 - (self.sampling_rate*2.5)).astype(int)
@@ -643,8 +753,8 @@ class Reading_EMG:
         # plt.savefig(f'../docs/figures/feb19_2024/ebc{patient_number}{session_name}.png', bbox_inches='tight')
         
         return 0
-        
-        
+
+
     def plotEnvelopedSignals(self, ids_emg, title_emg, patient_number, session_name, session_number, list_act_emg, channels_names):
         
         fig, ax = plt.subplots(nrows=4, ncols=2, figsize=(10, 7), sharex=True, sharey=True, squeeze=False)
