@@ -99,7 +99,7 @@ files_list={
     'c_bl':'BED CYCLING_baseline_couché.mat',
     'c_05':'BED CYCLING_5min_couché.mat',
     'c_10':'BED CYCLING_10min_couché.mat',
-    'c_15a':'BED CYCLING_15min_couché(actif).mat',
+    'c_15':'BED CYCLING_15min_couché(actif).mat',
     },
 'S3':{
     'a_bl':'BED CYCLING_assis_baseline.mat',
@@ -114,11 +114,11 @@ files_list={
 
     'c_bl':'BED CYCLING_baseline_couché.mat',
     'c_01':'BED CYCLING_couché_1min.mat',
-    'c_05sa':'BED CYCLING_couché_semiactif_5min.mat',
+    'c_05':'BED CYCLING_couché_semiactif_5min.mat',
     'c_10':'BED CYCLING_10min_couché.mat',
     'c_10_1':'BED CYCLING_10min_couché-1.mat',
     'c_15':'BED CYCLING_couché_15min.mat',
-    'c_18a':'BED CYCLING_couché_actif_18min.mat',
+    'c_18':'BED CYCLING_couché_actif_18min.mat',
     'c_20':'BED CYCLING_couché_20min.mat',
     'c_25':'BED CYCLING_25min_couché.mat',
     },
@@ -129,17 +129,17 @@ files_list={
     'a_10':'BED CYCLING_10min_assis.mat',
     'a_10_1':'BED CYCLING_10min_assis-1.mat',
     'a_15':'BED CYCLING_15min_assis.mat',
-    'a_18a':'BED CYCLING_active_18min_assis.mat',
+    'a_18':'BED CYCLING_active_18min_assis.mat',
     'a_20':'BED CYCLING_20min_assis.mat',
     'a_25':'BED CYCLING_25min_assis.mat',
     'a_29':'BED CYCLING_29min_assis.mat',
 
-    'a_bl':'BED CYCLING_baseline_couché.mat',
-    'a_05':'BED CYCLING_5min_couché.mat',
-    'a_15':'BED CYCLING_15min_couché.mat',
-    'a_20':'BED CYCLING_20min_couché.mat',
-    'a_25':'BED CYCLING_25min_couché.mat',
-    'a_29a':'BED CYCLING_29min_active_couché.mat',
+    'c_bl':'BED CYCLING_baseline_couché.mat',
+    'c_05':'BED CYCLING_5min_couché.mat',
+    'c_15':'BED CYCLING_15min_couché.mat',
+    'c_20':'BED CYCLING_20min_couché.mat',
+    'c_25':'BED CYCLING_25min_couché.mat',
+    'c_29':'BED CYCLING_29min_active_couché.mat',
     },
 'S5':{
     'a_bl':'BED CYCLING_BASELINE_ASSIS.mat',
@@ -255,29 +255,86 @@ files_list={
 
 files_channels = {
     'S2':{
-        'a_bl' :[1,9],
-        'a_05' :[1,9],
-        'a_10' :[1,9],
+        'a_bl':[1,9],
+        'a_05':[1,9],
+        'a_10':[1,9],
 
-        'c_bl' :[9,14],
-        'c_05' :[9,14],
-        'c_10' :[9,14],
-        'c_15a':[9,14],
+        'c_bl':[9,14],
+        'c_05':[9,14],
+        'c_10':[9,14],
+        'c_15':[9,14],
         },
+    'S3':{
+        'a_bl':[9,16],
+        'a_05':[9,16],
+        'a_15':[9,16],
+        'a_25':[9,16],
+
+        'c_bl':[9,16],
+        'c_05':[9,16],
+        'c_15':[9,16],
+        'c_25':[9,16],
+        },
+    'S4':{
+        'a_bl':[9,16],
+        'a_05':[9,16],
+        'a_15':[9,16],
+        'a_25':[1,8],
+
+        'c_bl':[1,9],
+        'c_05':[1,9],
+        'c_15':[1,9],
+        'c_25':[1,9],
+        },
+    'S9':{
+        'a_bl':[1,9],
+        'a_05':[1,9],
+        'a_15':[1,9],
+        'a_25':[1,9],
+    },
+
 
 }
 
 signals_order = {
     'S2':{
-        'a_bl' :[3,1,7,5,2,0,6,4],
-        'a_05' :[3,1,7,5,2,0,6,4],
-        'a_10' :[3,1,7,5,2,0,6,4],
+        'a_bl':[3,1,7,5,2,0,6,4],
+        'a_05':[3,1,7,5,2,0,6,4],
+        'a_10':[3,1,7,5,2,0,6,4],
 
-        'c_bl' :[3,1,5,2,0,4],
-        'c_05' :[3,1,5,2,0,4],
-        'c_10' :[3,1,5,2,0,4],
-        'c_15a':[3,1,5,2,0,4],
+        'c_bl':[3,1,5,2,0,4],
+        'c_05':[3,1,5,2,0,4],
+        'c_10':[3,1,5,2,0,4],
+        'c_15':[3,1,5,2,0,4],
         },
+    'S3':{
+        'a_bl':[3,1,7,5,2,0,6,4],
+        'a_05':[3,1,7,5,2,0,6,4],
+        'a_15':[3,1,7,5,2,0,6,4],
+        'a_25':[3,1,7,5,2,0,6,4],
+
+        'c_bl':[3,1,7,5,2,0,6,4],
+        'c_05':[3,1,7,5,2,0,6,4],
+        'c_15':[3,1,7,5,2,0,6,4],
+        'c_25':[3,1,7,5,2,0,6,4],
+        },
+    'S4':{
+        'a_bl':[3,1,7,5,2,0,6,4],
+        'a_05':[3,1,7,5,2,0,6,4],
+        'a_15':[3,1,7,5,2,0,6,4],
+        'a_25':[3,1,7,5,2,0,6,],
+
+        'c_bl':[3,1,7,5,2,0,6,4],
+        'c_05':[3,1,7,5,2,0,6,4],
+        'c_15':[3,1,7,5,2,0,6,4],
+        'c_25':[3,1,7,5,2,0,6,4],
+        },
+    'S9':{
+        'a_bl':[3,1,7,5,2,0,6,4],
+        'a_05':[3,1,7,5,2,0,6,4],
+        'a_15':[3,1,7,5,2,0,6,4],
+        'a_25':[3,1,7,5,2,0,6,4],
+    },
 
 }
 
@@ -290,8 +347,36 @@ signals_title = {
         'c_bl':'S2: ABT lying baseline',
         'c_05':'S2: ABT lying 05 min',
         'c_10':'S2: ABT lying 10 min', 
-        'c_15a':'S2: ABT lying 15 min',
+        'c_15':'S2: ABT lying 15 min',
         },
+    'S3':{ 
+        'a_bl':'S3: ABT sitting baseline',
+        'a_05':'S3: ABT sitting 05 min',
+        'a_15':'S3: ABT sitting 15 min',
+        'a_25':'S3: ABT sitting 25 min',
+
+        'c_bl':'S3: ABT lying baseline',
+        'c_05':'S3: ABT lying 05 min',
+        'c_15':'S3: ABT lying 15 min', 
+        'c_25':'S3: ABT lying 25 min',
+        },
+    'S4':{ 
+        'a_bl':'S4: ABT sitting baseline',
+        'a_05':'S4: ABT sitting 05 min',
+        'a_15':'S4: ABT sitting 15 min',
+        'a_25':'S4: ABT sitting 25 min',
+
+        'c_bl':'S4: ABT lying baseline',
+        'c_05':'S4: ABT lying 05 min',
+        'c_15':'S4: ABT lying 15 min', 
+        'c_25':'S4: ABT lying 25 min',
+        },
+    'S9':{ 
+        'a_bl':'S9: ABT sitting baseline',
+        'a_05':'S9: ABT sitting 05 min',
+        'a_15':'S9: ABT sitting 15 min',
+        'a_25':'S9: ABT sitting 25 min',
+    },
 
 }
 
@@ -304,7 +389,35 @@ filenames_figures = {
         'c_bl':'S2_lying_bl.png',
         'c_05':'S2_lying_05.png',
         'c_10':'S2_lying_10.png',
-        'c_15a':'S2_lying_15.png',
+        'c_15':'S2_lying_15.png',
+    },
+    'S3':{
+        'a_bl':'S3_sitting_bl.png',
+        'a_05':'S3_sitting_05.png',
+        'a_15':'S3_sitting_15.png',
+        'a_25':'S3_sitting_25.png',
+
+        'c_bl':'S3_lying_bl.png',
+        'c_05':'S3_lying_05.png',
+        'c_15':'S3_lying_15.png',
+        'c_25':'S3_lying_25.png',
+    },
+    'S4':{
+        'a_bl':'S4_sitting_bl.png',
+        'a_05':'S4_sitting_05.png',
+        'a_15':'S4_sitting_15.png',
+        'a_25':'S4_sitting_25.png',
+
+        'c_bl':'S4_lying_bl.png',
+        'c_05':'S4_lying_05.png',
+        'c_15':'S4_lying_15.png',
+        'c_25':'S4_lying_25.png',
+    },
+    'S9':{
+        'a_bl':'S9_sitting_bl.png',
+        'a_05':'S9_sitting_05.png',
+        'a_15':'S9_sitting_15.png',
+        'a_25':'S9_sitting_25.png',
     },
 }
 

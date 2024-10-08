@@ -35,7 +35,7 @@ def main(args):
     files_subjects={
         'S2':['a_bl','a_05','a_10','c_bl','c_05','c_10','c_15a',],
         'S3':['a_bl','a_01','a_05','a_14','a_15','a_20','a_25','a_28','a_29','c_bl','c_01','c_05sa','c_10','c_10_1','c_15','c_18a','c_20','c_25',],
-        'S4':['a_bl','a_01','a_05','a_10','a_10_1','a_15','a_18a','a_20','a_25','a_29','a_bl','a_05','a_15','a_20','a_25','a_29a',],
+        'S4':['a_bl','a_01','a_05','a_10','a_10_1','a_15','a_18a','a_20','a_25','a_29','c_bl','c_05','c_15','c_20','c_25','c_29a',],
         'S9':['a_bl','a_01','a_05','a_10','a_15','a_20','a_25','a_29a',],
         }
 
@@ -54,10 +54,18 @@ def main(args):
 
     # open file emg signals
     ## selection patient and section of emg data recording
-    id_patient = 'S2'   ## patient S1
+    # id_patient = 'S2'   ## patient S1
+    # id_patient = 'S3'   ## patient S1
+    # id_patient = 'S4'   ## patient S1
+    id_patient = 'S9'   ## patient S1
 
-    sections_list = ['a_bl','a_05','a_10',]
+    # sections_list = ['a_bl','a_05','a_10',]
     # sections_list = ['c_bl','c_05','c_10','c_15a',]
+    # sections_list = ['a_bl','a_05','a_15','a_25',]
+    # sections_list = ['c_bl','c_05','c_15','c_25',]
+    # sections_list =['a_bl','a_05','a_15','a_25',]
+    # sections_list =['c_bl','c_05','c_15','c_25',]
+    sections_list =['a_bl','a_05','a_15','a_25',]
 
     # section = 'c_15a' # 'c_15a' -> couché 15min active, 'a_bl' -> assis baseline 
     # ids_emg = [3,1,5,2,0,4]
@@ -70,6 +78,8 @@ def main(args):
     files_png = emg_files.filenames_figures[id_patient]
 
     for section in sections_list:
+
+        print(f'{folder} + {files[section]}')
 
         filename = folder + files[section]
         channels = idx_channels[section]
@@ -92,7 +102,7 @@ def main(args):
         obj_emg.envelopeFilter()
 
         # obj_emg.plotSignals()
-        obj_emg.plotSignalsFiltered()
+        # obj_emg.plotSignalsFiltered()
         obj_emg.plotSignalsFiltered_ordered(ids_emg, title, out_filename)
     
     

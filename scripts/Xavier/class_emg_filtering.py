@@ -568,7 +568,7 @@ class Reading_EMG:
             # cont+=1
 
         ax[0].set_ylim([-50,50])
-        ax[0].set_xlim([ 0,5])
+        ax[0].set_xlim([5,10])
 
         fig.suptitle(title)
         fig.supxlabel('time (s)')
