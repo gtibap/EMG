@@ -6,3 +6,4 @@ PyWavelets
 kineticstoolkit
 c3d
 seaborn
+pyomeca
