@@ -6,31 +6,40 @@ from scipy.signal import savgol_filter
 from pyomeca import Markers
 
 
-from class_emg_filtering import Reading_EMG
+# from class_emg_filtering import Reading_EMG
 # import markers_list as recordings
 from markersets_names import markersets_dict
 
 class Leg_kinematics:
     ######
-    def __init__(self, path_filename, labels_markers, label_side):
-        self.df = pd.DataFrame()
-        self.path_filename = path_filename
+    def __init__(self, path, filename, labels_markers, label_side):
+
+        self.df = pd.DataFrame() 
+        self.empty = False      
+        self.path_filename = path+filename
         self.markers_labels = labels_markers
         self.markers_side = label_side
-        self.markers_arr = Markers.from_c3d(path_filename, usecols=labels_markers)
-        self.df['time'] = self.markers_arr.time.to_numpy()
 
-        ch_list = ['a','b','c']
-        for ch_label, marker_label in zip(ch_list, labels_markers):
-            self.df[ch_label+'_x'] = self.markers_arr.sel(axis='x', channel=marker_label,).to_numpy()
-            self.df[ch_label+'_y'] = self.markers_arr.sel(axis='y', channel=marker_label,).to_numpy()
-            self.df[ch_label+'_z'] = self.markers_arr.sel(axis='z', channel=marker_label,).to_numpy()
+        try:
+            self.markers_arr = Markers.from_c3d(self.path_filename, usecols=labels_markers)
+            self.df['time'] = self.markers_arr.time.to_numpy()
 
-        self.interpolation_filter(ch_list)
-        self.smooth_filter(ch_list)
-        self.angles_rad = self.angle_between_three_markers()
-        self.angles_deg = np.rad2deg(self.angles_rad)
-        self.arr_time_angles_max, self.arr_time_angles_min = self.get_time_max_and_min_angles()
+            ch_list = ['a','b','c']
+            for ch_label, marker_label in zip(ch_list, labels_markers):
+                self.df[ch_label+'_x'] = self.markers_arr.sel(axis='x', channel=marker_label,).to_numpy()
+                self.df[ch_label+'_y'] = self.markers_arr.sel(axis='y', channel=marker_label,).to_numpy()
+                self.df[ch_label+'_z'] = self.markers_arr.sel(axis='z', channel=marker_label,).to_numpy()
+
+            self.interpolation_filter(ch_list)
+            self.smooth_filter(ch_list)
+            self.angles_rad = self.angle_between_three_markers()
+            self.angles_deg = np.rad2deg(self.angles_rad)
+            self.arr_time_angles_max, self.arr_time_angles_min = self.get_time_max_and_min_angles()
+
+        except:
+            print(f'Problem reading the selected file: {filename}')
+            self.empty = True
+
 
     ######
     def interpolation_filter(self, ch_list):
@@ -127,6 +136,30 @@ class Leg_kinematics:
         t_sel_min = arr_time[ids_sel_min]
 
         return t_sel_max, t_sel_min
+    
+    ############################
+    def plot_sync_kinematics(self, channels_names, fig, ax, label):
+        # path, save_figs
+        # # print(f"channels names: {channels_names, len(channels_names)}")        
+        # num_rows = len(channels_names)//2
+        # # num_rows = math.ceil(len(channels_names)/2)
+        # fig, ax = plt.subplots(nrows=num_rows, ncols=2, figsize=(10, 7), sharex=True, squeeze=False)
+        # fig.canvas.mpl_connect('key_press_event', self.on_press)
+        
+        # ax = ax.reshape(-1)
+        print(f"time sync: {self.arr_time_angles_max}")
+        ymin = -500
+        ymax =  500
+        
+        ## plot EMG signals
+        for ch_name, ax_single in zip(channels_names, ax):
+            if (label in ch_name):
+                ax_single.vlines(self.arr_time_angles_max,  ymin=ymin,ymax=ymax, colors='tab:purple', alpha=0.5, lw=0.5)
+            else:
+                pass
+
+        return fig, ax
+    ############################
 
     ######
     def get_df(self):
@@ -151,67 +184,29 @@ class Leg_kinematics:
     ######
     def get_arr_time_angles_min(self):
         return self.arr_time_angles_min
+    
+    ######
+    def get_flag_empty(self):
+        return self.empty
 
-
-
-
-
-# def max_and_min(arr):
+# ##########
+# def plot_angles(arr, max_list, min_list):
+    
+#     fig, ax = plt.subplots()
+#     ax.plot(arr, label='angle knee')
+#     # ax.plot(JCD_grad, label='gradient')
+#     # only one line may be specified; full height
+#     for x_val in max_list:
+#         ax.axvline(x = x_val, color = 'tab:purple')
         
-#     max_list=[]
-#     min_list=[]
-#     win_size = 60
-#     delta=10
-#     id0=0
+#     for x_val in min_list:
+#         ax.axvline(x = x_val, color = 'tab:orange')
     
-#     while id0 < len(arr):
-#         window = arr[id0:id0+win_size]
-#         ids_max = np.argmax(window)
-#         ids_min = np.argmin(window)
-        
-#         max_list.append(ids_max+id0) 
-#         min_list.append(ids_min+id0) 
-#         id0 = id0 + delta
-    
-#     ids_max, max_counts = np.unique(max_list, return_counts=True)
-#     ids_min, min_counts = np.unique(min_list, return_counts=True)
-    
-#     # print(f'max:\n{ids_max}, {max_counts}')
-#     # print(f'min:\n{ids_min}, {min_counts}')
-    
-#     ## ids occurrences greater than 1
-#     sel_max = np.argwhere(max_counts > 1).reshape(1,-1)
-#     sel_min = np.argwhere(min_counts > 1).reshape(1,-1)
-    
-#     # print(f'indices max: {sel_max}')
-#     # print(f'indices min: {sel_min}')
-    
-#     ids_sel_max = ids_max[sel_max[0]]
-#     ids_sel_min = ids_min[sel_min[0]]
-    
-#     # print(f'values max: {ids_sel_max}')
-#     # print(f'values min: {ids_sel_min}')
-
-#     return ids_sel_max, ids_sel_min
-
-
-def plot_angles(arr, max_list, min_list):
-    
-    fig, ax = plt.subplots()
-    ax.plot(arr, label='angle knee')
-    # ax.plot(JCD_grad, label='gradient')
-    # only one line may be specified; full height
-    for x_val in max_list:
-        ax.axvline(x = x_val, color = 'tab:purple')
-        
-    for x_val in min_list:
-        ax.axvline(x = x_val, color = 'tab:orange')
-    
-    ax.legend()
-    # ax.set_xlim([500,1000])
-    # plt.show()
+#     ax.legend()
+#     # ax.set_xlim([500,1000])
+#     # plt.show()
    
-    return 0
+#     return 0
  
 def main(args):
 
@@ -222,7 +217,7 @@ def main(args):
     markers_right_list = markersets_dict['abc005']['right']
     markers_left_list  = markersets_dict['abc005']['left']
 
-    obj_right = Leg_kinematics(data_path, markers_right_list, 'right')
+    obj_right = Leg_kinematics(data_path,  markers_left_list,  'left')
     obj_left  = Leg_kinematics(data_path,  markers_left_list,  'left')
 
     arr_time_max_extension_right = obj_right.get_arr_time_angles_max()
@@ -238,8 +233,11 @@ def main(args):
     # ax[0].vlines(arr_time_max_extension_right, ymin=ymin,ymax=ymax, colors='tab:purple', alpha=0.5, lw=0.5)
     # ax[1].vlines(arr_time_max_extension_left,  ymin=ymin,ymax=ymax, colors='tab:purple', alpha=0.5, lw=0.5)
 
-    # ax[0].plot(obj_right.get_time(), obj_right.get_angles_deg())
-    # ax[1].plot(obj_left.get_time(),  obj_left.get_angles_deg())
+    # ax[0].plot(obj_right.get_time(), obj_right.get_angles_deg(), label='angle right leg')
+    # ax[1].plot(obj_left.get_time(),  obj_left.get_angles_deg(), label='angle left leg')
+
+    # ax[0].legend()
+    # ax[1].legend()
 
     # ax[0].set_ylim([ymin,ymax])
     # ax[1].set_ylim([ymin,ymax])

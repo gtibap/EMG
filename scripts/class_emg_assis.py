@@ -26,68 +26,70 @@ class Reading_EMG_Assis:
         self.arr_time_max=[]
         self.arr_time_min=[]
         self.df_EnvelopedSignals = pd.DataFrame()
-        
+        self.empty = False
         
         self.path = path
         self.filename = filename
         
         # self.day_number = day_number
-    
-        mat = scipy.io.loadmat(self.path+self.filename)
-        # print(f'\n{self.filename}')
-        # print(f'dictionary {mat}')
-        header = mat['__header__']
-        # print(f"Header:\n{header}")
-        # print(f"Header type :\n{type(header)}")
-        header = list(header.decode('utf-8'))
-        # print(f"{''.join(header[-35:])}")
+        try:
+            mat = scipy.io.loadmat(self.path+self.filename)
+            # print(f'\n{self.filename}')
+            # print(f'dictionary {mat}')
+            header = mat['__header__']
+            # print(f"Header:\n{header}")
+            # print(f"Header type :\n{type(header)}")
+            header = list(header.decode('utf-8'))
+            # print(f"{''.join(header[-35:])}")
 
-        ## recording date and time for plots headers
-        self.date = "Recorded" + ''.join(header[-28:])
+            ## recording date and time for plots headers
+            self.date = "Recorded" + ''.join(header[-28:])
 
-        # print(f"mat:\n{mat}")
-        print(f"Channel Names:\n{mat['channelNames']}")
-        # print(f"type ch: {type(mat['channelNames'])}")
-        # print(f"len ch [0]: {len(mat['channelNames'][0])}")
-        # print(f"ch [0][0]: {mat['channelNames'][0][0]}")
-        # print(f"len (ch [0][0]): {len(mat['channelNames'][0][0])}")
-        # print(f"ch [0][0][0]: {mat['channelNames'][0][0][0]}")
+            # print(f"mat:\n{mat}")
+            print(f"Channel Names:\n{mat['channelNames']}")
+            # print(f"type ch: {type(mat['channelNames'])}")
+            # print(f"len ch [0]: {len(mat['channelNames'][0])}")
+            # print(f"ch [0][0]: {mat['channelNames'][0][0]}")
+            # print(f"len (ch [0][0]): {len(mat['channelNames'][0][0])}")
+            # print(f"ch [0][0][0]: {mat['channelNames'][0][0][0]}")
 
-        ## finding id's of selected channels from all the recorded data
-        ## scanning all the recorded channels
-        self.channels_ids = {}
+            ## finding id's of selected channels from all the recorded data
+            ## scanning all the recorded channels
+            self.channels_ids = {}
 
-        for id in np.arange(len(mat['channelNames'][0])):
-            ## comparing with selected channels
-            print(f"{id}: {mat['channelNames'][0][id][0]}")
-            if mat['channelNames'][0][id][0] in channel_names:
-                # print(f"{id}: {mat['channelNames'][0][id][0]}")
-                self.channels_ids[mat['channelNames'][0][id][0]]=id
-            else:
-                pass
-        print(f"channels ids:\n{self.channels_ids}")
-        
-        self.sampling_rate = mat['samplingRate'][0,0]
-        # print(f'sample rate: {self.sampling_rate}')
+            for id in np.arange(len(mat['channelNames'][0])):
+                ## comparing with selected channels
+                print(f"{id}: {mat['channelNames'][0][id][0]}")
+                if mat['channelNames'][0][id][0] in channel_names:
+                    # print(f"{id}: {mat['channelNames'][0][id][0]}")
+                    self.channels_ids[mat['channelNames'][0][id][0]]=id
+                else:
+                    pass
+            print(f"channels ids:\n{self.channels_ids}")
+            
+            self.sampling_rate = mat['samplingRate'][0,0]
+            # print(f'sample rate: {self.sampling_rate}')
 
-        ## reservate memory space for data channels
-        self.n_channels = len(self.channels_ids)
-        
-        self.channels_data = {}
+            ## reservate memory space for data channels
+            self.n_channels = len(self.channels_ids)
+            
+            self.channels_data = {}
 
-        ## channel 0 is the time array
-        self.ch_time = mat['Data'][0, 0].flatten()
-        self.ch_time_name = mat['channelNames'][0][0][0]
-        # print(f'time ch: {self.ch_time[0]}, {self.ch_time[-1]}, {self.ch_time.shape}')
-        
-        self.df_EnvelopedSignals[self.ch_time_name] = self.ch_time
-        
-        for ch_name in self.channels_ids:
-            # print(f"ch_name: {ch_name}")
-            id = self.channels_ids[ch_name]
-            self.channels_data[ch_name] = mat['Data'][0, id].flatten()
-        
-        
+            ## channel 0 is the time array
+            self.ch_time = mat['Data'][0, 0].flatten()
+            self.ch_time_name = mat['channelNames'][0][0][0]
+            # print(f'time ch: {self.ch_time[0]}, {self.ch_time[-1]}, {self.ch_time.shape}')
+            
+            self.df_EnvelopedSignals[self.ch_time_name] = self.ch_time
+            
+            for ch_name in self.channels_ids:
+                # print(f"ch_name: {ch_name}")
+                id = self.channels_ids[ch_name]
+                self.channels_data[ch_name] = mat['Data'][0, id].flatten()
+
+        except:
+            print(f'Problem reading the selected file: {self.filename}')
+            self.empty = True
 
 
     def filterHighPass(self, emg, fc):
@@ -118,12 +120,16 @@ class Reading_EMG_Assis:
         
         print(f"band pass and band stop filters")
         
-        fc1p =  10 ## 20 Hz high pass filter to remove motion artifacts
+        fc1p =  20 ## 20 Hz high pass filter to remove motion artifacts
         fc2p = 150 ## 500 Hz low pass filter 
+
+        print(f"{fc1p}-{fc2p} Hz bandpass")
 
         # line power 60 Hz
         fc1s =  55 ## low limit
         fc2s =  65 ## high limit
+
+        print(f"60 Hz notch filter")
 
         self.channelsFiltered = {}
         for ch_name in channel_names:
@@ -155,15 +161,15 @@ class Reading_EMG_Assis:
     
 
     ############################
-    def plotEMGSession_assis_filtered(self, channels_names,):
-
-        # print(f"channels names: {channels_names, len(channels_names)}")        
-        num_rows = len(channels_names)//2
-        # num_rows = math.ceil(len(channels_names)/2)
-        fig, ax = plt.subplots(nrows=num_rows, ncols=2, figsize=(10, 7), sharex=True, squeeze=False)
-        fig.canvas.mpl_connect('key_press_event', self.on_press)
+    def plotEMGSession_assis_filtered(self, channels_names, fig, ax):
+        # path, save_figs
+        # # print(f"channels names: {channels_names, len(channels_names)}")        
+        # num_rows = len(channels_names)//2
+        # # num_rows = math.ceil(len(channels_names)/2)
+        # fig, ax = plt.subplots(nrows=num_rows, ncols=2, figsize=(10, 7), sharex=True, squeeze=False)
+        # fig.canvas.mpl_connect('key_press_event', self.on_press)
         
-        ax = ax.reshape(-1)
+        # ax = ax.reshape(-1)
         
         ## plot EMG signals
         for ch_name, ax_single in zip(channels_names, ax):
@@ -217,19 +223,23 @@ class Reading_EMG_Assis:
         filename = self.filename.split('.')[0]
         fig.suptitle(f'{filename}\n{self.date}')
         
-        # ### save figure ####
-        # path_out=f'../data/a_velo_assis/figures/figs/'
-        # # checking if the directory
-        # # exist or not. 
-        # if not os.path.isdir(path_out): 
-        #     # if directory is  
-        #     # not present then create it. 
-        #     os.makedirs(path_out) 
+        # if save_figs:
+        #     ### save figures ####
+        #     # path_out=f'../data/a_velo_assis/figures/figs/'
+        #     path_out= path + 'figures/'
+        #     # checking if the directory
+        #     # exist or not. 
+        #     if not os.path.isdir(path_out): 
+        #         # if directory is  
+        #         # not present then create it. 
+        #         os.makedirs(path_out) 
+            
+        #     plt.savefig(f'{path_out}/{filename}.png', bbox_inches='tight')
+        #     ### save figure ####
+        # else:
+        #     pass
         
-        # plt.savefig(f'{path_out}/{filename}.png', bbox_inches='tight')
-        # ### save figure ####
-        
-        return 0
+        return fig, ax
     ############################
 
        
@@ -265,6 +275,14 @@ class Reading_EMG_Assis:
     ## we remove the last minimum because it could be incomplete
     def getFlexionTimeList(self):
         return self.arr_time_min[:-1]
+    
+    ######
+    def get_flag_empty(self):
+        return self.empty
+    
+
+############################
+
         
         
     
