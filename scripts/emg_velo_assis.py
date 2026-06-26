@@ -128,7 +128,7 @@ def main(args):
     # print(f'channels-sorted: {ids_emg_sorted}')
     
     # print(f'selected file: {filename}, channels: {file_channels}')
-    obj_emg = [[]]*len(files_names_emg)
+    obj_emg_list = [[]]*len(files_names_emg)
     obj_kin_left  = [[]]*len(files_names_kin)
     obj_kin_right = [[]]*len(files_names_kin)
     
@@ -146,17 +146,18 @@ def main(args):
     save_fig = False
     i=0
     for filename_emg in files_names_emg:
-        fig, ax = plt.subplots(nrows=num_rows, ncols=2, figsize=(10, 7), sharex=True, squeeze=False)
-        ax = ax.flatten()
+        # fig, ax = plt.subplots(nrows=num_rows, ncols=2, figsize=(10, 7), sharex=True, squeeze=False)
+        # ax = ax.flatten()
 
         print(f'reading file: {filename_emg}, ... \n', end='')
         # create object class
-        obj_emg[i] = Reading_EMG_Assis(path_emg, filename_emg, channel_names)
+        obj_emg_list[i] = Reading_EMG_Assis(path_emg, filename_emg, channel_names)
         
-        if obj_emg[i].get_flag_empty()==False:
-            obj_emg[i].filteringSignals_assis(channel_names,)
-            obj_emg[i].envelopeFilter_assis()
-            fig, ax = obj_emg[i].plotEMGSession_assis_filtered(channel_names, fig, ax)
+        if obj_emg_list[i].get_flag_empty()==False:
+            obj_emg_list[i].filteringSignals_assis(channel_names,)
+            obj_emg_list[i].envelopeFilter_assis()
+            # obj_emg_list[i].plotEMGSession_assis_filtered(channel_names)
+            # fig, ax = obj_emg[i].plotEMGSession_assis_filtered(channel_names, fig, ax)
             # obj_emg[i].plotEMGSession_assis_filtered(channel_names, path_emg, save_fig)
 
         else:
@@ -164,8 +165,8 @@ def main(args):
         
         print(f'done.')
 
-        fig_list.append(fig)
-        ax_list.append(ax)
+        # fig_list.append(fig)
+        # ax_list.append(ax)
 
         i+=1
     ## EMG
@@ -174,21 +175,43 @@ def main(args):
     #############################
     ## Kinematics
     arr_time_max_extension_right = [[]]*len(files_names_kin)
-    arr_time_max_extension_left = [[]]*len(files_names_kin)
+    arr_time_max_extension_left  = [[]]*len(files_names_kin)
 
     markers_right_list = markersets_dict[patient_id]['right']
     markers_left_list  = markersets_dict[patient_id]['left']
+    
     i=0
     for filename_kin in files_names_kin:
 
-        print(f'reading file: {filename_kin}, ... \n', end='')
+        print(f'reading file:  {filename_kin}, ... \n', end='')
+        print(f'initials file: {filename_kin[:5]}, ... \n', end='')
+        ## the initials 5 characters define the time of data collection, i.e. 00min, 05min, 10min,...
+        ## we compare those initials to the initials of the emg filenames to pair them
+        initials_kin_filename = filename_kin[:5]
+
         # create object class
         obj_kin_left[i]  = Leg_kinematics(path_kin, filename_kin, markers_left_list,  'left')
         obj_kin_right[i] = Leg_kinematics(path_kin, filename_kin, markers_right_list, 'right')
-        
-        if obj_kin_left[i].get_flag_empty()==False:
-            fig_list[i], ax_list[i] = obj_kin_left[i].plot_sync_kinematics(channel_names, fig_list[i], ax_list[i], ' LT,')
-            fig_list[i], ax_list[i] = obj_kin_right[i].plot_sync_kinematics(channel_names, fig_list[i], ax_list[i], ' RT,')
+
+        markers_time_left_max  = obj_kin_left[i].get_time_angles_max()
+        markers_time_left_min  = obj_kin_left[i].get_time_angles_min()
+        markers_time_right_max = obj_kin_right[i].get_time_angles_max()
+        markers_time_right_min = obj_kin_right[i].get_time_angles_min()
+
+        for obj_emg in obj_emg_list:
+            if (initials_kin_filename in obj_emg.getFilename()):
+                obj_emg.setTimeAnglesMarkers(markers_time_left_max, 'left_max')
+                obj_emg.setTimeAnglesMarkers(markers_time_left_min, 'left_min')
+                obj_emg.setTimeAnglesMarkers(markers_time_right_max, 'right_max')
+                obj_emg.setTimeAnglesMarkers(markers_time_right_min, 'right_min')
+                break
+
+                # obj_emg.plot_vlines(arr_markers_time,' LT,')
+
+                # fig_list[i], ax_list[i] = obj_kin_left[i].plot_sync_kinematics(channel_names, fig_list[i], ax_list[i], ' LT,')
+            
+            
+            # fig_list[i], ax_list[i] = obj_kin_right[i].plot_sync_kinematics(channel_names, fig_list[i], ax_list[i], ' RT,')
             # arr_time_max_extension_right[i] = obj_kin_left[i].get_arr_time_angles_max()
             # arr_time_max_extension_left[i]  = obj_kin_right[i].get_arr_time_angles_max()
             # print(f"{filename_kin} angles right:\n{arr_time_max_extension_right[i]}")
@@ -201,6 +224,15 @@ def main(args):
     ## Kinematics
     #############################
     ## visualization emg + kinematics landmarks (time extension max.)
+
+    # a = obj_emg_list[-1].getFilename()
+    # b = obj_emg_list[-1].getChannelsNames()
+    # c = obj_emg_list[-1].get_flag_empty()
+    # print(f"{a}\n{b}\n{c}")
+
+    obj_emg_list[-1].plot_selected_emg(channel_names)
+    obj_emg_list[-1].flexion_extension('VMO RT, uV')
+
     # plot_EMG_kinematics(obj_emg, obj_kin_left, obj_kin_right, channel_names, path_ses, save_fig)
 
     # if save_figs:

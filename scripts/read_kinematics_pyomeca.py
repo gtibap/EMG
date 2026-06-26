@@ -19,6 +19,8 @@ class Leg_kinematics:
         self.path_filename = path+filename
         self.markers_labels = labels_markers
         self.markers_side = label_side
+        self.time_angles_max = []
+        self.time_angles_min = []
 
         try:
             self.markers_arr = Markers.from_c3d(self.path_filename, usecols=labels_markers)
@@ -34,7 +36,7 @@ class Leg_kinematics:
             self.smooth_filter(ch_list)
             self.angles_rad = self.angle_between_three_markers()
             self.angles_deg = np.rad2deg(self.angles_rad)
-            self.arr_time_angles_max, self.arr_time_angles_min = self.get_time_max_and_min_angles()
+            self.time_angles_max, self.time_angles_min = self.get_time_max_and_min_angles()
 
         except:
             print(f'Problem reading the selected file: {filename}')
@@ -178,12 +180,12 @@ class Leg_kinematics:
         return self.angles_deg
     
     ######
-    def get_arr_time_angles_max(self):
-        return self.arr_time_angles_max
+    def get_time_angles_max(self):
+        return self.time_angles_max
     
     ######
-    def get_arr_time_angles_min(self):
-        return self.arr_time_angles_min
+    def get_time_angles_min(self):
+        return self.time_angles_min
     
     ######
     def get_flag_empty(self):
